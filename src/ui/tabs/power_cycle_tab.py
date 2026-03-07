@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from html import escape
 import logging
 from datetime import datetime
 
@@ -37,6 +38,16 @@ from src.core.types import AppSettings, CycleResult, VerificationPolicy
 _LOGGER = logging.getLogger("ui.power_cycle")
 
 
+class NoWheelSpinBox(QSpinBox):
+    def wheelEvent(self, event) -> None:  # noqa: N802
+        event.ignore()
+
+
+class NoWheelDoubleSpinBox(QDoubleSpinBox):
+    def wheelEvent(self, event) -> None:  # noqa: N802
+        event.ignore()
+
+
 class PowerCycleTab(QWidget):
     def __init__(self, config_store: ConfigStore, parent: QWidget | None = None) -> None:
         super().__init__(parent)
@@ -58,11 +69,14 @@ class PowerCycleTab(QWidget):
         self._fail_count = 0
         self._preferred_meter_port = ""
         self._preferred_relay_port = ""
+        self._suspend_auto_save = True
 
         self._build_ui()
+        self._bind_auto_save_signals()
         self._load_settings_into_ui()
         self._refresh_serial_ports()
         self._update_device_control_state()
+        self._suspend_auto_save = False
 
     def _build_ui(self) -> None:
         root_layout = QHBoxLayout(self)
@@ -108,21 +122,21 @@ class PowerCycleTab(QWidget):
         layout.setContentsMargins(12, 14, 12, 12)
         layout.setSpacing(8)
 
-        self.input_test_count = QSpinBox()
+        self.input_test_count = NoWheelSpinBox()
         self.input_test_count.setRange(1, 1_000_000)
         self.input_test_count.setValue(100)
 
-        self.input_state_timeout = QSpinBox()
+        self.input_state_timeout = NoWheelSpinBox()
         self.input_state_timeout.setRange(500, 120_000)
         self.input_state_timeout.setSuffix(" ms")
         self.input_state_timeout.setValue(5000)
 
-        self.input_sample_interval = QSpinBox()
+        self.input_sample_interval = NoWheelSpinBox()
         self.input_sample_interval.setRange(50, 10_000)
         self.input_sample_interval.setSuffix(" ms")
         self.input_sample_interval.setValue(200)
 
-        self.input_consecutive_pass = QSpinBox()
+        self.input_consecutive_pass = NoWheelSpinBox()
         self.input_consecutive_pass.setRange(1, 20)
         self.input_consecutive_pass.setValue(2)
 
@@ -144,9 +158,6 @@ class PowerCycleTab(QWidget):
 
         self.btn_auto_connect = QPushButton("自动连接设备")
         self.btn_auto_connect.clicked.connect(self._auto_connect_devices)
-
-        self.btn_apply_save = QPushButton("应用并保存")
-        self.btn_apply_save.clicked.connect(self._save_current_settings)
 
         top_row = QHBoxLayout()
         top_row.addWidget(QLabel("测试次数："))
@@ -171,10 +182,9 @@ class PowerCycleTab(QWidget):
 
         button_row = QHBoxLayout()
         button_row.addWidget(self.btn_auto_connect)
-        button_row.addWidget(self.btn_apply_save)
-        button_row.addStretch(1)
         button_row.addWidget(self.btn_start)
         button_row.addWidget(self.btn_stop)
+        button_row.addStretch(1)
 
         layout.addLayout(top_row)
         layout.addLayout(sim_row)
@@ -188,7 +198,7 @@ class PowerCycleTab(QWidget):
         layout.setContentsMargins(12, 14, 12, 12)
         layout.setSpacing(8)
 
-        self.input_voltage_threshold = QDoubleSpinBox()
+        self.input_voltage_threshold = NoWheelDoubleSpinBox()
         self.input_voltage_threshold.setRange(0.01, 1000.0)
         self.input_voltage_threshold.setDecimals(3)
         self.input_voltage_threshold.setValue(3.0)
@@ -236,17 +246,19 @@ class PowerCycleTab(QWidget):
         layout.setContentsMargins(12, 14, 12, 12)
         layout.setSpacing(8)
 
-        self.input_interval = QSpinBox()
+        self.input_interval = NoWheelSpinBox()
         self.input_interval.setRange(0, 3600_000)
         self.input_interval.setValue(1000)
         self.input_interval.setSuffix(" ms")
 
-        self.input_relay_channel = QSpinBox()
+        self.input_relay_channel = NoWheelSpinBox()
         self.input_relay_channel.setRange(1, 8)
         self.input_relay_channel.setValue(1)
         self.input_relay_channel.valueChanged.connect(self._sync_sim_target_channel)
 
         self.combo_relay_port = QComboBox()
+        self.btn_refresh_relay_ports = QPushButton("刷新串口")
+        self.btn_refresh_relay_ports.clicked.connect(self._refresh_serial_ports)
         self.btn_relay_connect = QPushButton("连接设备")
         self.btn_relay_connect.clicked.connect(self._connect_relay)
         self.btn_relay_disconnect = QPushButton("断开设备")
@@ -266,6 +278,7 @@ class PowerCycleTab(QWidget):
         row_port = QHBoxLayout()
         row_port.addWidget(QLabel("继电器串口："))
         row_port.addWidget(self.combo_relay_port, 1)
+        row_port.addWidget(self.btn_refresh_relay_ports)
         row_actions = QHBoxLayout()
         row_actions.addWidget(self.btn_relay_connect)
         row_actions.addWidget(self.btn_relay_disconnect)
@@ -302,9 +315,12 @@ class PowerCycleTab(QWidget):
         button_row = QWidget()
         button_layout = QHBoxLayout(button_row)
         button_layout.setContentsMargins(0, 0, 0, 0)
-        self.btn_bt_detect = QPushButton("自动检测蓝牙设备")
+        self.btn_bt_detect = QPushButton("检测已配对蓝牙名称")
         self.btn_bt_detect.clicked.connect(self._detect_bluetooth_devices)
+        self.btn_bt_check = QPushButton("检查连接状态")
+        self.btn_bt_check.clicked.connect(self._check_bluetooth_connection)
         button_layout.addWidget(self.btn_bt_detect)
+        button_layout.addWidget(self.btn_bt_check)
         button_layout.addStretch(1)
 
         form.addRow("蓝牙鼠标名称关键字：", self.input_bt_name)
@@ -377,6 +393,31 @@ class PowerCycleTab(QWidget):
             self.combo_bt_mode.setCurrentIndex(mode_index)
         self._on_simulation_options_changed()
 
+    def _bind_auto_save_signals(self) -> None:
+        self.input_test_count.valueChanged.connect(self._on_settings_changed_auto_save)
+        self.input_state_timeout.valueChanged.connect(self._on_settings_changed_auto_save)
+        self.input_sample_interval.valueChanged.connect(self._on_settings_changed_auto_save)
+        self.input_consecutive_pass.valueChanged.connect(self._on_settings_changed_auto_save)
+        self.input_voltage_threshold.valueChanged.connect(self._on_settings_changed_auto_save)
+        self.input_interval.valueChanged.connect(self._on_settings_changed_auto_save)
+        self.input_relay_channel.valueChanged.connect(self._on_settings_changed_auto_save)
+
+        self.check_sim_multimeter.toggled.connect(self._on_settings_changed_auto_save)
+        self.check_sim_relay.toggled.connect(self._on_settings_changed_auto_save)
+        self.check_sim_bluetooth.toggled.connect(self._on_settings_changed_auto_save)
+
+        self.combo_multimeter_port.currentIndexChanged.connect(self._on_settings_changed_auto_save)
+        self.combo_relay_port.currentIndexChanged.connect(self._on_settings_changed_auto_save)
+        self.combo_bt_mode.currentIndexChanged.connect(self._on_settings_changed_auto_save)
+
+        self.input_bt_name.textChanged.connect(self._on_settings_changed_auto_save)
+        self.input_bt_mac.textChanged.connect(self._on_settings_changed_auto_save)
+
+    def _on_settings_changed_auto_save(self, *_: object) -> None:
+        if self._suspend_auto_save:
+            return
+        self._save_current_settings(emit_log=False, show_error=False)
+
     def _collect_settings_from_ui(self) -> AppSettings:
         mode_data = self.combo_bt_mode.currentData()
         bt_match_mode = mode_data if mode_data in {"name_or_mac", "name_and_mac"} else "name_or_mac"
@@ -408,15 +449,19 @@ class PowerCycleTab(QWidget):
             consecutive_pass_needed=self.input_consecutive_pass.value(),
         )
 
-    def _save_current_settings(self) -> bool:
+    def _save_current_settings(self, *, emit_log: bool = True, show_error: bool = True) -> bool:
         try:
             cfg = self._collect_settings_from_ui()
             self._config_store.save(cfg)
         except ValueError as exc:
-            QMessageBox.warning(self, "参数错误", str(exc))
+            if show_error:
+                QMessageBox.warning(self, "参数错误", str(exc))
             return False
         self.input_bt_mac.setText(cfg.bt_mac)
-        self._append_log("INFO", "配置已保存。")
+        self._preferred_meter_port = cfg.multimeter_port
+        self._preferred_relay_port = cfg.relay_port
+        if emit_log:
+            self._append_log("INFO", "配置已保存。")
         return True
 
     def _refresh_serial_ports(self) -> None:
@@ -561,6 +606,49 @@ class PowerCycleTab(QWidget):
             self.input_bt_name.setText(devices[0].name)
         if not self.input_bt_mac.text().strip() and devices[0].mac:
             self.input_bt_mac.setText(devices[0].mac)
+        self._on_settings_changed_auto_save()
+
+    def _check_bluetooth_connection(self) -> None:
+        mode_data = self.combo_bt_mode.currentData()
+        bt_match_mode = mode_data if mode_data in {"name_or_mac", "name_and_mac"} else "name_or_mac"
+        bt_name = self.input_bt_name.text().strip()
+        raw_mac = self.input_bt_mac.text().strip()
+        bt_mac = normalize_mac(raw_mac)
+        if raw_mac and not bt_mac:
+            QMessageBox.warning(self, "参数错误", "蓝牙MAC格式无效，请输入12位十六进制地址。")
+            return
+
+        if not bt_name and not bt_mac:
+            QMessageBox.warning(self, "参数错误", "请至少填写蓝牙名称关键字或MAC后再检查。")
+            return
+
+        probe = self._sim_bt_probe if self.check_sim_bluetooth.isChecked() else self._bt_probe_real
+        source = "仿真蓝牙" if self.check_sim_bluetooth.isChecked() else "真实已配对蓝牙"
+        mode_text = "名称且MAC" if bt_match_mode == "name_and_mac" else "名称或MAC"
+        criteria: list[str] = []
+        if bt_name:
+            criteria.append(f"名称关键字={bt_name}")
+        if bt_mac:
+            criteria.append(f"MAC={bt_mac}")
+        self._append_log(
+            "INFO",
+            f"手动检查蓝牙连接状态（来源: {source} | 模式: {mode_text} | 条件: {', '.join(criteria)}）",
+        )
+
+        connected, matched = probe.is_target_connected(bt_name, bt_mac, bt_match_mode)
+        if matched:
+            self._append_log("INFO", f"匹配到 {len(matched)} 个设备：")
+            for device in matched:
+                connected_hint = getattr(device, "connected", None)
+                if connected_hint is None:
+                    connected_text = "未知"
+                else:
+                    connected_text = "已连接" if connected_hint else "未连接"
+                self._append_log("INFO", f"  - {device.summary} | 判定={connected_text}")
+        else:
+            self._append_log("WARNING", "未匹配到目标设备，请检查名称关键字/MAC。")
+
+        self._append_log("INFO" if connected else "WARNING", f"手动检查结果：{'已连接' if connected else '未连接'}")
 
     def _start_test(self) -> None:
         if self._running:
@@ -665,10 +753,24 @@ class PowerCycleTab(QWidget):
     @Slot(str, str)
     def _append_log(self, level: str, message: str) -> None:
         ts = datetime.now().strftime("%H:%M:%S")
-        line = f"[{ts}] [{level}] {message}"
-        self.log_view.append(line)
-        log_level = getattr(logging, level.upper(), logging.INFO)
+        level_upper = level.upper()
+        line = f"[{ts}] [{level_upper}] {message}"
+        color = self._log_level_color(level_upper)
+        self.log_view.append(
+            f'<span style="color:{color}; white-space:pre;">{escape(line)}</span>'
+        )
+        log_level = getattr(logging, level_upper, logging.INFO)
         _LOGGER.log(log_level, message)
+
+    @staticmethod
+    def _log_level_color(level: str) -> str:
+        if level in {"ERROR", "CRITICAL"}:
+            return "#dc2626"
+        if level == "WARNING":
+            return "#d97706"
+        if level == "DEBUG":
+            return "#64748b"
+        return "#1f2937"
 
     @Slot(int, int)
     def _on_progress(self, done: int, total: int) -> None:
@@ -794,7 +896,9 @@ class PowerCycleTab(QWidget):
         self.btn_relay_connect.setEnabled((not busy) and relay_real_mode)
         self.btn_relay_disconnect.setEnabled((not busy) and relay_real_mode)
 
-        self.btn_refresh_ports.setEnabled((not busy) and (meter_real_mode or relay_real_mode))
+        allow_refresh = (not busy) and (meter_real_mode or relay_real_mode)
+        self.btn_refresh_ports.setEnabled(allow_refresh)
+        self.btn_refresh_relay_ports.setEnabled(allow_refresh)
         self.btn_auto_connect.setEnabled(not busy)
 
         self.btn_start.setEnabled(not busy)
@@ -802,8 +906,8 @@ class PowerCycleTab(QWidget):
         self.check_sim_multimeter.setEnabled(not busy)
         self.check_sim_relay.setEnabled(not busy)
         self.check_sim_bluetooth.setEnabled(not busy)
-        self.btn_apply_save.setEnabled(not busy)
         self.btn_bt_detect.setEnabled(not busy)
+        self.btn_bt_check.setEnabled(not busy)
 
     def _update_running_state(self) -> None:
         self._update_device_control_state()

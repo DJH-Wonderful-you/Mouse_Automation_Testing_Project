@@ -14,6 +14,18 @@ _INSTANCE_MAC_PATTERNS = [
     re.compile(r"BLUETOOTHDEVICE_([0-9A-Fa-f]{12})", re.IGNORECASE),
     re.compile(r"(?:^|\\|_)DEV_([0-9A-Fa-f]{12})(?:\\|_|$)", re.IGNORECASE),
 ]
+_BLE_HID_SERVICE_LINK_PATTERN = re.compile(
+    r"^BTHLEDEVICE\\\{00001812-0000-1000-8000-00805F9B34FB\}_DEV_"
+    r"(VID&[0-9A-F]{4,6}_PID&[0-9A-F]{4}(?:_REV&[0-9A-F]{4})?)_([0-9A-F]{12})\\",
+    re.IGNORECASE,
+)
+_HID_BLE_SIGNATURE_PATTERN = re.compile(
+    r"^HID\\\{00001812-0000-1000-8000-00805F9B34FB\}_DEV_"
+    r"(VID&[0-9A-F]{4,6}_PID&[0-9A-F]{4}(?:_REV&[0-9A-F]{4})?)",
+    re.IGNORECASE,
+)
+_BT_INSTANCE_PREFIXES = ("BTHENUM\\", "BTHLEDEVICE\\", "BTHLE\\")
+_BT_PRIMARY_PREFIXES = ("BTHENUM\\DEV_", "BTHLEDEVICE\\DEV_", "BTHLE\\DEV_")
 
 
 @dataclass(slots=True, frozen=True)
@@ -24,6 +36,7 @@ class BluetoothDeviceInfo:
     class_name: str
     present: bool
     mac: str
+    connected: bool | None = None
 
     @property
     def status_ok(self) -> bool:
@@ -52,7 +65,8 @@ def query_bluetooth_devices() -> list[BluetoothDeviceInfo]:
     script = (
         "$ErrorActionPreference='SilentlyContinue';"
         "$items = Get-PnpDevice | Where-Object { "
-        "($_.InstanceId -match '^(BTHENUM|BTHLEDEVICE)\\\\') };"
+        "($_.InstanceId -match '^(BTHENUM|BTHLEDEVICE|BTHLE)\\\\' "
+        "-or $_.InstanceId -match '^HID\\\\\\{00001812-0000-1000-8000-00805F9B34FB\\}_DEV_') };"
         "$items | Select-Object Status,Class,FriendlyName,InstanceId,Present | "
         "ConvertTo-Json -Compress -Depth 3"
     )
@@ -67,6 +81,9 @@ def query_bluetooth_devices() -> list[BluetoothDeviceInfo]:
         return []
 
     rows = data if isinstance(data, list) else [data]
+    mac_to_hid_signature = _build_ble_hid_service_links(rows)
+    hid_signatures = _collect_hid_signatures(rows)
+    hid_connected_signatures = _collect_connected_hid_signatures(rows)
     devices: list[BluetoothDeviceInfo] = []
     for row in rows:
         if not isinstance(row, dict):
@@ -82,6 +99,14 @@ def query_bluetooth_devices() -> list[BluetoothDeviceInfo]:
             continue
         merged_text = f"{name} {instance_id}"
         mac = extract_mac(merged_text)
+        connected = _resolve_connected_hint(
+            status=status,
+            present=present,
+            mac=mac,
+            mac_to_hid_signature=mac_to_hid_signature,
+            hid_signatures=hid_signatures,
+            hid_connected_signatures=hid_connected_signatures,
+        )
         if not _looks_like_mouse_related(name, class_name, instance_id):
             continue
         devices.append(
@@ -92,6 +117,7 @@ def query_bluetooth_devices() -> list[BluetoothDeviceInfo]:
                 class_name=class_name,
                 present=present,
                 mac=mac,
+                connected=connected,
             )
         )
     return _deduplicate_devices(devices)
@@ -106,7 +132,7 @@ def is_target_connected(
         for device in devices
         if match_target(device, name_keyword=name_keyword, mac=mac, mode=mode)
     ]
-    connected = any(device.present and device.status_ok for device in matched)
+    connected = any(_is_device_connected(device) for device in matched)
     return connected, matched
 
 
@@ -162,16 +188,96 @@ def _looks_like_mouse_related(name: str, class_name: str, instance_id: str) -> b
     return any(keyword in text for keyword in keywords)
 
 
+def _build_ble_hid_service_links(rows: list[object]) -> dict[str, str]:
+    links: dict[str, str] = {}
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        instance_id = str(row.get("InstanceId") or "")
+        parsed = _extract_ble_hid_service_link(instance_id)
+        if not parsed:
+            continue
+        signature, mac_key = parsed
+        links[mac_key] = signature
+    return links
+
+
+def _collect_connected_hid_signatures(rows: list[object]) -> set[str]:
+    connected_signatures: set[str] = set()
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        instance_id = str(row.get("InstanceId") or "")
+        signature = _extract_hid_signature(instance_id)
+        if not signature:
+            continue
+        status = str(row.get("Status") or "")
+        present = bool(row.get("Present", True))
+        if present and status.strip().upper() == "OK":
+            connected_signatures.add(signature)
+    return connected_signatures
+
+
+def _collect_hid_signatures(rows: list[object]) -> set[str]:
+    signatures: set[str] = set()
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        instance_id = str(row.get("InstanceId") or "")
+        signature = _extract_hid_signature(instance_id)
+        if signature:
+            signatures.add(signature)
+    return signatures
+
+
+def _resolve_connected_hint(
+    *,
+    status: str,
+    present: bool,
+    mac: str,
+    mac_to_hid_signature: dict[str, str],
+    hid_signatures: set[str],
+    hid_connected_signatures: set[str],
+) -> bool | None:
+    mac_key = normalize_mac(mac).replace(":", "")
+    signature = mac_to_hid_signature.get(mac_key)
+    if signature and signature in hid_signatures:
+        return signature in hid_connected_signatures
+    if status or present:
+        return present and status.strip().upper() == "OK"
+    return None
+
+
+def _extract_ble_hid_service_link(instance_id: str) -> tuple[str, str] | None:
+    match = _BLE_HID_SERVICE_LINK_PATTERN.match((instance_id or "").strip())
+    if not match:
+        return None
+    signature = match.group(1).upper()
+    mac_key = match.group(2).upper()
+    return signature, mac_key
+
+
+def _extract_hid_signature(instance_id: str) -> str:
+    match = _HID_BLE_SIGNATURE_PATTERN.match((instance_id or "").strip())
+    if not match:
+        return ""
+    return match.group(1).upper()
+
+
+def _is_device_connected(device: BluetoothDeviceInfo) -> bool:
+    if device.connected is not None:
+        return bool(device.connected)
+    return device.present and device.status_ok
+
+
 def is_paired_bluetooth_instance(instance_id: str) -> bool:
     normalized = (instance_id or "").strip().upper()
-    return normalized.startswith("BTHENUM\\") or normalized.startswith("BTHLEDEVICE\\")
+    return normalized.startswith(_BT_INSTANCE_PREFIXES)
 
 
 def is_primary_device_node(instance_id: str) -> bool:
     normalized = (instance_id or "").strip().upper()
-    if normalized.startswith("BTHENUM\\DEV_"):
-        return True
-    if normalized.startswith("BTHLEDEVICE\\DEV_"):
+    if normalized.startswith(_BT_PRIMARY_PREFIXES):
         return True
     return "BLUETOOTHDEVICE_" in normalized
 
@@ -196,7 +302,7 @@ def _deduplicate_devices(devices: list[BluetoothDeviceInfo]) -> list[BluetoothDe
     return list(result.values())
 
 
-def _run_powershell(script: str, timeout_sec: int = 8) -> str:
+def _run_powershell(script: str, timeout_sec: int = 15) -> str:
     payload = (
         "[Console]::OutputEncoding=[System.Text.Encoding]::UTF8;"
         "$OutputEncoding=[System.Text.Encoding]::UTF8;"

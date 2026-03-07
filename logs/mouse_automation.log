@@ -561,3 +561,294 @@
 2026-03-06 07:59:48,501 [INFO] ui.power_cycle - 配置已保存。
 2026-03-06 07:59:49,997 [INFO] ui.power_cycle - 仿真设置更新：万用表=开, 继电器=开, 蓝牙=关
 2026-03-06 07:59:50,009 [INFO] ui.power_cycle - 串口刷新完成，共发现 2 个端口。
+2026-03-06 12:31:53,482 [INFO] ui.power_cycle - 检测到 2 个蓝牙相关设备（来源: 真实已配对蓝牙）：
+2026-03-06 12:31:53,484 [INFO] ui.power_cycle -   - 名称=TONEMAC HS1 | 状态=OK | MAC=F4:4E:FE:00:11:4C | Class=Bluetooth | ID=BTHENUM\DEV_F44EFE00114C\7&3B5EF62B&1&BLUETOOTHDEVICE_F44EFE00114C
+2026-03-06 12:31:53,485 [INFO] ui.power_cycle -   - 名称=HUAWEI FreeBuds 5i | 状态=OK | MAC=14:51:20:FF:A1:14 | Class=Bluetooth | ID=BTHENUM\DEV_145120FFA114\7&3B5EF62B&1&BLUETOOTHDEVICE_145120FFA114
+2026-03-06 12:32:57,608 [INFO] ui.power_cycle - 配置已保存。
+2026-03-06 12:32:57,615 [INFO] ui.power_cycle - 测试线程启动。
+2026-03-06 12:32:57,620 [INFO] ui.power_cycle - 测试开始，总轮次: 100
+2026-03-06 12:32:57,621 [INFO] ui.power_cycle - [第1轮] 当前继电器通道1状态: 关
+2026-03-06 12:33:10,972 [INFO] ui.power_cycle - 断电状态确认通过: 电压=0.200V, 蓝牙=未连接
+2026-03-06 12:33:11,977 [INFO] ui.power_cycle - 执行上电: 通道1上电命令已发送。
+2026-03-06 12:33:24,103 [WARNING] ui.power_cycle - [第1轮] 失败 | 原因: 上电验证失败: 上电状态等待超时(last: voltage=4.9, bt_connected=False)
+2026-03-06 12:33:24,118 [INFO] ui.power_cycle - [第2轮] 当前继电器通道1状态: 开
+2026-03-06 12:33:24,119 [INFO] ui.power_cycle - 执行断电准备: 通道1断电命令已发送。
+2026-03-06 12:33:36,431 [INFO] ui.power_cycle - 断电状态确认通过: 电压=0.200V, 蓝牙=未连接
+2026-03-06 12:33:37,441 [INFO] ui.power_cycle - 执行上电: 通道1上电命令已发送。
+2026-03-06 12:33:50,168 [WARNING] ui.power_cycle - [第2轮] 失败 | 原因: 上电验证失败: 上电状态等待超时(last: voltage=4.9, bt_connected=False)
+2026-03-06 12:33:50,170 [INFO] ui.power_cycle - [第3轮] 当前继电器通道1状态: 开
+2026-03-06 12:33:50,172 [INFO] ui.power_cycle - 执行断电准备: 通道1断电命令已发送。
+2026-03-06 12:34:01,963 [INFO] ui.power_cycle - 断电状态确认通过: 电压=0.200V, 蓝牙=未连接
+2026-03-06 12:34:02,971 [INFO] ui.power_cycle - 执行上电: 通道1上电命令已发送。
+2026-03-06 12:34:15,222 [WARNING] ui.power_cycle - [第3轮] 失败 | 原因: 上电验证失败: 上电状态等待超时(last: voltage=4.9, bt_connected=False)
+2026-03-06 12:34:15,231 [INFO] ui.power_cycle - [第4轮] 当前继电器通道1状态: 开
+2026-03-06 12:34:15,232 [INFO] ui.power_cycle - 执行断电准备: 通道1断电命令已发送。
+2026-03-06 12:34:27,460 [INFO] ui.power_cycle - 断电状态确认通过: 电压=0.200V, 蓝牙=未连接
+2026-03-06 12:34:28,464 [INFO] ui.power_cycle - 执行上电: 通道1上电命令已发送。
+2026-03-06 12:34:36,391 [WARNING] ui.power_cycle - 已请求停止测试。
+2026-03-06 12:34:40,312 [WARNING] ui.power_cycle - 收到停止请求，退出测试循环。
+2026-03-06 12:34:40,313 [INFO] ui.power_cycle - 测试结束：成功 0，失败 3，成功率 0.00%
+2026-03-06 12:34:40,314 [INFO] ui.power_cycle - 测试完成。成功 0，失败 3，成功率 0.00%
+2026-03-06 12:35:43,987 [INFO] ui.power_cycle - 检测到 2 个蓝牙相关设备（来源: 真实已配对蓝牙）：
+2026-03-06 12:35:43,988 [INFO] ui.power_cycle -   - 名称=TONEMAC HS1 | 状态=OK | MAC=F4:4E:FE:00:11:4C | Class=Bluetooth | ID=BTHENUM\DEV_F44EFE00114C\7&3B5EF62B&1&BLUETOOTHDEVICE_F44EFE00114C
+2026-03-06 12:35:43,989 [INFO] ui.power_cycle -   - 名称=HUAWEI FreeBuds 5i | 状态=OK | MAC=14:51:20:FF:A1:14 | Class=Bluetooth | ID=BTHENUM\DEV_145120FFA114\7&3B5EF62B&1&BLUETOOTHDEVICE_145120FFA114
+2026-03-06 12:37:41,895 [INFO] ui.power_cycle - 检测到 2 个蓝牙相关设备（来源: 真实已配对蓝牙）：
+2026-03-06 12:37:41,896 [INFO] ui.power_cycle -   - 名称=TONEMAC HS1 | 状态=OK | MAC=F4:4E:FE:00:11:4C | Class=Bluetooth | ID=BTHENUM\DEV_F44EFE00114C\7&3B5EF62B&1&BLUETOOTHDEVICE_F44EFE00114C
+2026-03-06 12:37:41,897 [INFO] ui.power_cycle -   - 名称=HUAWEI FreeBuds 5i | 状态=OK | MAC=14:51:20:FF:A1:14 | Class=Bluetooth | ID=BTHENUM\DEV_145120FFA114\7&3B5EF62B&1&BLUETOOTHDEVICE_145120FFA114
+2026-03-06 12:38:07,123 [INFO] ui.power_cycle - 配置已保存。
+2026-03-06 12:38:07,130 [INFO] ui.power_cycle - 测试线程启动。
+2026-03-06 12:38:07,137 [INFO] ui.power_cycle - 测试开始，总轮次: 100
+2026-03-06 12:38:07,139 [INFO] ui.power_cycle - [第1轮] 当前继电器通道1状态: 开
+2026-03-06 12:38:07,140 [INFO] ui.power_cycle - 执行断电准备: 通道1断电命令已发送。
+2026-03-06 12:38:19,756 [WARNING] ui.power_cycle - [第1轮] 失败 | 原因: 断电验证失败: 断电状态等待超时(last: voltage=0.2, bt_connected=True)
+2026-03-06 12:38:19,761 [INFO] ui.power_cycle - [第2轮] 当前继电器通道1状态: 关
+2026-03-06 12:38:33,978 [WARNING] ui.power_cycle - [第2轮] 失败 | 原因: 断电验证失败: 断电状态等待超时(last: voltage=0.2, bt_connected=True)
+2026-03-06 12:38:33,982 [INFO] ui.power_cycle - [第3轮] 当前继电器通道1状态: 关
+2026-03-06 12:38:48,110 [WARNING] ui.power_cycle - [第3轮] 失败 | 原因: 断电验证失败: 断电状态等待超时(last: voltage=0.2, bt_connected=True)
+2026-03-06 12:38:48,111 [INFO] ui.power_cycle - [第4轮] 当前继电器通道1状态: 关
+2026-03-06 12:39:01,827 [WARNING] ui.power_cycle - [第4轮] 失败 | 原因: 断电验证失败: 断电状态等待超时(last: voltage=0.2, bt_connected=True)
+2026-03-06 12:39:01,833 [INFO] ui.power_cycle - [第5轮] 当前继电器通道1状态: 关
+2026-03-06 12:39:15,972 [WARNING] ui.power_cycle - [第5轮] 失败 | 原因: 断电验证失败: 断电状态等待超时(last: voltage=0.2, bt_connected=True)
+2026-03-06 12:39:15,980 [INFO] ui.power_cycle - [第6轮] 当前继电器通道1状态: 关
+2026-03-06 12:39:31,836 [WARNING] bluetooth - 调用 PowerShell 检测蓝牙失败: Command '['powershell', '-NoProfile', '-Command', "[Console]::OutputEncoding=[System.Text.Encoding]::UTF8;$OutputEncoding=[System.Text.Encoding]::UTF8;$ErrorActionPreference='SilentlyContinue';$items = Get-PnpDevice | Where-Object { ($_.InstanceId -match '^(BTHENUM|BTHLEDEVICE)\\\\') };$items | Select-Object Status,Class,FriendlyName,InstanceId,Present | ConvertTo-Json -Compress -Depth 3"]' timed out after 8 seconds
+2026-03-06 12:39:31,839 [INFO] ui.power_cycle - 断电状态确认通过: 电压=0.200V, 蓝牙=未连接
+2026-03-06 12:39:32,846 [INFO] ui.power_cycle - 执行上电: 通道1上电命令已发送。
+2026-03-06 12:39:46,174 [INFO] ui.power_cycle - 上电状态确认通过: 电压=4.900V, 蓝牙=已连接
+2026-03-06 12:39:46,175 [INFO] ui.power_cycle - [第6轮] 通过 | 断电电压=0.2, 上电电压=4.9
+2026-03-06 12:39:46,181 [INFO] ui.power_cycle - [第7轮] 当前继电器通道1状态: 开
+2026-03-06 12:39:46,182 [INFO] ui.power_cycle - 执行断电准备: 通道1断电命令已发送。
+2026-03-06 12:39:58,661 [WARNING] ui.power_cycle - [第7轮] 失败 | 原因: 断电验证失败: 断电状态等待超时(last: voltage=0.2, bt_connected=True)
+2026-03-06 12:39:58,668 [INFO] ui.power_cycle - [第8轮] 当前继电器通道1状态: 关
+2026-03-06 12:40:11,137 [WARNING] ui.power_cycle - [第8轮] 失败 | 原因: 断电验证失败: 断电状态等待超时(last: voltage=0.2, bt_connected=True)
+2026-03-06 12:40:11,151 [INFO] ui.power_cycle - [第9轮] 当前继电器通道1状态: 关
+2026-03-06 12:40:19,163 [WARNING] bluetooth - 调用 PowerShell 检测蓝牙失败: Command '['powershell', '-NoProfile', '-Command', "[Console]::OutputEncoding=[System.Text.Encoding]::UTF8;$OutputEncoding=[System.Text.Encoding]::UTF8;$ErrorActionPreference='SilentlyContinue';$items = Get-PnpDevice | Where-Object { ($_.InstanceId -match '^(BTHENUM|BTHLEDEVICE)\\\\') };$items | Select-Object Status,Class,FriendlyName,InstanceId,Present | ConvertTo-Json -Compress -Depth 3"]' timed out after 8 seconds
+2026-03-06 12:40:26,755 [INFO] ui.power_cycle - 断电状态确认通过: 电压=0.200V, 蓝牙=未连接
+2026-03-06 12:40:27,761 [INFO] ui.power_cycle - 执行上电: 通道1上电命令已发送。
+2026-03-06 12:40:41,127 [INFO] ui.power_cycle - 上电状态确认通过: 电压=4.900V, 蓝牙=已连接
+2026-03-06 12:40:41,127 [INFO] ui.power_cycle - [第9轮] 通过 | 断电电压=0.2, 上电电压=4.9
+2026-03-06 12:40:41,138 [INFO] ui.power_cycle - [第10轮] 当前继电器通道1状态: 开
+2026-03-06 12:40:41,139 [INFO] ui.power_cycle - 执行断电准备: 通道1断电命令已发送。
+2026-03-06 12:40:54,954 [INFO] ui.power_cycle - 断电状态确认通过: 电压=0.200V, 蓝牙=未连接
+2026-03-06 12:40:55,962 [INFO] ui.power_cycle - 执行上电: 通道1上电命令已发送。
+2026-03-06 12:41:04,000 [WARNING] bluetooth - 调用 PowerShell 检测蓝牙失败: Command '['powershell', '-NoProfile', '-Command', "[Console]::OutputEncoding=[System.Text.Encoding]::UTF8;$OutputEncoding=[System.Text.Encoding]::UTF8;$ErrorActionPreference='SilentlyContinue';$items = Get-PnpDevice | Where-Object { ($_.InstanceId -match '^(BTHENUM|BTHLEDEVICE)\\\\') };$items | Select-Object Status,Class,FriendlyName,InstanceId,Present | ConvertTo-Json -Compress -Depth 3"]' timed out after 8 seconds
+2026-03-06 12:41:11,280 [WARNING] ui.power_cycle - [第10轮] 失败 | 原因: 上电验证失败: 上电状态等待超时(last: voltage=4.9, bt_connected=True)
+2026-03-06 12:41:11,293 [INFO] ui.power_cycle - [第11轮] 当前继电器通道1状态: 开
+2026-03-06 12:41:11,293 [INFO] ui.power_cycle - 执行断电准备: 通道1断电命令已发送。
+2026-03-06 12:41:23,653 [WARNING] ui.power_cycle - [第11轮] 失败 | 原因: 断电验证失败: 断电状态等待超时(last: voltage=0.2, bt_connected=True)
+2026-03-06 12:41:23,653 [INFO] ui.power_cycle - [第12轮] 当前继电器通道1状态: 关
+2026-03-06 12:41:34,800 [WARNING] ui.power_cycle - [第12轮] 失败 | 原因: 断电验证失败: 断电状态等待超时(last: voltage=0.2, bt_connected=True)
+2026-03-06 12:41:34,800 [INFO] ui.power_cycle - [第13轮] 当前继电器通道1状态: 关
+2026-03-06 12:41:46,708 [WARNING] ui.power_cycle - [第13轮] 失败 | 原因: 断电验证失败: 断电状态等待超时(last: voltage=0.2, bt_connected=True)
+2026-03-06 12:41:46,712 [INFO] ui.power_cycle - [第14轮] 当前继电器通道1状态: 关
+2026-03-06 12:41:58,178 [WARNING] ui.power_cycle - [第14轮] 失败 | 原因: 断电验证失败: 断电状态等待超时(last: voltage=0.2, bt_connected=True)
+2026-03-06 12:41:58,178 [INFO] ui.power_cycle - [第15轮] 当前继电器通道1状态: 关
+2026-03-06 12:42:09,984 [WARNING] ui.power_cycle - [第15轮] 失败 | 原因: 断电验证失败: 断电状态等待超时(last: voltage=0.2, bt_connected=True)
+2026-03-06 12:42:09,993 [INFO] ui.power_cycle - [第16轮] 当前继电器通道1状态: 关
+2026-03-06 12:42:20,965 [WARNING] ui.power_cycle - [第16轮] 失败 | 原因: 断电验证失败: 断电状态等待超时(last: voltage=0.2, bt_connected=True)
+2026-03-06 12:42:20,977 [INFO] ui.power_cycle - [第17轮] 当前继电器通道1状态: 关
+2026-03-06 12:42:32,049 [WARNING] ui.power_cycle - [第17轮] 失败 | 原因: 断电验证失败: 断电状态等待超时(last: voltage=0.2, bt_connected=True)
+2026-03-06 12:42:32,053 [INFO] ui.power_cycle - [第18轮] 当前继电器通道1状态: 关
+2026-03-06 12:42:36,494 [WARNING] ui.power_cycle - 已请求停止测试。
+2026-03-06 12:42:37,610 [WARNING] ui.power_cycle - 收到停止请求，退出测试循环。
+2026-03-06 12:42:37,610 [INFO] ui.power_cycle - 测试结束：成功 2，失败 15，成功率 11.76%
+2026-03-06 12:42:37,610 [INFO] ui.power_cycle - 测试完成。成功 2，失败 15，成功率 11.76%
+2026-03-06 12:43:30,928 [INFO] ui.power_cycle - 配置已保存。
+2026-03-06 12:43:30,928 [INFO] ui.power_cycle - 测试线程启动。
+2026-03-06 12:43:30,928 [INFO] ui.power_cycle - 测试开始，总轮次: 100
+2026-03-06 12:43:30,928 [INFO] ui.power_cycle - [第1轮] 当前继电器通道1状态: 关
+2026-03-06 12:43:42,807 [INFO] ui.power_cycle - 断电状态确认通过: 电压=0.200V, 蓝牙=未连接
+2026-03-06 12:43:43,821 [INFO] ui.power_cycle - 执行上电: 通道1上电命令已发送。
+2026-03-06 12:44:06,717 [WARNING] ui.power_cycle - [第1轮] 失败 | 原因: 上电验证失败: 上电状态等待超时(last: voltage=4.9, bt_connected=False)
+2026-03-06 12:44:06,717 [INFO] ui.power_cycle - [第2轮] 当前继电器通道1状态: 开
+2026-03-06 12:44:06,717 [INFO] ui.power_cycle - 执行断电准备: 通道1断电命令已发送。
+2026-03-06 12:44:17,796 [INFO] ui.power_cycle - 断电状态确认通过: 电压=0.200V, 蓝牙=未连接
+2026-03-06 12:44:18,806 [INFO] ui.power_cycle - 执行上电: 通道1上电命令已发送。
+2026-03-06 12:44:41,842 [WARNING] ui.power_cycle - [第2轮] 失败 | 原因: 上电验证失败: 上电状态等待超时(last: voltage=4.9, bt_connected=False)
+2026-03-06 12:44:41,842 [INFO] ui.power_cycle - [第3轮] 当前继电器通道1状态: 开
+2026-03-06 12:44:41,842 [INFO] ui.power_cycle - 执行断电准备: 通道1断电命令已发送。
+2026-03-06 12:44:43,917 [WARNING] ui.power_cycle - 已请求停止测试。
+2026-03-06 12:44:47,570 [WARNING] ui.power_cycle - 收到停止请求，退出测试循环。
+2026-03-06 12:44:47,570 [INFO] ui.power_cycle - 测试结束：成功 0，失败 2，成功率 0.00%
+2026-03-06 12:44:47,570 [INFO] ui.power_cycle - 测试完成。成功 0，失败 2，成功率 0.00%
+2026-03-06 12:44:52,833 [INFO] ui.power_cycle - 配置已保存。
+2026-03-06 12:44:52,833 [INFO] ui.power_cycle - 测试线程启动。
+2026-03-06 12:44:52,844 [INFO] ui.power_cycle - 测试开始，总轮次: 100
+2026-03-06 12:44:52,844 [INFO] ui.power_cycle - [第1轮] 当前继电器通道1状态: 关
+2026-03-06 12:45:04,240 [INFO] ui.power_cycle - 断电状态确认通过: 电压=0.200V, 蓝牙=未连接
+2026-03-06 12:45:05,248 [INFO] ui.power_cycle - 执行上电: 通道1上电命令已发送。
+2026-03-06 12:45:13,766 [WARNING] ui.power_cycle - 已请求停止测试。
+2026-03-06 12:45:16,360 [WARNING] ui.power_cycle - 收到停止请求，退出测试循环。
+2026-03-06 12:45:16,360 [INFO] ui.power_cycle - 测试结束：成功 0，失败 0，成功率 0.00%
+2026-03-06 12:45:16,362 [INFO] ui.power_cycle - 测试完成。成功 0，失败 0，成功率 0.00%
+2026-03-07 09:55:20,671 [INFO] ui.power_cycle - 仿真设置更新：万用表=开, 继电器=开, 蓝牙=关
+2026-03-07 09:55:20,688 [INFO] ui.power_cycle - 串口刷新完成，共发现 2 个端口。
+2026-03-07 09:55:34,348 [INFO] ui.power_cycle - 检测到 2 个蓝牙相关设备（来源: 真实已配对蓝牙）：
+2026-03-07 09:55:34,348 [INFO] ui.power_cycle -   - 名称=TONEMAC HS1 | 状态=OK | MAC=F4:4E:FE:00:11:4C | Class=Bluetooth | ID=BTHENUM\DEV_F44EFE00114C\7&3B5EF62B&1&BLUETOOTHDEVICE_F44EFE00114C
+2026-03-07 09:55:34,348 [INFO] ui.power_cycle -   - 名称=HUAWEI FreeBuds 5i | 状态=OK | MAC=14:51:20:FF:A1:14 | Class=Bluetooth | ID=BTHENUM\DEV_145120FFA114\7&3B5EF62B&1&BLUETOOTHDEVICE_145120FFA114
+2026-03-07 10:04:21,813 [INFO] ui.power_cycle - 配置已保存。
+2026-03-07 10:07:13,716 [INFO] ui.power_cycle - 仿真设置更新：万用表=开, 继电器=开, 蓝牙=关
+2026-03-07 10:07:13,725 [INFO] ui.power_cycle - 串口刷新完成，共发现 2 个端口。
+2026-03-07 10:07:23,614 [INFO] ui.power_cycle - 检测到 2 个蓝牙相关设备（来源: 真实已配对蓝牙）：
+2026-03-07 10:07:23,615 [INFO] ui.power_cycle -   - 名称=TONEMAC HS1 | 状态=OK | MAC=F4:4E:FE:00:11:4C | Class=Bluetooth | ID=BTHENUM\DEV_F44EFE00114C\7&3B5EF62B&1&BLUETOOTHDEVICE_F44EFE00114C
+2026-03-07 10:07:23,616 [INFO] ui.power_cycle -   - 名称=HUAWEI FreeBuds 5i | 状态=OK | MAC=14:51:20:FF:A1:14 | Class=Bluetooth | ID=BTHENUM\DEV_145120FFA114\7&3B5EF62B&1&BLUETOOTHDEVICE_145120FFA114
+2026-03-07 10:18:14,248 [INFO] ui.power_cycle - 配置已保存。
+2026-03-07 10:18:15,810 [INFO] ui.power_cycle - 仿真设置更新：万用表=开, 继电器=开, 蓝牙=关
+2026-03-07 10:18:15,822 [INFO] ui.power_cycle - 串口刷新完成，共发现 2 个端口。
+2026-03-07 10:18:24,369 [INFO] ui.power_cycle - 检测到 5 个蓝牙相关设备（来源: 真实已配对蓝牙）：
+2026-03-07 10:18:24,370 [INFO] ui.power_cycle -   - 名称=SUNWINON Mouse MOCO | 状态=OK | MAC=D1:02:12:03:7B:B6 | Class=Bluetooth | ID=BTHLE\DEV_D10212037BB6\7&1679758C&0&D10212037BB6
+2026-03-07 10:18:24,372 [INFO] ui.power_cycle -   - 名称=Logi M750 | 状态=OK | MAC=D5:E7:15:41:4C:A8 | Class=Bluetooth | ID=BTHLE\DEV_D5E715414CA8\7&1679758C&0&D5E715414CA8
+2026-03-07 10:18:24,372 [INFO] ui.power_cycle -   - 名称=LOWA Mouse | 状态=OK | MAC=F0:61:EE:A2:D5:A0 | Class=Bluetooth | ID=BTHLE\DEV_F061EEA2D5A0\7&1679758C&0&F061EEA2D5A0
+2026-03-07 10:18:24,373 [INFO] ui.power_cycle -   - 名称=TONEMAC HS1 | 状态=OK | MAC=F4:4E:FE:00:11:4C | Class=Bluetooth | ID=BTHENUM\DEV_F44EFE00114C\7&3B5EF62B&1&BLUETOOTHDEVICE_F44EFE00114C
+2026-03-07 10:18:24,373 [INFO] ui.power_cycle -   - 名称=HUAWEI FreeBuds 5i | 状态=OK | MAC=14:51:20:FF:A1:14 | Class=Bluetooth | ID=BTHENUM\DEV_145120FFA114\7&3B5EF62B&1&BLUETOOTHDEVICE_145120FFA114
+2026-03-07 10:18:49,152 [INFO] ui.power_cycle - 配置已保存。
+2026-03-07 10:18:49,159 [INFO] ui.power_cycle - 测试线程启动。
+2026-03-07 10:18:49,165 [INFO] ui.power_cycle - 测试开始，总轮次: 100
+2026-03-07 10:18:49,166 [INFO] ui.power_cycle - [第1轮] 当前继电器通道1状态: 关
+2026-03-07 10:19:12,555 [WARNING] ui.power_cycle - [第1轮] 失败 | 原因: 断电验证失败: 断电状态等待超时(last: voltage=0.2, bt_connected=True)
+2026-03-07 10:19:12,570 [INFO] ui.power_cycle - [第2轮] 当前继电器通道1状态: 关
+2026-03-07 10:19:37,108 [WARNING] ui.power_cycle - [第2轮] 失败 | 原因: 断电验证失败: 断电状态等待超时(last: voltage=0.2, bt_connected=True)
+2026-03-07 10:19:37,111 [INFO] ui.power_cycle - [第3轮] 当前继电器通道1状态: 关
+2026-03-07 10:19:41,523 [WARNING] ui.power_cycle - 已请求停止测试。
+2026-03-07 10:19:43,160 [WARNING] ui.power_cycle - 收到停止请求，退出测试循环。
+2026-03-07 10:19:43,161 [INFO] ui.power_cycle - 测试结束：成功 0，失败 2，成功率 0.00%
+2026-03-07 10:19:43,161 [INFO] ui.power_cycle - 测试完成。成功 0，失败 2，成功率 0.00%
+2026-03-07 10:21:33,714 [INFO] ui.power_cycle - 配置已保存。
+2026-03-07 10:21:33,718 [INFO] ui.power_cycle - 测试线程启动。
+2026-03-07 10:21:33,718 [INFO] ui.power_cycle - 测试开始，总轮次: 100
+2026-03-07 10:21:33,725 [INFO] ui.power_cycle - [第1轮] 当前继电器通道1状态: 关
+2026-03-07 10:21:48,020 [WARNING] ui.power_cycle - 已请求停止测试。
+2026-03-07 10:21:51,984 [WARNING] ui.power_cycle - 收到停止请求，退出测试循环。
+2026-03-07 10:21:51,984 [INFO] ui.power_cycle - 测试结束：成功 0，失败 0，成功率 0.00%
+2026-03-07 10:21:51,984 [INFO] ui.power_cycle - 测试完成。成功 0，失败 0，成功率 0.00%
+2026-03-07 11:15:32,234 [INFO] ui.power_cycle - 配置已保存。
+2026-03-07 11:15:34,052 [INFO] ui.power_cycle - 仿真设置更新：万用表=开, 继电器=开, 蓝牙=关
+2026-03-07 11:15:34,063 [INFO] ui.power_cycle - 串口刷新完成，共发现 2 个端口。
+2026-03-07 11:15:48,021 [INFO] ui.power_cycle - 检测到 5 个蓝牙相关设备（来源: 真实已配对蓝牙）：
+2026-03-07 11:15:48,022 [INFO] ui.power_cycle -   - 名称=SUNWINON Mouse MOCO | 状态=OK | MAC=D1:02:12:03:7B:B6 | Class=Bluetooth | ID=BTHLE\DEV_D10212037BB6\7&1679758C&0&D10212037BB6
+2026-03-07 11:15:48,023 [INFO] ui.power_cycle -   - 名称=Logi M750 | 状态=OK | MAC=D5:E7:15:41:4C:A8 | Class=Bluetooth | ID=BTHLE\DEV_D5E715414CA8\7&1679758C&0&D5E715414CA8
+2026-03-07 11:15:48,023 [INFO] ui.power_cycle -   - 名称=LOWA Mouse | 状态=OK | MAC=F0:61:EE:A2:D5:A0 | Class=Bluetooth | ID=BTHLE\DEV_F061EEA2D5A0\7&1679758C&0&F061EEA2D5A0
+2026-03-07 11:15:48,024 [INFO] ui.power_cycle -   - 名称=TONEMAC HS1 | 状态=OK | MAC=F4:4E:FE:00:11:4C | Class=Bluetooth | ID=BTHENUM\DEV_F44EFE00114C\7&3B5EF62B&1&BLUETOOTHDEVICE_F44EFE00114C
+2026-03-07 11:15:48,025 [INFO] ui.power_cycle -   - 名称=HUAWEI FreeBuds 5i | 状态=OK | MAC=14:51:20:FF:A1:14 | Class=Bluetooth | ID=BTHENUM\DEV_145120FFA114\7&3B5EF62B&1&BLUETOOTHDEVICE_145120FFA114
+2026-03-07 11:16:09,854 [INFO] ui.power_cycle - 配置已保存。
+2026-03-07 11:16:09,860 [INFO] ui.power_cycle - 测试线程启动。
+2026-03-07 11:16:09,864 [INFO] ui.power_cycle - 测试开始，总轮次: 100
+2026-03-07 11:16:09,865 [INFO] ui.power_cycle - [第1轮] 当前继电器通道1状态: 关
+2026-03-07 11:16:19,398 [WARNING] ui.power_cycle - 已请求停止测试。
+2026-03-07 11:16:21,111 [INFO] ui.power_cycle - 断电状态确认通过: 电压=0.200V, 蓝牙=未连接
+2026-03-07 11:16:21,112 [WARNING] ui.power_cycle - 收到停止请求，退出测试循环。
+2026-03-07 11:16:21,112 [INFO] ui.power_cycle - 测试结束：成功 0，失败 0，成功率 0.00%
+2026-03-07 11:16:21,113 [INFO] ui.power_cycle - 测试完成。成功 0，失败 0，成功率 0.00%
+2026-03-07 11:16:35,679 [INFO] ui.power_cycle - 配置已保存。
+2026-03-07 11:16:35,679 [INFO] ui.power_cycle - 测试线程启动。
+2026-03-07 11:16:35,679 [INFO] ui.power_cycle - 测试开始，总轮次: 100
+2026-03-07 11:16:35,679 [INFO] ui.power_cycle - [第1轮] 当前继电器通道1状态: 关
+2026-03-07 11:16:46,938 [INFO] ui.power_cycle - 断电状态确认通过: 电压=0.200V, 蓝牙=未连接
+2026-03-07 11:16:47,941 [INFO] ui.power_cycle - 执行上电: 通道1上电命令已发送。
+2026-03-07 11:17:11,038 [WARNING] ui.power_cycle - [第1轮] 失败 | 原因: 上电验证失败: 上电状态等待超时(last: voltage=4.9, bt_connected=False)
+2026-03-07 11:17:11,046 [INFO] ui.power_cycle - [第2轮] 当前继电器通道1状态: 开
+2026-03-07 11:17:11,047 [INFO] ui.power_cycle - 执行断电准备: 通道1断电命令已发送。
+2026-03-07 11:17:23,053 [INFO] ui.power_cycle - 断电状态确认通过: 电压=0.200V, 蓝牙=未连接
+2026-03-07 11:17:24,058 [INFO] ui.power_cycle - 执行上电: 通道1上电命令已发送。
+2026-03-07 11:17:36,569 [WARNING] ui.power_cycle - 已请求停止测试。
+2026-03-07 11:17:36,700 [WARNING] ui.power_cycle - 已请求停止测试。
+2026-03-07 11:17:40,355 [INFO] ui.power_cycle - 配置已保存。
+2026-03-07 11:19:02,384 [INFO] ui.power_cycle - 仿真设置更新：万用表=开, 继电器=开, 蓝牙=关
+2026-03-07 11:19:02,401 [INFO] ui.power_cycle - 串口刷新完成，共发现 2 个端口。
+2026-03-07 11:19:09,603 [INFO] ui.power_cycle - 配置已保存。
+2026-03-07 11:19:09,606 [INFO] ui.power_cycle - 测试线程启动。
+2026-03-07 11:19:09,614 [INFO] ui.power_cycle - 测试开始，总轮次: 100
+2026-03-07 11:19:09,615 [INFO] ui.power_cycle - [第1轮] 当前继电器通道1状态: 关
+2026-03-07 11:19:20,869 [INFO] ui.power_cycle - 断电状态确认通过: 电压=0.200V, 蓝牙=未连接
+2026-03-07 11:19:21,878 [INFO] ui.power_cycle - 执行上电: 通道1上电命令已发送。
+2026-03-07 11:19:30,597 [WARNING] ui.power_cycle - 已请求停止测试。
+2026-03-07 11:19:33,294 [WARNING] ui.power_cycle - 收到停止请求，退出测试循环。
+2026-03-07 11:19:33,296 [INFO] ui.power_cycle - 测试结束：成功 0，失败 0，成功率 0.00%
+2026-03-07 11:19:33,296 [INFO] ui.power_cycle - 测试完成。成功 0，失败 0，成功率 0.00%
+2026-03-07 11:19:56,320 [INFO] ui.power_cycle - 检测到 5 个蓝牙相关设备（来源: 真实已配对蓝牙）：
+2026-03-07 11:19:56,320 [INFO] ui.power_cycle -   - 名称=SUNWINON Mouse MOCO | 状态=OK | MAC=D1:02:12:03:7B:B6 | Class=Bluetooth | ID=BTHLE\DEV_D10212037BB6\7&1679758C&0&D10212037BB6
+2026-03-07 11:19:56,320 [INFO] ui.power_cycle -   - 名称=Logi M750 | 状态=OK | MAC=D5:E7:15:41:4C:A8 | Class=Bluetooth | ID=BTHLE\DEV_D5E715414CA8\7&1679758C&0&D5E715414CA8
+2026-03-07 11:19:56,320 [INFO] ui.power_cycle -   - 名称=LOWA Mouse | 状态=OK | MAC=F0:61:EE:A2:D5:A0 | Class=Bluetooth | ID=BTHLE\DEV_F061EEA2D5A0\7&1679758C&0&F061EEA2D5A0
+2026-03-07 11:19:56,320 [INFO] ui.power_cycle -   - 名称=TONEMAC HS1 | 状态=OK | MAC=F4:4E:FE:00:11:4C | Class=Bluetooth | ID=BTHENUM\DEV_F44EFE00114C\7&3B5EF62B&1&BLUETOOTHDEVICE_F44EFE00114C
+2026-03-07 11:19:56,320 [INFO] ui.power_cycle -   - 名称=HUAWEI FreeBuds 5i | 状态=OK | MAC=14:51:20:FF:A1:14 | Class=Bluetooth | ID=BTHENUM\DEV_145120FFA114\7&3B5EF62B&1&BLUETOOTHDEVICE_145120FFA114
+2026-03-07 11:31:22,171 [INFO] ui.power_cycle - 配置已保存。
+2026-03-07 11:31:23,933 [INFO] ui.power_cycle - 仿真设置更新：万用表=开, 继电器=开, 蓝牙=关
+2026-03-07 11:31:23,946 [INFO] ui.power_cycle - 串口刷新完成，共发现 2 个端口。
+2026-03-07 11:31:28,340 [INFO] ui.power_cycle - 手动检查蓝牙连接状态（来源: 真实已配对蓝牙 | 模式: 名称且MAC | 条件: 名称关键字=Logi M750, MAC=D5:E7:15:41:4C:A8）
+2026-03-07 11:31:35,747 [INFO] ui.power_cycle - 匹配到 1 个设备：
+2026-03-07 11:31:35,748 [INFO] ui.power_cycle -   - 名称=Logi M750 | 状态=OK | MAC=D5:E7:15:41:4C:A8 | Class=Bluetooth | ID=BTHLE\DEV_D5E715414CA8\7&1679758C&0&D5E715414CA8 | 判定=已连接
+2026-03-07 11:31:35,750 [INFO] ui.power_cycle - 手动检查结果：已连接
+2026-03-07 11:31:58,705 [INFO] ui.power_cycle - 检测到 5 个蓝牙相关设备（来源: 真实已配对蓝牙）：
+2026-03-07 11:31:58,707 [INFO] ui.power_cycle -   - 名称=SUNWINON Mouse MOCO | 状态=OK | MAC=D1:02:12:03:7B:B6 | Class=Bluetooth | ID=BTHLE\DEV_D10212037BB6\7&1679758C&0&D10212037BB6
+2026-03-07 11:31:58,708 [INFO] ui.power_cycle -   - 名称=Logi M750 | 状态=OK | MAC=D5:E7:15:41:4C:A8 | Class=Bluetooth | ID=BTHLE\DEV_D5E715414CA8\7&1679758C&0&D5E715414CA8
+2026-03-07 11:31:58,709 [INFO] ui.power_cycle -   - 名称=LOWA Mouse | 状态=OK | MAC=F0:61:EE:A2:D5:A0 | Class=Bluetooth | ID=BTHLE\DEV_F061EEA2D5A0\7&1679758C&0&F061EEA2D5A0
+2026-03-07 11:31:58,710 [INFO] ui.power_cycle -   - 名称=TONEMAC HS1 | 状态=OK | MAC=F4:4E:FE:00:11:4C | Class=Bluetooth | ID=BTHENUM\DEV_F44EFE00114C\7&3B5EF62B&1&BLUETOOTHDEVICE_F44EFE00114C
+2026-03-07 11:31:58,711 [INFO] ui.power_cycle -   - 名称=HUAWEI FreeBuds 5i | 状态=OK | MAC=14:51:20:FF:A1:14 | Class=Bluetooth | ID=BTHENUM\DEV_145120FFA114\7&3B5EF62B&1&BLUETOOTHDEVICE_145120FFA114
+2026-03-07 11:32:29,356 [INFO] ui.power_cycle - 手动检查蓝牙连接状态（来源: 真实已配对蓝牙 | 模式: 名称且MAC | 条件: 名称关键字=Logi M750, MAC=D5:E7:15:41:4C:A8）
+2026-03-07 11:32:34,943 [INFO] ui.power_cycle - 匹配到 1 个设备：
+2026-03-07 11:32:34,943 [INFO] ui.power_cycle -   - 名称=Logi M750 | 状态=OK | MAC=D5:E7:15:41:4C:A8 | Class=Bluetooth | ID=BTHLE\DEV_D5E715414CA8\7&1679758C&0&D5E715414CA8 | 判定=未连接
+2026-03-07 11:32:34,943 [WARNING] ui.power_cycle - 手动检查结果：未连接
+2026-03-07 11:33:06,571 [INFO] ui.power_cycle - 手动检查蓝牙连接状态（来源: 真实已配对蓝牙 | 模式: 名称或MAC | 条件: 名称关键字=Logi M750, MAC=D5:E7:15:41:4C:A8）
+2026-03-07 11:33:12,014 [INFO] ui.power_cycle - 匹配到 1 个设备：
+2026-03-07 11:33:12,014 [INFO] ui.power_cycle -   - 名称=Logi M750 | 状态=OK | MAC=D5:E7:15:41:4C:A8 | Class=Bluetooth | ID=BTHLE\DEV_D5E715414CA8\7&1679758C&0&D5E715414CA8 | 判定=未连接
+2026-03-07 11:33:12,014 [WARNING] ui.power_cycle - 手动检查结果：未连接
+2026-03-07 11:33:17,831 [INFO] ui.power_cycle - 手动检查蓝牙连接状态（来源: 真实已配对蓝牙 | 模式: 名称或MAC | 条件: 名称关键字=Logi M750）
+2026-03-07 11:33:23,325 [INFO] ui.power_cycle - 匹配到 1 个设备：
+2026-03-07 11:33:23,325 [INFO] ui.power_cycle -   - 名称=Logi M750 | 状态=OK | MAC=D5:E7:15:41:4C:A8 | Class=Bluetooth | ID=BTHLE\DEV_D5E715414CA8\7&1679758C&0&D5E715414CA8 | 判定=未连接
+2026-03-07 11:33:23,325 [WARNING] ui.power_cycle - 手动检查结果：未连接
+2026-03-07 11:33:32,356 [INFO] ui.power_cycle - 配置已保存。
+2026-03-07 11:33:32,356 [INFO] ui.power_cycle - 测试线程启动。
+2026-03-07 11:33:32,356 [INFO] ui.power_cycle - 测试开始，总轮次: 100
+2026-03-07 11:33:32,356 [INFO] ui.power_cycle - [第1轮] 当前继电器通道1状态: 关
+2026-03-07 11:33:43,334 [INFO] ui.power_cycle - 断电状态确认通过: 电压=0.200V, 蓝牙=未连接
+2026-03-07 11:33:44,346 [INFO] ui.power_cycle - 执行上电: 通道1上电命令已发送。
+2026-03-07 11:34:01,074 [INFO] ui.power_cycle - 上电状态确认通过: 电压=4.900V, 蓝牙=已连接
+2026-03-07 11:34:01,074 [INFO] ui.power_cycle - [第1轮] 通过 | 断电电压=0.2, 上电电压=4.9
+2026-03-07 11:34:01,074 [INFO] ui.power_cycle - [第2轮] 当前继电器通道1状态: 开
+2026-03-07 11:34:01,074 [INFO] ui.power_cycle - 执行断电准备: 通道1断电命令已发送。
+2026-03-07 11:34:17,884 [INFO] ui.power_cycle - 断电状态确认通过: 电压=0.200V, 蓝牙=未连接
+2026-03-07 11:34:18,894 [INFO] ui.power_cycle - 执行上电: 通道1上电命令已发送。
+2026-03-07 11:34:30,090 [INFO] ui.power_cycle - 上电状态确认通过: 电压=4.900V, 蓝牙=已连接
+2026-03-07 11:34:30,090 [INFO] ui.power_cycle - [第2轮] 通过 | 断电电压=0.2, 上电电压=4.9
+2026-03-07 11:34:30,090 [INFO] ui.power_cycle - [第3轮] 当前继电器通道1状态: 开
+2026-03-07 11:34:30,090 [INFO] ui.power_cycle - 执行断电准备: 通道1断电命令已发送。
+2026-03-07 11:34:41,348 [INFO] ui.power_cycle - 断电状态确认通过: 电压=0.200V, 蓝牙=未连接
+2026-03-07 11:34:42,368 [INFO] ui.power_cycle - 执行上电: 通道1上电命令已发送。
+2026-03-07 11:34:53,493 [INFO] ui.power_cycle - 上电状态确认通过: 电压=4.900V, 蓝牙=已连接
+2026-03-07 11:34:53,493 [INFO] ui.power_cycle - [第3轮] 通过 | 断电电压=0.2, 上电电压=4.9
+2026-03-07 11:34:53,493 [INFO] ui.power_cycle - [第4轮] 当前继电器通道1状态: 开
+2026-03-07 11:34:53,493 [INFO] ui.power_cycle - 执行断电准备: 通道1断电命令已发送。
+2026-03-07 11:35:04,176 [WARNING] ui.power_cycle - 已请求停止测试。
+2026-03-07 11:35:04,808 [INFO] ui.power_cycle - 断电状态确认通过: 电压=0.200V, 蓝牙=未连接
+2026-03-07 11:35:04,816 [WARNING] ui.power_cycle - 收到停止请求，退出测试循环。
+2026-03-07 11:35:04,817 [INFO] ui.power_cycle - 测试结束：成功 3，失败 0，成功率 100.00%
+2026-03-07 11:35:04,817 [INFO] ui.power_cycle - 测试完成。成功 3，失败 0，成功率 100.00%
+2026-03-07 17:30:03,390 [INFO] ui.power_cycle - 仿真设置更新：万用表=开, 继电器=开, 蓝牙=关
+2026-03-07 17:30:03,396 [INFO] ui.power_cycle - 串口刷新完成，共发现 2 个端口。
+2026-03-07 17:30:59,149 [INFO] ui.power_cycle - 配置已保存。
+2026-03-07 18:14:53,087 [INFO] ui.power_cycle - 仿真设置更新：万用表=开, 继电器=开, 蓝牙=关
+2026-03-07 18:14:53,097 [INFO] ui.power_cycle - 串口刷新完成，共发现 2 个端口。
+2026-03-07 18:44:46,384 [INFO] ui.power_cycle - 配置已保存。
+2026-03-07 18:44:48,818 [INFO] ui.power_cycle - 仿真设置更新：万用表=开, 继电器=开, 蓝牙=关
+2026-03-07 18:44:48,828 [INFO] ui.power_cycle - 串口刷新完成，共发现 2 个端口。
+2026-03-07 19:26:49,955 [INFO] ui.power_cycle - 配置已保存。
+2026-03-07 19:26:51,560 [INFO] ui.power_cycle - 仿真设置更新：万用表=开, 继电器=开, 蓝牙=关
+2026-03-07 19:26:51,567 [INFO] ui.power_cycle - 串口刷新完成，共发现 2 个端口。
+2026-03-07 19:27:00,154 [INFO] ui.power_cycle - 配置已保存。
+2026-03-07 19:27:00,154 [INFO] ui.power_cycle - 测试线程启动。
+2026-03-07 19:27:00,164 [INFO] ui.power_cycle - 测试开始，总轮次: 100
+2026-03-07 19:27:00,164 [INFO] ui.power_cycle - [第1轮] 当前继电器通道1状态: 关
+2026-03-07 19:27:05,994 [INFO] ui.power_cycle - 断电状态确认通过: 电压=0.200V, 蓝牙=未连接
+2026-03-07 19:27:07,002 [INFO] ui.power_cycle - 执行上电: 通道1上电命令已发送。
+2026-03-07 19:27:29,779 [WARNING] ui.power_cycle - [第1轮] 失败 | 原因: 上电验证失败: 上电状态等待超时(last: voltage=4.9, bt_connected=False)
+2026-03-07 19:27:29,782 [INFO] ui.power_cycle - [第2轮] 当前继电器通道1状态: 开
+2026-03-07 19:27:29,782 [INFO] ui.power_cycle - 执行断电准备: 通道1断电命令已发送。
+2026-03-07 19:27:35,410 [INFO] ui.power_cycle - 断电状态确认通过: 电压=0.200V, 蓝牙=未连接
+2026-03-07 19:27:36,416 [INFO] ui.power_cycle - 执行上电: 通道1上电命令已发送。
+2026-03-07 19:27:38,825 [WARNING] ui.power_cycle - 已请求停止测试。
+2026-03-07 19:27:41,945 [WARNING] ui.power_cycle - 收到停止请求，退出测试循环。
+2026-03-07 19:27:41,945 [INFO] ui.power_cycle - 测试结束：成功 0，失败 1，成功率 0.00%
+2026-03-07 19:27:41,945 [INFO] ui.power_cycle - 测试完成。成功 0，失败 1，成功率 0.00%
+2026-03-07 19:27:44,497 [INFO] ui.power_cycle - 仿真设置更新：万用表=开, 继电器=关, 蓝牙=关
+2026-03-07 19:27:45,002 [INFO] ui.power_cycle - 仿真设置更新：万用表=关, 继电器=关, 蓝牙=关
+2026-03-07 19:27:45,685 [INFO] ui.power_cycle - 配置已保存。
+2026-03-07 19:28:20,062 [INFO] ui.power_cycle - 配置已保存。

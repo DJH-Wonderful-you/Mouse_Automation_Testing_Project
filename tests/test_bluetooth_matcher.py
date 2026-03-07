@@ -4,6 +4,9 @@ import unittest
 
 from src.core.bluetooth_probe import (
     BluetoothDeviceInfo,
+    _extract_ble_hid_service_link,
+    _extract_hid_signature,
+    _resolve_connected_hint,
     extract_mac,
     is_paired_bluetooth_instance,
     is_primary_device_node,
@@ -27,6 +30,62 @@ class TestBluetoothMatcher(unittest.TestCase):
     def test_extract_mac_ignores_service_uuid_suffix(self) -> None:
         text = "BTHENUM\\{0000110E-0000-1000-8000-00805F9B34FB}_VID&xxxx"
         self.assertEqual(extract_mac(text), "")
+
+    def test_extract_ble_hid_service_link(self) -> None:
+        instance_id = (
+            "BTHLEDEVICE\\{00001812-0000-1000-8000-00805F9B34FB}_"
+            "DEV_VID&02046D_PID&B02C_REV&0014_D5E715414CA8\\8&221C218D&0&001F"
+        )
+        self.assertEqual(
+            _extract_ble_hid_service_link(instance_id),
+            ("VID&02046D_PID&B02C_REV&0014", "D5E715414CA8"),
+        )
+        self.assertIsNone(
+            _extract_ble_hid_service_link(
+                "BTHLEDEVICE\\{0000180F-0000-1000-8000-00805F9B34FB}_DEV_XXX\\1"
+            )
+        )
+
+    def test_extract_hid_signature(self) -> None:
+        instance_id = (
+            "HID\\{00001812-0000-1000-8000-00805F9B34FB}_"
+            "DEV_VID&02046D_PID&B02C_REV&0014&COL01\\5&10559097&0&0000"
+        )
+        self.assertEqual(
+            _extract_hid_signature(instance_id), "VID&02046D_PID&B02C_REV&0014"
+        )
+        self.assertEqual(_extract_hid_signature("USB\\VID_046D&PID_C52B"), "")
+
+    def test_resolve_connected_hint_prefers_hid_state(self) -> None:
+        hint = _resolve_connected_hint(
+            status="OK",
+            present=True,
+            mac="D5:E7:15:41:4C:A8",
+            mac_to_hid_signature={"D5E715414CA8": "VID&02046D_PID&B02C_REV&0014"},
+            hid_signatures={"VID&02046D_PID&B02C_REV&0014"},
+            hid_connected_signatures={"VID&02046D_PID&B02C_REV&0014"},
+        )
+        self.assertTrue(hint)
+        hint2 = _resolve_connected_hint(
+            status="OK",
+            present=True,
+            mac="D5:E7:15:41:4C:A8",
+            mac_to_hid_signature={"D5E715414CA8": "VID&02046D_PID&B02C_REV&0014"},
+            hid_signatures={"VID&02046D_PID&B02C_REV&0014"},
+            hid_connected_signatures=set(),
+        )
+        self.assertFalse(hint2)
+
+    def test_resolve_connected_hint_falls_back_without_hid_signature(self) -> None:
+        hint = _resolve_connected_hint(
+            status="OK",
+            present=True,
+            mac="D5:E7:15:41:4C:A8",
+            mac_to_hid_signature={"D5E715414CA8": "VID&02046D_PID&B02C_REV&0014"},
+            hid_signatures=set(),
+            hid_connected_signatures=set(),
+        )
+        self.assertTrue(hint)
 
     def test_match_target_name_or_mac(self) -> None:
         device = BluetoothDeviceInfo(
@@ -56,6 +115,7 @@ class TestBluetoothMatcher(unittest.TestCase):
     def test_is_paired_bluetooth_instance(self) -> None:
         self.assertTrue(is_paired_bluetooth_instance("BTHENUM\\DEV_001122AABBCC"))
         self.assertTrue(is_paired_bluetooth_instance("BTHLEDEVICE\\DEV_VID&1234"))
+        self.assertTrue(is_paired_bluetooth_instance("BTHLE\\DEV_D5E715414CA8\\7&1679758C&0&D5E715414CA8"))
         self.assertFalse(is_paired_bluetooth_instance("USB\\VID_046D&PID_C52B"))
         self.assertFalse(is_paired_bluetooth_instance("HID\\VID_0000&PID_0000"))
 
@@ -64,6 +124,7 @@ class TestBluetoothMatcher(unittest.TestCase):
             is_primary_device_node("BTHENUM\\DEV_001122AABBCC\\7&3B&1&BLUETOOTHDEVICE_001122AABBCC")
         )
         self.assertTrue(is_primary_device_node("BTHLEDEVICE\\DEV_A1B2C3D4E5F6\\8&1&0"))
+        self.assertTrue(is_primary_device_node("BTHLE\\DEV_D5E715414CA8\\7&1679758C&0&D5E715414CA8"))
         self.assertFalse(
             is_primary_device_node("BTHENUM\\{0000110E-0000-1000-8000-00805F9B34FB}_VID&0001")
         )
