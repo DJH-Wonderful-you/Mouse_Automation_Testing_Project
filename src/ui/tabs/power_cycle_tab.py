@@ -92,6 +92,7 @@ class PowerCycleTab(QWidget):
         left_layout.setContentsMargins(0, 0, 0, 0)
         left_layout.setSpacing(8)
 
+        left_layout.addWidget(self._create_page_intro())
         left_layout.addWidget(self._create_main_control_group())
         left_layout.addWidget(self._create_multimeter_group())
         left_layout.addWidget(self._create_relay_group())
@@ -115,6 +116,23 @@ class PowerCycleTab(QWidget):
         splitter.setSizes([760, 420])
         splitter.setStretchFactor(0, 3)
         splitter.setStretchFactor(1, 2)
+
+    def _create_page_intro(self) -> QWidget:
+        card = QWidget()
+        card.setObjectName("PageIntroCard")
+        layout = QVBoxLayout(card)
+        layout.setContentsMargins(14, 12, 14, 10)
+        layout.setSpacing(4)
+
+        title = QLabel("上下电测试")
+        title.setObjectName("PageTitle")
+        subtitle = QLabel("执行上下电循环验证，支持设备自动连接、蓝牙目标定位、过程日志与统计分析。")
+        subtitle.setObjectName("PageSubtitle")
+        subtitle.setWordWrap(True)
+
+        layout.addWidget(title)
+        layout.addWidget(subtitle)
+        return card
 
     def _create_main_control_group(self) -> QGroupBox:
         group = QGroupBox("主控区")
@@ -765,12 +783,12 @@ class PowerCycleTab(QWidget):
     @staticmethod
     def _log_level_color(level: str) -> str:
         if level in {"ERROR", "CRITICAL"}:
-            return "#dc2626"
+            return "#c62828"
         if level == "WARNING":
-            return "#d97706"
+            return "#b26a00"
         if level == "DEBUG":
-            return "#64748b"
-        return "#1f2937"
+            return "#546e7a"
+        return "#1f5e94"
 
     @Slot(int, int)
     def _on_progress(self, done: int, total: int) -> None:

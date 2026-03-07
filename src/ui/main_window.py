@@ -1,10 +1,20 @@
 from __future__ import annotations
 
 import math
+from functools import partial
 
-from PySide6.QtCore import QRect, QSize, QTimer
+from PySide6.QtCore import QRect, Qt, QTimer
 from PySide6.QtGui import QCloseEvent, QGuiApplication, QShowEvent
-from PySide6.QtWidgets import QMainWindow, QStyle, QStyleOptionTab, QStylePainter, QTabBar, QTabWidget
+from PySide6.QtWidgets import (
+    QButtonGroup,
+    QHBoxLayout,
+    QLabel,
+    QMainWindow,
+    QPushButton,
+    QStackedWidget,
+    QVBoxLayout,
+    QWidget,
+)
 
 from src.core.config_store import ConfigStore
 from src.ui.styles import app_stylesheet
@@ -13,56 +23,113 @@ from src.ui.tabs.placeholders import PlaceholderTab
 from src.ui.tabs.power_cycle_tab import PowerCycleTab
 
 
-class HorizontalWestTabBar(QTabBar):
-    def tabSizeHint(self, index: int) -> QSize:  # noqa: N802
-        size = super().tabSizeHint(index)
-        size.transpose()
-        text_height = self.fontMetrics().height()
-        size.setHeight(max(26, text_height + 10))
-        return size
-
-    def paintEvent(self, event) -> None:  # noqa: N802
-        _ = event
-        painter = QStylePainter(self)
-        for index in range(self.count()):
-            option = QStyleOptionTab()
-            self.initStyleOption(option, index)
-            painter.drawControl(QStyle.ControlElement.CE_TabBarTabShape, option)
-
-            horizontal_option = QStyleOptionTab(option)
-            horizontal_option.shape = QTabBar.Shape.RoundedNorth
-            horizontal_rect = QRect(option.rect)
-            horizontal_rect.setSize(option.rect.size().transposed())
-            horizontal_rect.moveCenter(option.rect.center())
-            horizontal_option.rect = horizontal_rect
-            painter.drawControl(QStyle.ControlElement.CE_TabBarTabLabel, horizontal_option)
-
-
 class MainWindow(QMainWindow):
     def __init__(self) -> None:
         super().__init__()
         self.setWindowTitle("鼠标自动化测试工具")
         self._config_store = ConfigStore()
         self._power_cycle_tab = PowerCycleTab(config_store=self._config_store, parent=self)
+        self._stack = QStackedWidget()
+        self._nav_group = QButtonGroup(self)
+        self._nav_group.setExclusive(True)
+        self._nav_buttons: list[QPushButton] = []
         self._did_post_show_adjust = False
         self._init_ui()
-        self._apply_responsive_window_size(default_width=1180, default_height=760)
+        self._apply_responsive_window_size(default_width=1280, default_height=800)
 
     def _init_ui(self) -> None:
-        tabs = QTabWidget()
-        tabs.setTabBar(HorizontalWestTabBar())
-        tabs.setTabPosition(QTabWidget.TabPosition.West)
-        tabs.setDocumentMode(True)
-        tabs.setMovable(False)
+        pages: list[tuple[str, QWidget]] = [
+            ("上下电测试", self._power_cycle_tab),
+            (
+                "蓝牙连接测试",
+                PlaceholderTab(
+                    "蓝牙连接测试",
+                    "用于验证蓝牙配对设备的自动连接、断连重试与状态识别能力。",
+                ),
+            ),
+            (
+                "蓝牙开关测试",
+                PlaceholderTab(
+                    "蓝牙开关测试",
+                    "用于验证蓝牙模块开关动作是否稳定，以及开关后连接状态恢复是否正常。",
+                ),
+            ),
+            (
+                "休眠唤醒测试",
+                PlaceholderTab(
+                    "休眠唤醒测试",
+                    "用于验证设备休眠与唤醒流程，重点关注唤醒后响应和连接恢复时延。",
+                ),
+            ),
+            ("帮助", HelpTab()),
+        ]
 
-        tabs.addTab(self._power_cycle_tab, "上下电测试")
-        tabs.addTab(PlaceholderTab("蓝牙连接测试"), "蓝牙连接测试")
-        tabs.addTab(PlaceholderTab("蓝牙开关测试"), "蓝牙开关测试")
-        tabs.addTab(PlaceholderTab("休眠唤醒测试"), "休眠唤醒测试")
-        tabs.addTab(HelpTab(), "帮助")
+        root = QWidget()
+        root.setObjectName("MainRoot")
+        root_layout = QHBoxLayout(root)
+        root_layout.setContentsMargins(8, 8, 8, 8)
+        root_layout.setSpacing(10)
 
-        self.setCentralWidget(tabs)
+        sidebar = self._build_sidebar([title for title, _ in pages])
+        content = self._build_content_panel([page for _, page in pages])
+        root_layout.addWidget(sidebar)
+        root_layout.addWidget(content, 1)
+
+        self.setCentralWidget(root)
         self.setStyleSheet(app_stylesheet())
+        self._set_active_page(0)
+
+    def _build_sidebar(self, titles: list[str]) -> QWidget:
+        panel = QWidget()
+        panel.setObjectName("SidebarPanel")
+        panel.setFixedWidth(212)
+
+        layout = QVBoxLayout(panel)
+        layout.setContentsMargins(12, 14, 12, 14)
+        layout.setSpacing(12)
+
+        title = QLabel("鼠标自动化测试工具")
+        title.setObjectName("SidebarTitle")
+        title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        title.setWordWrap(True)
+        layout.addWidget(title)
+
+        divider = QWidget()
+        divider.setObjectName("SidebarDivider")
+        divider.setFixedHeight(1)
+        layout.addWidget(divider)
+
+        for index, text in enumerate(titles):
+            button = QPushButton(text)
+            button.setObjectName("SidebarNavButton")
+            button.setCheckable(True)
+            button.setCursor(Qt.CursorShape.PointingHandCursor)
+            button.clicked.connect(partial(self._set_active_page, index))
+            self._nav_group.addButton(button, index)
+            self._nav_buttons.append(button)
+            layout.addWidget(button)
+
+        layout.addStretch(1)
+        return panel
+
+    def _build_content_panel(self, pages: list[QWidget]) -> QWidget:
+        panel = QWidget()
+        panel.setObjectName("ContentPanel")
+        layout = QVBoxLayout(panel)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(0)
+
+        for page in pages:
+            self._stack.addWidget(page)
+        layout.addWidget(self._stack)
+        return panel
+
+    def _set_active_page(self, index: int, *_: object) -> None:
+        if index < 0 or index >= self._stack.count():
+            return
+        self._stack.setCurrentIndex(index)
+        if index < len(self._nav_buttons):
+            self._nav_buttons[index].setChecked(True)
 
     def _apply_responsive_window_size(self, default_width: int, default_height: int) -> None:
         screen = QGuiApplication.primaryScreen()
@@ -128,3 +195,4 @@ class MainWindow(QMainWindow):
     def closeEvent(self, event: QCloseEvent) -> None:  # noqa: N802
         self._power_cycle_tab.shutdown()
         super().closeEvent(event)
+
