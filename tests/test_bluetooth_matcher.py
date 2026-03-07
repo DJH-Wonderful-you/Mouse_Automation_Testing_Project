@@ -4,8 +4,10 @@ import unittest
 
 from src.core.bluetooth_probe import (
     BluetoothDeviceInfo,
+    _collect_audio_endpoints,
     _extract_ble_hid_service_link,
     _extract_hid_signature,
+    _resolve_audio_endpoint_hint,
     _resolve_connected_hint,
     extract_mac,
     is_paired_bluetooth_instance,
@@ -58,34 +60,87 @@ class TestBluetoothMatcher(unittest.TestCase):
 
     def test_resolve_connected_hint_prefers_hid_state(self) -> None:
         hint = _resolve_connected_hint(
+            name="Logi M750",
             status="OK",
             present=True,
             mac="D5:E7:15:41:4C:A8",
             mac_to_hid_signature={"D5E715414CA8": "VID&02046D_PID&B02C_REV&0014"},
             hid_signatures={"VID&02046D_PID&B02C_REV&0014"},
             hid_connected_signatures={"VID&02046D_PID&B02C_REV&0014"},
+            audio_endpoints=[],
         )
         self.assertTrue(hint)
         hint2 = _resolve_connected_hint(
+            name="Logi M750",
             status="OK",
             present=True,
             mac="D5:E7:15:41:4C:A8",
             mac_to_hid_signature={"D5E715414CA8": "VID&02046D_PID&B02C_REV&0014"},
             hid_signatures={"VID&02046D_PID&B02C_REV&0014"},
             hid_connected_signatures=set(),
+            audio_endpoints=[],
         )
         self.assertFalse(hint2)
 
     def test_resolve_connected_hint_falls_back_without_hid_signature(self) -> None:
         hint = _resolve_connected_hint(
+            name="Logi M750",
             status="OK",
             present=True,
             mac="D5:E7:15:41:4C:A8",
             mac_to_hid_signature={"D5E715414CA8": "VID&02046D_PID&B02C_REV&0014"},
             hid_signatures=set(),
             hid_connected_signatures=set(),
+            audio_endpoints=[],
         )
         self.assertTrue(hint)
+
+    def test_resolve_connected_hint_hid_priority_over_audio(self) -> None:
+        hint = _resolve_connected_hint(
+            name="Logi M750",
+            status="OK",
+            present=True,
+            mac="D5:E7:15:41:4C:A8",
+            mac_to_hid_signature={"D5E715414CA8": "VID&02046D_PID&B02C_REV&0014"},
+            hid_signatures={"VID&02046D_PID&B02C_REV&0014"},
+            hid_connected_signatures=set(),
+            audio_endpoints=[("耳机 (logi m750)", True)],
+        )
+        self.assertFalse(hint)
+
+    def test_collect_audio_endpoints(self) -> None:
+        rows = [
+            {
+                "Class": "AudioEndpoint",
+                "InstanceId": "SWD\\MMDEVAPI\\{x}",
+                "FriendlyName": "耳机 (HUAWEI FreeBuds 5i)",
+                "Status": "Unknown",
+                "Present": False,
+            },
+            {
+                "Class": "AudioEndpoint",
+                "InstanceId": "SWD\\MMDEVAPI\\{y}",
+                "FriendlyName": "耳机 (HUAWEI FreeBuds 5i)",
+                "Status": "OK",
+                "Present": True,
+            },
+        ]
+        self.assertEqual(
+            _collect_audio_endpoints(rows),
+            [("耳机 (huawei freebuds 5i)", False), ("耳机 (huawei freebuds 5i)", True)],
+        )
+
+    def test_resolve_audio_endpoint_hint(self) -> None:
+        endpoints = [
+            ("耳机 (huawei freebuds 5i)", False),
+            ("耳机 (huawei freebuds 5i hands-free)", False),
+        ]
+        self.assertFalse(_resolve_audio_endpoint_hint("HUAWEI FreeBuds 5i", endpoints))
+        endpoints2 = [
+            ("耳机 (huawei freebuds 5i)", False),
+            ("扬声器 (huawei freebuds 5i)", True),
+        ]
+        self.assertTrue(_resolve_audio_endpoint_hint("HUAWEI FreeBuds 5i", endpoints2))
 
     def test_match_target_name_or_mac(self) -> None:
         device = BluetoothDeviceInfo(

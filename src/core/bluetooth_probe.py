@@ -66,7 +66,8 @@ def query_bluetooth_devices() -> list[BluetoothDeviceInfo]:
         "$ErrorActionPreference='SilentlyContinue';"
         "$items = Get-PnpDevice | Where-Object { "
         "($_.InstanceId -match '^(BTHENUM|BTHLEDEVICE|BTHLE)\\\\' "
-        "-or $_.InstanceId -match '^HID\\\\\\{00001812-0000-1000-8000-00805F9B34FB\\}_DEV_') };"
+        "-or $_.InstanceId -match '^HID\\\\\\{00001812-0000-1000-8000-00805F9B34FB\\}_DEV_' "
+        "-or ($_.InstanceId -match '^SWD\\\\MMDEVAPI\\\\' -and $_.Class -eq 'AudioEndpoint')) };"
         "$items | Select-Object Status,Class,FriendlyName,InstanceId,Present | "
         "ConvertTo-Json -Compress -Depth 3"
     )
@@ -84,6 +85,7 @@ def query_bluetooth_devices() -> list[BluetoothDeviceInfo]:
     mac_to_hid_signature = _build_ble_hid_service_links(rows)
     hid_signatures = _collect_hid_signatures(rows)
     hid_connected_signatures = _collect_connected_hid_signatures(rows)
+    audio_endpoints = _collect_audio_endpoints(rows)
     devices: list[BluetoothDeviceInfo] = []
     for row in rows:
         if not isinstance(row, dict):
@@ -100,12 +102,14 @@ def query_bluetooth_devices() -> list[BluetoothDeviceInfo]:
         merged_text = f"{name} {instance_id}"
         mac = extract_mac(merged_text)
         connected = _resolve_connected_hint(
+            name=name,
             status=status,
             present=present,
             mac=mac,
             mac_to_hid_signature=mac_to_hid_signature,
             hid_signatures=hid_signatures,
             hid_connected_signatures=hid_connected_signatures,
+            audio_endpoints=audio_endpoints,
         )
         if not _looks_like_mouse_related(name, class_name, instance_id):
             continue
@@ -230,22 +234,60 @@ def _collect_hid_signatures(rows: list[object]) -> set[str]:
     return signatures
 
 
+def _collect_audio_endpoints(rows: list[object]) -> list[tuple[str, bool]]:
+    endpoints: list[tuple[str, bool]] = []
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        class_name = str(row.get("Class") or "")
+        instance_id = str(row.get("InstanceId") or "")
+        if class_name.strip().lower() != "audioendpoint" and not instance_id.upper().startswith(
+            "SWD\\MMDEVAPI\\"
+        ):
+            continue
+        name = str(row.get("FriendlyName") or "").strip().lower()
+        if not name:
+            continue
+        status = str(row.get("Status") or "")
+        present = bool(row.get("Present", True))
+        endpoints.append((name, present and status.strip().upper() == "OK"))
+    return endpoints
+
+
 def _resolve_connected_hint(
     *,
+    name: str,
     status: str,
     present: bool,
     mac: str,
     mac_to_hid_signature: dict[str, str],
     hid_signatures: set[str],
     hid_connected_signatures: set[str],
+    audio_endpoints: list[tuple[str, bool]],
 ) -> bool | None:
     mac_key = normalize_mac(mac).replace(":", "")
     signature = mac_to_hid_signature.get(mac_key)
     if signature and signature in hid_signatures:
         return signature in hid_connected_signatures
+    audio_hint = _resolve_audio_endpoint_hint(name, audio_endpoints)
+    if audio_hint is not None:
+        return audio_hint
     if status or present:
         return present and status.strip().upper() == "OK"
     return None
+
+
+def _resolve_audio_endpoint_hint(
+    device_name: str, audio_endpoints: list[tuple[str, bool]]
+) -> bool | None:
+    normalized_name = (device_name or "").strip().lower()
+    if not normalized_name or not audio_endpoints:
+        return None
+
+    matches = [connected for endpoint_name, connected in audio_endpoints if normalized_name in endpoint_name]
+    if not matches:
+        return None
+    return any(matches)
 
 
 def _extract_ble_hid_service_link(instance_id: str) -> tuple[str, str] | None:

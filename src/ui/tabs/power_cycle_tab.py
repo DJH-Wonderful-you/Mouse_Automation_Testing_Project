@@ -48,6 +48,11 @@ class NoWheelDoubleSpinBox(QDoubleSpinBox):
         event.ignore()
 
 
+class NoWheelComboBox(QComboBox):
+    def wheelEvent(self, event) -> None:  # noqa: N802
+        event.ignore()
+
+
 class PowerCycleTab(QWidget):
     def __init__(self, config_store: ConfigStore, parent: QWidget | None = None) -> None:
         super().__init__(parent)
@@ -69,6 +74,9 @@ class PowerCycleTab(QWidget):
         self._fail_count = 0
         self._preferred_meter_port = ""
         self._preferred_relay_port = ""
+        self._bt_inputs_locked_by_sim = False
+        self._bt_name_before_sim = ""
+        self._bt_mac_before_sim = ""
         self._suspend_auto_save = True
 
         self._build_ui()
@@ -221,7 +229,7 @@ class PowerCycleTab(QWidget):
         self.input_voltage_threshold.setDecimals(3)
         self.input_voltage_threshold.setValue(3.0)
 
-        self.combo_multimeter_port = QComboBox()
+        self.combo_multimeter_port = NoWheelComboBox()
         self.btn_refresh_ports = QPushButton("刷新串口")
         self.btn_refresh_ports.clicked.connect(self._refresh_serial_ports)
         self.btn_meter_connect = QPushButton("连接设备")
@@ -274,7 +282,7 @@ class PowerCycleTab(QWidget):
         self.input_relay_channel.setValue(1)
         self.input_relay_channel.valueChanged.connect(self._sync_sim_target_channel)
 
-        self.combo_relay_port = QComboBox()
+        self.combo_relay_port = NoWheelComboBox()
         self.btn_refresh_relay_ports = QPushButton("刷新串口")
         self.btn_refresh_relay_ports.clicked.connect(self._refresh_serial_ports)
         self.btn_relay_connect = QPushButton("连接设备")
@@ -326,7 +334,7 @@ class PowerCycleTab(QWidget):
         self.input_bt_mac = QLineEdit()
         self.input_bt_mac.setPlaceholderText("例如：AA:BB:CC:11:22:33")
 
-        self.combo_bt_mode = QComboBox()
+        self.combo_bt_mode = NoWheelComboBox()
         self.combo_bt_mode.addItem("名称或MAC（推荐）", "name_or_mac")
         self.combo_bt_mode.addItem("名称且MAC", "name_and_mac")
 
@@ -886,6 +894,8 @@ class PowerCycleTab(QWidget):
             )
             self.label_relay_status.setText(relay_text)
 
+        self._sync_bt_inputs_for_simulation(bt_sim)
+
         self._append_log(
             "INFO",
             "仿真设置更新：万用表=%s, 继电器=%s, 蓝牙=%s"
@@ -896,6 +906,40 @@ class PowerCycleTab(QWidget):
             ),
         )
         self._update_device_control_state()
+
+    def _sync_bt_inputs_for_simulation(self, bt_sim: bool) -> None:
+        if bt_sim:
+            if not self._bt_inputs_locked_by_sim:
+                self._bt_name_before_sim = self.input_bt_name.text().strip()
+                self._bt_mac_before_sim = self.input_bt_mac.text().strip()
+            sim_name, sim_mac = self._get_simulated_bt_identity()
+            self._set_bt_inputs(sim_name, sim_mac)
+            self.input_bt_name.setReadOnly(True)
+            self.input_bt_mac.setReadOnly(True)
+            self._bt_inputs_locked_by_sim = True
+            return
+
+        self.input_bt_name.setReadOnly(False)
+        self.input_bt_mac.setReadOnly(False)
+        if not self._bt_inputs_locked_by_sim:
+            return
+        self._set_bt_inputs(self._bt_name_before_sim, self._bt_mac_before_sim)
+        self._bt_inputs_locked_by_sim = False
+
+    def _get_simulated_bt_identity(self) -> tuple[str, str]:
+        devices = self._sim_bt_probe.query_devices()
+        if not devices:
+            return "SimMouse", "00:11:22:AA:BB:CC"
+        device = devices[0]
+        name = (device.name or "SimMouse").strip() or "SimMouse"
+        mac = normalize_mac(device.mac) or "00:11:22:AA:BB:CC"
+        return name, mac
+
+    def _set_bt_inputs(self, name: str, mac: str) -> None:
+        if self.input_bt_name.text() != name:
+            self.input_bt_name.setText(name)
+        if self.input_bt_mac.text() != mac:
+            self.input_bt_mac.setText(mac)
 
     def _sync_sim_target_channel(self, channel: int) -> None:
         self._sim_multimeter.set_target_channel(channel)
