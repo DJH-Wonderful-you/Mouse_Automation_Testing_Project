@@ -1283,3 +1283,103 @@
 2026-03-07 22:14:33,492 [INFO] ui.power_cycle -   - 名称=Logi M750 | 状态=OK | MAC=D5:E7:15:41:4C:AA | Class=Bluetooth | ID=BTHLE\DEV_D5E715414CAA\7&1679758C&0&D5E715414CAA | 判定=未连接
 2026-03-07 22:14:33,493 [WARNING] ui.power_cycle - 手动检查结果：未连接
 2026-03-07 22:50:49,905 [INFO] ui.power_cycle - 配置已保存。
+2026-03-09 20:24:59,540 [INFO] ui.power_cycle - 仿真设置更新：万用表=开, 继电器=开, 蓝牙=关
+2026-03-09 20:24:59,550 [INFO] ui.power_cycle - 串口刷新完成，共发现 2 个端口。
+2026-03-09 20:25:03,188 [INFO] ui.power_cycle - 手动检查蓝牙连接状态（来源: 真实已配对蓝牙 | 模式: 名称或MAC | 条件: 名称关键字=SUNWINON Mouse MOCO, MAC=D5:E7:15:41:4C:AC）
+2026-03-09 20:25:03,323 [INFO] ui.power_cycle - 匹配到 2 个设备：
+2026-03-09 20:25:03,324 [INFO] ui.power_cycle -   - 名称=SUNWINON Mouse MOCO | 状态=OK | MAC=D1:02:12:03:7B:B6 | Class=Bluetooth | ID=BTHLE\Dev_d10212037bb6\7&1679758c&0&d10212037bb6 | 判定=未连接
+2026-03-09 20:25:03,325 [INFO] ui.power_cycle -   - 名称=Logi M750 | 状态=OK | MAC=D5:E7:15:41:4C:AC | Class=Bluetooth | ID=BTHLE\Dev_d5e715414cac\7&1679758c&0&d5e715414cac | 判定=未连接
+2026-03-09 20:25:03,326 [WARNING] ui.power_cycle - 手动检查结果：未连接
+2026-03-09 20:25:08,396 [INFO] ui.power_cycle - 手动检查蓝牙连接状态（来源: 真实已配对蓝牙 | 模式: 名称或MAC | 条件: 名称关键字=SUNWINON Mouse MOCO）
+2026-03-09 20:25:08,530 [INFO] ui.power_cycle - 匹配到 1 个设备：
+2026-03-09 20:25:08,532 [INFO] ui.power_cycle -   - 名称=SUNWINON Mouse MOCO | 状态=OK | MAC=D1:02:12:03:7B:B6 | Class=Bluetooth | ID=BTHLE\Dev_d10212037bb6\7&1679758c&0&d10212037bb6 | 判定=未连接
+2026-03-09 20:25:08,532 [WARNING] ui.power_cycle - 手动检查结果：未连接
+2026-03-09 20:25:10,172 [INFO] ui.power_cycle - 检测到 5 个蓝牙相关设备（来源: 真实已配对蓝牙）：
+2026-03-09 20:25:10,173 [INFO] ui.power_cycle -   - 名称=SUNWINON Mouse MOCO | 状态=OK | MAC=D1:02:12:03:7B:B6 | Class=Bluetooth | ID=BTHLE\Dev_d10212037bb6\7&1679758c&0&d10212037bb6
+2026-03-09 20:25:10,175 [INFO] ui.power_cycle -   - 名称=Logi M750 | 状态=OK | MAC=D5:E7:15:41:4C:AC | Class=Bluetooth | ID=BTHLE\Dev_d5e715414cac\7&1679758c&0&d5e715414cac
+2026-03-09 20:25:10,175 [INFO] ui.power_cycle -   - 名称=LOWA Mouse | 状态=OK | MAC=F0:61:EE:A2:D5:A0 | Class=Bluetooth | ID=BTHLE\Dev_f061eea2d5a0\7&1679758c&0&f061eea2d5a0
+2026-03-09 20:25:10,177 [INFO] ui.power_cycle -   - 名称=TONEMAC HS1 | 状态=OK | MAC=F4:4E:FE:00:11:4C | Class=Bluetooth | ID=BTHENUM\Dev_F44EFE00114C\7&3b5ef62b&1&BluetoothDevice_F44EFE00114C
+2026-03-09 20:25:10,177 [INFO] ui.power_cycle -   - 名称=HUAWEI FreeBuds 5i | 状态=OK | MAC=14:51:20:FF:A1:14 | Class=Bluetooth | ID=BTHENUM\Dev_145120FFA114\7&3b5ef62b&1&BluetoothDevice_145120FFA114
+2026-03-09 20:25:29,490 [INFO] ui.power_cycle - 检测到 5 个蓝牙相关设备（来源: 真实已配对蓝牙）：
+2026-03-09 20:25:29,491 [INFO] ui.power_cycle -   - 名称=SUNWINON Mouse MOCO | 状态=OK | MAC=D1:02:12:03:7B:B6 | Class=Bluetooth | ID=BTHLE\Dev_d10212037bb6\7&1679758c&0&d10212037bb6
+2026-03-09 20:25:29,492 [INFO] ui.power_cycle -   - 名称=Logi M750 | 状态=OK | MAC=D5:E7:15:41:4C:AC | Class=Bluetooth | ID=BTHLE\Dev_d5e715414cac\7&1679758c&0&d5e715414cac
+2026-03-09 20:25:29,493 [INFO] ui.power_cycle -   - 名称=LOWA Mouse | 状态=OK | MAC=F0:61:EE:A2:D5:A0 | Class=Bluetooth | ID=BTHLE\Dev_f061eea2d5a0\7&1679758c&0&f061eea2d5a0
+2026-03-09 20:25:29,494 [INFO] ui.power_cycle -   - 名称=TONEMAC HS1 | 状态=OK | MAC=F4:4E:FE:00:11:4C | Class=Bluetooth | ID=BTHENUM\Dev_F44EFE00114C\7&3b5ef62b&1&BluetoothDevice_F44EFE00114C
+2026-03-09 20:25:29,495 [INFO] ui.power_cycle -   - 名称=HUAWEI FreeBuds 5i | 状态=OK | MAC=14:51:20:FF:A1:14 | Class=Bluetooth | ID=BTHENUM\Dev_145120FFA114\7&3b5ef62b&1&BluetoothDevice_145120FFA114
+2026-03-09 20:25:41,627 [INFO] ui.power_cycle - 手动检查蓝牙连接状态（来源: 真实已配对蓝牙 | 模式: 名称或MAC | 条件: 名称关键字=Logi M750, MAC=D5:E7:15:41:4C:AC）
+2026-03-09 20:25:41,758 [INFO] ui.power_cycle - 匹配到 1 个设备：
+2026-03-09 20:25:41,759 [INFO] ui.power_cycle -   - 名称=Logi M750 | 状态=OK | MAC=D5:E7:15:41:4C:AC | Class=Bluetooth | ID=BTHLE\Dev_d5e715414cac\7&1679758c&0&d5e715414cac | 判定=未连接
+2026-03-09 20:25:41,760 [WARNING] ui.power_cycle - 手动检查结果：未连接
+2026-03-09 20:25:51,067 [INFO] ui.power_cycle - 手动检查蓝牙连接状态（来源: 真实已配对蓝牙 | 模式: 名称或MAC | 条件: 名称关键字=Logi M750, MAC=D5:E7:15:41:4C:AC）
+2026-03-09 20:25:51,091 [INFO] ui.power_cycle - 匹配到 1 个设备：
+2026-03-09 20:25:51,092 [INFO] ui.power_cycle -   - 名称=Logi M750 | 状态=OK | MAC=D5:E7:15:41:4C:AC | Class=Bluetooth | ID=BTHLE\Dev_d5e715414cac\7&1679758c&0&d5e715414cac | 判定=已连接
+2026-03-09 20:25:51,093 [INFO] ui.power_cycle - 手动检查结果：已连接
+2026-03-09 20:26:06,298 [INFO] ui.power_cycle - 配置已保存。
+2026-03-09 20:26:06,301 [INFO] ui.power_cycle - 测试线程启动。
+2026-03-09 20:26:06,306 [INFO] ui.power_cycle - 测试开始，总轮次: 10
+2026-03-09 20:26:06,308 [INFO] ui.power_cycle - [第1轮] 当前继电器通道1状态: 关
+2026-03-09 20:26:06,552 [INFO] ui.power_cycle - 断电状态确认通过: 电压=0.200V, 蓝牙=未连接
+2026-03-09 20:26:07,560 [INFO] ui.power_cycle - 执行上电: 通道1上电命令已发送。
+2026-03-09 20:26:09,360 [INFO] ui.power_cycle - 上电状态确认通过: 电压=4.900V, 蓝牙=已连接
+2026-03-09 20:26:09,361 [INFO] ui.power_cycle - [第1轮] 通过 | 断电电压=0.2, 上电电压=4.9
+2026-03-09 20:26:09,365 [INFO] ui.power_cycle - [第2轮] 当前继电器通道1状态: 开
+2026-03-09 20:26:09,366 [INFO] ui.power_cycle - 执行断电准备: 通道1断电命令已发送。
+2026-03-09 20:26:10,820 [INFO] ui.power_cycle - 断电状态确认通过: 电压=0.200V, 蓝牙=未连接
+2026-03-09 20:26:11,825 [INFO] ui.power_cycle - 执行上电: 通道1上电命令已发送。
+2026-03-09 20:26:13,407 [INFO] ui.power_cycle - 上电状态确认通过: 电压=4.900V, 蓝牙=已连接
+2026-03-09 20:26:13,408 [INFO] ui.power_cycle - [第2轮] 通过 | 断电电压=0.2, 上电电压=4.9
+2026-03-09 20:26:13,413 [INFO] ui.power_cycle - [第3轮] 当前继电器通道1状态: 开
+2026-03-09 20:26:13,413 [INFO] ui.power_cycle - 执行断电准备: 通道1断电命令已发送。
+2026-03-09 20:26:14,870 [INFO] ui.power_cycle - 断电状态确认通过: 电压=0.200V, 蓝牙=未连接
+2026-03-09 20:26:15,874 [INFO] ui.power_cycle - 执行上电: 通道1上电命令已发送。
+2026-03-09 20:26:17,453 [INFO] ui.power_cycle - 上电状态确认通过: 电压=4.900V, 蓝牙=已连接
+2026-03-09 20:26:17,455 [INFO] ui.power_cycle - [第3轮] 通过 | 断电电压=0.2, 上电电压=4.9
+2026-03-09 20:26:17,459 [INFO] ui.power_cycle - [第4轮] 当前继电器通道1状态: 开
+2026-03-09 20:26:17,460 [INFO] ui.power_cycle - 执行断电准备: 通道1断电命令已发送。
+2026-03-09 20:26:18,697 [INFO] ui.power_cycle - 断电状态确认通过: 电压=0.200V, 蓝牙=未连接
+2026-03-09 20:26:19,705 [INFO] ui.power_cycle - 执行上电: 通道1上电命令已发送。
+2026-03-09 20:26:21,058 [INFO] ui.power_cycle - 上电状态确认通过: 电压=4.900V, 蓝牙=已连接
+2026-03-09 20:26:21,059 [INFO] ui.power_cycle - [第4轮] 通过 | 断电电压=0.2, 上电电压=4.9
+2026-03-09 20:26:21,063 [INFO] ui.power_cycle - [第5轮] 当前继电器通道1状态: 开
+2026-03-09 20:26:21,065 [INFO] ui.power_cycle - 执行断电准备: 通道1断电命令已发送。
+2026-03-09 20:26:22,079 [INFO] ui.power_cycle - 断电状态确认通过: 电压=0.200V, 蓝牙=未连接
+2026-03-09 20:26:23,086 [INFO] ui.power_cycle - 执行上电: 通道1上电命令已发送。
+2026-03-09 20:26:24,443 [INFO] ui.power_cycle - 上电状态确认通过: 电压=4.900V, 蓝牙=已连接
+2026-03-09 20:26:24,444 [INFO] ui.power_cycle - [第5轮] 通过 | 断电电压=0.2, 上电电压=4.9
+2026-03-09 20:26:24,448 [INFO] ui.power_cycle - [第6轮] 当前继电器通道1状态: 开
+2026-03-09 20:26:24,449 [INFO] ui.power_cycle - 执行断电准备: 通道1断电命令已发送。
+2026-03-09 20:26:25,459 [INFO] ui.power_cycle - 断电状态确认通过: 电压=0.200V, 蓝牙=未连接
+2026-03-09 20:26:26,463 [INFO] ui.power_cycle - 执行上电: 通道1上电命令已发送。
+2026-03-09 20:26:27,372 [INFO] ui.power_cycle - 上电状态确认通过: 电压=4.900V, 蓝牙=已连接
+2026-03-09 20:26:27,373 [INFO] ui.power_cycle - [第6轮] 通过 | 断电电压=0.2, 上电电压=4.9
+2026-03-09 20:26:27,378 [INFO] ui.power_cycle - [第7轮] 当前继电器通道1状态: 开
+2026-03-09 20:26:27,378 [INFO] ui.power_cycle - 执行断电准备: 通道1断电命令已发送。
+2026-03-09 20:26:28,388 [INFO] ui.power_cycle - 断电状态确认通过: 电压=0.200V, 蓝牙=未连接
+2026-03-09 20:26:29,394 [INFO] ui.power_cycle - 执行上电: 通道1上电命令已发送。
+2026-03-09 20:26:30,305 [INFO] ui.power_cycle - 上电状态确认通过: 电压=4.900V, 蓝牙=已连接
+2026-03-09 20:26:30,306 [INFO] ui.power_cycle - [第7轮] 通过 | 断电电压=0.2, 上电电压=4.9
+2026-03-09 20:26:30,312 [INFO] ui.power_cycle - [第8轮] 当前继电器通道1状态: 开
+2026-03-09 20:26:30,313 [INFO] ui.power_cycle - 执行断电准备: 通道1断电命令已发送。
+2026-03-09 20:26:31,322 [INFO] ui.power_cycle - 断电状态确认通过: 电压=0.200V, 蓝牙=未连接
+2026-03-09 20:26:32,331 [INFO] ui.power_cycle - 执行上电: 通道1上电命令已发送。
+2026-03-09 20:26:33,243 [INFO] ui.power_cycle - 上电状态确认通过: 电压=4.900V, 蓝牙=已连接
+2026-03-09 20:26:33,243 [INFO] ui.power_cycle - [第8轮] 通过 | 断电电压=0.2, 上电电压=4.9
+2026-03-09 20:26:33,250 [INFO] ui.power_cycle - [第9轮] 当前继电器通道1状态: 开
+2026-03-09 20:26:33,250 [INFO] ui.power_cycle - 执行断电准备: 通道1断电命令已发送。
+2026-03-09 20:26:35,813 [INFO] ui.power_cycle - 断电状态确认通过: 电压=0.200V, 蓝牙=未连接
+2026-03-09 20:26:36,820 [INFO] ui.power_cycle - 执行上电: 通道1上电命令已发送。
+2026-03-09 20:26:37,531 [WARNING] ui.power_cycle - 已请求停止测试。
+2026-03-09 20:26:37,557 [WARNING] ui.power_cycle - 收到停止请求，退出测试循环。
+2026-03-09 20:26:37,558 [INFO] ui.power_cycle - 测试结束：成功 8，失败 0，成功率 100.00%
+2026-03-09 20:26:37,559 [INFO] ui.power_cycle - 测试完成。成功 8，失败 0，成功率 100.00%
+2026-03-09 20:27:38,889 [INFO] ui.power_cycle - 检测到 5 个蓝牙相关设备（来源: 真实已配对蓝牙）：
+2026-03-09 20:27:38,891 [INFO] ui.power_cycle -   - 名称=SUNWINON Mouse MOCO | 状态=OK | MAC=D1:02:12:03:7B:B6 | Class=Bluetooth | ID=BTHLE\Dev_d10212037bb6\7&1679758c&0&d10212037bb6
+2026-03-09 20:27:38,892 [INFO] ui.power_cycle -   - 名称=Logi M750 | 状态=OK | MAC=D5:E7:15:41:4C:AC | Class=Bluetooth | ID=BTHLE\Dev_d5e715414cac\7&1679758c&0&d5e715414cac
+2026-03-09 20:27:38,892 [INFO] ui.power_cycle -   - 名称=LOWA Mouse | 状态=OK | MAC=F0:61:EE:A2:D5:A0 | Class=Bluetooth | ID=BTHLE\Dev_f061eea2d5a0\7&1679758c&0&f061eea2d5a0
+2026-03-09 20:27:38,893 [INFO] ui.power_cycle -   - 名称=TONEMAC HS1 | 状态=OK | MAC=F4:4E:FE:00:11:4C | Class=Bluetooth | ID=BTHENUM\Dev_F44EFE00114C\7&3b5ef62b&1&BluetoothDevice_F44EFE00114C
+2026-03-09 20:27:38,893 [INFO] ui.power_cycle -   - 名称=HUAWEI FreeBuds 5i | 状态=OK | MAC=14:51:20:FF:A1:14 | Class=Bluetooth | ID=BTHENUM\Dev_145120FFA114\7&3b5ef62b&1&BluetoothDevice_145120FFA114
+2026-03-09 20:27:40,699 [INFO] ui.power_cycle - 手动检查蓝牙连接状态（来源: 真实已配对蓝牙 | 模式: 名称或MAC | 条件: 名称关键字=Logi M750, MAC=D5:E7:15:41:4C:AC）
+2026-03-09 20:27:40,721 [INFO] ui.power_cycle - 匹配到 1 个设备：
+2026-03-09 20:27:40,722 [INFO] ui.power_cycle -   - 名称=Logi M750 | 状态=OK | MAC=D5:E7:15:41:4C:AC | Class=Bluetooth | ID=BTHLE\Dev_d5e715414cac\7&1679758c&0&d5e715414cac | 判定=未连接
+2026-03-09 20:27:40,723 [WARNING] ui.power_cycle - 手动检查结果：未连接
+2026-03-09 20:28:10,207 [INFO] ui.power_cycle - 配置已保存。

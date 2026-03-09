@@ -1,10 +1,13 @@
 from __future__ import annotations
 
+import csv
+import io
 import json
 import logging
 import re
 import subprocess
-from dataclasses import dataclass
+import time
+from dataclasses import dataclass, replace
 
 from src.core.types import BtMatchMode
 
@@ -26,6 +29,9 @@ _HID_BLE_SIGNATURE_PATTERN = re.compile(
 )
 _BT_INSTANCE_PREFIXES = ("BTHENUM\\", "BTHLEDEVICE\\", "BTHLE\\")
 _BT_PRIMARY_PREFIXES = ("BTHENUM\\DEV_", "BTHLEDEVICE\\DEV_", "BTHLE\\DEV_")
+_PNPUTIL_CLASS_NAMES = ("Bluetooth", "HIDClass", "AudioEndpoint")
+_PNPUTIL_STATUS_OK = "OK"
+_PNPUTIL_PRESENT_FALSE_STATUSES = {"DISCONNECTED", "UNKNOWN", "NOT PRESENT"}
 
 
 @dataclass(slots=True, frozen=True)
@@ -51,80 +57,127 @@ class BluetoothDeviceInfo:
         )
 
 
+@dataclass(slots=True)
+class _BluetoothInventory:
+    rows: list[dict[str, object]]
+    devices: list[BluetoothDeviceInfo]
+    created_at: float
+
+
+@dataclass(slots=True)
+class _TrackedDevice:
+    device: BluetoothDeviceInfo
+    watcher_ids: tuple[str, ...]
+    prefer_hid_watchers: bool
+
+
+@dataclass(slots=True)
+class _TargetCacheEntry:
+    key: tuple[str, str, BtMatchMode]
+    tracked_devices: tuple[_TrackedDevice, ...]
+    created_at: float
+
+
 class BluetoothProbe:
+    def __init__(
+        self,
+        *,
+        inventory_cache_ttl_sec: float = 1.0,
+        target_cache_ttl_sec: float = 300.0,
+    ) -> None:
+        self._inventory_cache_ttl_sec = max(0.0, inventory_cache_ttl_sec)
+        self._target_cache_ttl_sec = max(self._inventory_cache_ttl_sec, target_cache_ttl_sec)
+        self._inventory_cache: _BluetoothInventory | None = None
+        self._target_cache: dict[tuple[str, str, BtMatchMode], _TargetCacheEntry] = {}
+
     def query_devices(self) -> list[BluetoothDeviceInfo]:
-        return query_bluetooth_devices()
+        inventory = self._get_inventory()
+        return list(inventory.devices)
 
     def is_target_connected(
         self, name_keyword: str, mac: str, mode: BtMatchMode
     ) -> tuple[bool, list[BluetoothDeviceInfo]]:
-        return is_target_connected(name_keyword, mac, mode)
+        key = _make_target_cache_key(name_keyword, mac, mode)
+        entry = self._target_cache.get(key)
+        now = time.monotonic()
+        if entry is not None and now - entry.created_at <= self._target_cache_ttl_sec:
+            fast_result = self._resolve_target_connection_fast(entry)
+            if fast_result is not None:
+                entry.created_at = now
+                return fast_result
+
+        entry, matched = self._rebuild_target_cache_entry(key)
+        if entry is not None:
+            self._target_cache[key] = entry
+        else:
+            self._target_cache.pop(key, None)
+        connected = any(_is_device_connected(device) for device in matched)
+        return connected, matched
+
+    def _get_inventory(self, *, force_refresh: bool = False) -> _BluetoothInventory:
+        now = time.monotonic()
+        if (
+            not force_refresh
+            and self._inventory_cache is not None
+            and now - self._inventory_cache.created_at <= self._inventory_cache_ttl_sec
+        ):
+            return self._inventory_cache
+        inventory = _query_bluetooth_inventory()
+        self._inventory_cache = inventory
+        return inventory
+
+    def _rebuild_target_cache_entry(
+        self, key: tuple[str, str, BtMatchMode]
+    ) -> tuple[_TargetCacheEntry | None, list[BluetoothDeviceInfo]]:
+        inventory = self._get_inventory()
+        name_keyword, mac, mode = key
+        matched = [
+            device
+            for device in inventory.devices
+            if match_target(device, name_keyword=name_keyword, mac=mac, mode=mode)
+        ]
+        if not matched:
+            return None, []
+        tracked_devices = tuple(_build_tracked_devices(inventory.rows, matched))
+        entry = _TargetCacheEntry(
+            key=key,
+            tracked_devices=tracked_devices,
+            created_at=time.monotonic(),
+        )
+        return entry, matched
+
+    def _resolve_target_connection_fast(
+        self, entry: _TargetCacheEntry
+    ) -> tuple[bool, list[BluetoothDeviceInfo]] | None:
+        if not entry.tracked_devices:
+            return None
+
+        rows_by_instance_id: dict[str, dict[str, object]] = {}
+        for tracked_device in entry.tracked_devices:
+            if not tracked_device.watcher_ids:
+                return None
+            for watcher_id in tracked_device.watcher_ids:
+                if watcher_id in rows_by_instance_id:
+                    continue
+                row = _query_pnputil_instance_row(watcher_id)
+                if row is None:
+                    return None
+                rows_by_instance_id[watcher_id] = row
+
+        updated_devices: list[BluetoothDeviceInfo] = []
+        for tracked_device in entry.tracked_devices:
+            connected = _resolve_tracked_device_connection(tracked_device, rows_by_instance_id)
+            if connected is None:
+                return None
+            updated_devices.append(replace(tracked_device.device, connected=connected))
+
+        connected = any(_is_device_connected(device) for device in updated_devices)
+        return connected, updated_devices
 
 
 def query_bluetooth_devices() -> list[BluetoothDeviceInfo]:
-    script = (
-        "$ErrorActionPreference='SilentlyContinue';"
-        "$items = Get-PnpDevice | Where-Object { "
-        "($_.InstanceId -match '^(BTHENUM|BTHLEDEVICE|BTHLE)\\\\' "
-        "-or $_.InstanceId -match '^HID\\\\\\{00001812-0000-1000-8000-00805F9B34FB\\}_DEV_' "
-        "-or ($_.InstanceId -match '^SWD\\\\MMDEVAPI\\\\' -and $_.Class -eq 'AudioEndpoint')) };"
-        "$items | Select-Object Status,Class,FriendlyName,InstanceId,Present | "
-        "ConvertTo-Json -Compress -Depth 3"
-    )
-    output = _run_powershell(script)
-    if not output:
-        return []
-
-    try:
-        data = json.loads(output)
-    except json.JSONDecodeError:
-        _LOGGER.warning("蓝牙检测返回非JSON内容: %s", output[:300])
-        return []
-
-    rows = data if isinstance(data, list) else [data]
-    mac_to_hid_signature = _build_ble_hid_service_links(rows)
-    hid_signatures = _collect_hid_signatures(rows)
-    hid_connected_signatures = _collect_connected_hid_signatures(rows)
-    audio_endpoints = _collect_audio_endpoints(rows)
-    devices: list[BluetoothDeviceInfo] = []
-    for row in rows:
-        if not isinstance(row, dict):
-            continue
-        name = str(row.get("FriendlyName") or "")
-        instance_id = str(row.get("InstanceId") or "")
-        class_name = str(row.get("Class") or "")
-        status = str(row.get("Status") or "")
-        present = bool(row.get("Present", True))
-        if not is_paired_bluetooth_instance(instance_id):
-            continue
-        if not is_primary_device_node(instance_id):
-            continue
-        merged_text = f"{name} {instance_id}"
-        mac = extract_mac(merged_text)
-        connected = _resolve_connected_hint(
-            name=name,
-            status=status,
-            present=present,
-            mac=mac,
-            mac_to_hid_signature=mac_to_hid_signature,
-            hid_signatures=hid_signatures,
-            hid_connected_signatures=hid_connected_signatures,
-            audio_endpoints=audio_endpoints,
-        )
-        if not _looks_like_mouse_related(name, class_name, instance_id):
-            continue
-        devices.append(
-            BluetoothDeviceInfo(
-                name=name,
-                instance_id=instance_id,
-                status=status,
-                class_name=class_name,
-                present=present,
-                mac=mac,
-                connected=connected,
-            )
-        )
-    return _deduplicate_devices(devices)
+    inventory = _query_bluetooth_inventory()
+    return inventory.devices
 
 
 def is_target_connected(
@@ -192,6 +245,167 @@ def _looks_like_mouse_related(name: str, class_name: str, instance_id: str) -> b
     return any(keyword in text for keyword in keywords)
 
 
+def _query_bluetooth_inventory() -> _BluetoothInventory:
+    rows = _query_bluetooth_rows()
+    devices = _build_devices_from_rows(rows)
+    return _BluetoothInventory(rows=rows, devices=devices, created_at=time.monotonic())
+
+
+def _query_bluetooth_rows() -> list[dict[str, object]]:
+    pnputil_rows = _query_bluetooth_rows_via_pnputil()
+    if pnputil_rows is not None:
+        return pnputil_rows
+    return _query_bluetooth_rows_via_powershell()
+
+
+def _query_bluetooth_rows_via_pnputil() -> list[dict[str, object]] | None:
+    rows: list[dict[str, object]] = []
+    for class_name in _PNPUTIL_CLASS_NAMES:
+        class_rows = _run_pnputil_csv(
+            ["pnputil", "/enum-devices", "/class", class_name, "/format", "csv"],
+            timeout_sec=10,
+        )
+        if class_rows is None:
+            return None
+        rows.extend(class_rows)
+    return rows
+
+
+def _query_pnputil_instance_row(instance_id: str) -> dict[str, object] | None:
+    rows = _run_pnputil_csv(
+        ["pnputil", "/enum-devices", "/instanceid", instance_id, "/format", "csv"],
+        timeout_sec=5,
+    )
+    if rows is None or not rows:
+        return None
+    return rows[0]
+
+
+def _run_pnputil_csv(
+    args: list[str], *, timeout_sec: int
+) -> list[dict[str, object]] | None:
+    completed = _run_process(args, timeout_sec=timeout_sec)
+    if completed is None:
+        return None
+    output = _decode_process_bytes(completed.stdout)
+    if completed.returncode != 0 and not output.strip():
+        return None
+    try:
+        return _parse_pnputil_csv_output(output)
+    except Exception as exc:  # noqa: BLE001
+        _LOGGER.warning("failed to parse pnputil output: %s", exc)
+        return None
+
+
+def _parse_pnputil_csv_output(output: str) -> list[dict[str, object]]:
+    payload = (output or "").strip()
+    if not payload:
+        return []
+    reader = csv.DictReader(io.StringIO(payload.lstrip("\ufeff")))
+    rows: list[dict[str, object]] = []
+    for raw_row in reader:
+        normalized_row = _normalize_pnputil_row(raw_row)
+        if normalized_row is not None:
+            rows.append(normalized_row)
+    return rows
+
+
+def _normalize_pnputil_row(raw_row: dict[str, str | None]) -> dict[str, object] | None:
+    instance_id = str(raw_row.get("InstanceId") or "").strip()
+    if not instance_id:
+        return None
+    status = _normalize_pnputil_status(str(raw_row.get("Status") or ""))
+    return {
+        "Status": status,
+        "Class": str(raw_row.get("ClassName") or "").strip(),
+        "FriendlyName": str(raw_row.get("DeviceDescription") or "").strip(),
+        "InstanceId": instance_id,
+        "Present": _pnputil_status_is_present(status),
+    }
+
+
+def _normalize_pnputil_status(status: str) -> str:
+    normalized = (status or "").strip()
+    if normalized.upper() == "STARTED":
+        return _PNPUTIL_STATUS_OK
+    return normalized
+
+
+def _pnputil_status_is_present(status: str) -> bool:
+    normalized = (status or "").strip().upper()
+    if not normalized:
+        return False
+    return normalized not in _PNPUTIL_PRESENT_FALSE_STATUSES
+
+
+def _query_bluetooth_rows_via_powershell() -> list[dict[str, object]]:
+    script = (
+        "$ErrorActionPreference='SilentlyContinue';"
+        "$items = Get-PnpDevice | Where-Object { "
+        "($_.InstanceId -match '^(BTHENUM|BTHLEDEVICE|BTHLE)\\\\' "
+        "-or $_.InstanceId -match '^HID\\\\\\{00001812-0000-1000-8000-00805F9B34FB\\}_DEV_' "
+        "-or ($_.InstanceId -match '^SWD\\\\MMDEVAPI\\\\' -and $_.Class -eq 'AudioEndpoint')) };"
+        "$items | Select-Object Status,Class,FriendlyName,InstanceId,Present | "
+        "ConvertTo-Json -Compress -Depth 3"
+    )
+    output = _run_powershell(script)
+    if not output:
+        return []
+
+    try:
+        data = json.loads(output)
+    except json.JSONDecodeError:
+        _LOGGER.warning("bluetooth probe returned non-JSON content: %s", output[:300])
+        return []
+
+    rows = data if isinstance(data, list) else [data]
+    return [row for row in rows if isinstance(row, dict)]
+
+
+def _build_devices_from_rows(rows: list[dict[str, object]]) -> list[BluetoothDeviceInfo]:
+    mac_to_hid_signature = _build_ble_hid_service_links(rows)
+    hid_signatures = _collect_hid_signatures(rows)
+    hid_connected_signatures = _collect_connected_hid_signatures(rows)
+    audio_endpoints = _collect_audio_endpoints(rows)
+    devices: list[BluetoothDeviceInfo] = []
+    for row in rows:
+        name = str(row.get("FriendlyName") or "")
+        instance_id = str(row.get("InstanceId") or "")
+        class_name = str(row.get("Class") or "")
+        status = str(row.get("Status") or "")
+        present = bool(row.get("Present", True))
+        if not is_paired_bluetooth_instance(instance_id):
+            continue
+        if not is_primary_device_node(instance_id):
+            continue
+        merged_text = f"{name} {instance_id}"
+        mac = extract_mac(merged_text)
+        connected = _resolve_connected_hint(
+            name=name,
+            status=status,
+            present=present,
+            mac=mac,
+            mac_to_hid_signature=mac_to_hid_signature,
+            hid_signatures=hid_signatures,
+            hid_connected_signatures=hid_connected_signatures,
+            audio_endpoints=audio_endpoints,
+        )
+        if not _looks_like_mouse_related(name, class_name, instance_id):
+            continue
+        devices.append(
+            BluetoothDeviceInfo(
+                name=name,
+                instance_id=instance_id,
+                status=status,
+                class_name=class_name,
+                present=present,
+                mac=mac,
+                connected=connected,
+            )
+        )
+    return _deduplicate_devices(devices)
+
+
 def _build_ble_hid_service_links(rows: list[object]) -> dict[str, str]:
     links: dict[str, str] = {}
     for row in rows:
@@ -234,6 +448,19 @@ def _collect_hid_signatures(rows: list[object]) -> set[str]:
     return signatures
 
 
+def _collect_hid_instance_ids_by_signature(rows: list[object]) -> dict[str, set[str]]:
+    instance_ids_by_signature: dict[str, set[str]] = {}
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        instance_id = str(row.get("InstanceId") or "")
+        signature = _extract_hid_signature(instance_id)
+        if not signature:
+            continue
+        instance_ids_by_signature.setdefault(signature, set()).add(instance_id)
+    return instance_ids_by_signature
+
+
 def _collect_audio_endpoints(rows: list[object]) -> list[tuple[str, bool]]:
     endpoints: list[tuple[str, bool]] = []
     for row in rows:
@@ -252,6 +479,64 @@ def _collect_audio_endpoints(rows: list[object]) -> list[tuple[str, bool]]:
         present = bool(row.get("Present", True))
         endpoints.append((name, present and status.strip().upper() == "OK"))
     return endpoints
+
+
+def _build_tracked_devices(
+    rows: list[dict[str, object]], matched_devices: list[BluetoothDeviceInfo]
+) -> list[_TrackedDevice]:
+    mac_to_hid_signature = _build_ble_hid_service_links(rows)
+    hid_instance_ids_by_signature = _collect_hid_instance_ids_by_signature(rows)
+    tracked_devices: list[_TrackedDevice] = []
+    for device in matched_devices:
+        watcher_ids: list[str] = []
+        prefer_hid_watchers = False
+        mac_key = normalize_mac(device.mac).replace(":", "")
+        signature = mac_to_hid_signature.get(mac_key)
+        if signature:
+            hid_instance_ids = sorted(hid_instance_ids_by_signature.get(signature, set()))
+            if hid_instance_ids:
+                watcher_ids.extend(hid_instance_ids)
+                prefer_hid_watchers = True
+        if not watcher_ids and device.instance_id:
+            watcher_ids.append(device.instance_id)
+        tracked_devices.append(
+            _TrackedDevice(
+                device=device,
+                watcher_ids=tuple(dict.fromkeys(watcher_ids)),
+                prefer_hid_watchers=prefer_hid_watchers,
+            )
+        )
+    return tracked_devices
+
+
+def _resolve_tracked_device_connection(
+    tracked_device: _TrackedDevice,
+    rows_by_instance_id: dict[str, dict[str, object]],
+) -> bool | None:
+    watcher_rows: list[dict[str, object]] = []
+    for watcher_id in tracked_device.watcher_ids:
+        row = rows_by_instance_id.get(watcher_id)
+        if row is None:
+            return None
+        watcher_rows.append(row)
+    if not watcher_rows:
+        return None
+    if tracked_device.prefer_hid_watchers:
+        return any(_row_indicates_connected(row) for row in watcher_rows)
+    return _row_indicates_connected(watcher_rows[0])
+
+
+def _row_indicates_connected(row: dict[str, object]) -> bool:
+    status = str(row.get("Status") or "")
+    present = bool(row.get("Present", True))
+    return present and status.strip().upper() == "OK"
+
+
+def _make_target_cache_key(
+    name_keyword: str, mac: str, mode: BtMatchMode
+) -> tuple[str, str, BtMatchMode]:
+    normalized_mode: BtMatchMode = "name_and_mac" if mode == "name_and_mac" else "name_or_mac"
+    return ((name_keyword or "").strip().lower(), normalize_mac(mac), normalized_mode)
 
 
 def _resolve_connected_hint(
@@ -336,7 +621,6 @@ def _deduplicate_devices(devices: list[BluetoothDeviceInfo]) -> list[BluetoothDe
             result[key] = device
             continue
         existing = result[key]
-        # Prefer entries with explicit class and readable non-empty name.
         existing_score = int(bool(existing.name.strip())) + int(bool(existing.class_name.strip()))
         current_score = int(bool(device.name.strip())) + int(bool(device.class_name.strip()))
         if current_score > existing_score:
@@ -350,29 +634,39 @@ def _run_powershell(script: str, timeout_sec: int = 15) -> str:
         "$OutputEncoding=[System.Text.Encoding]::UTF8;"
         + script
     )
+    completed = _run_process(
+        ["powershell", "-NoProfile", "-Command", payload],
+        timeout_sec=timeout_sec,
+    )
+    if completed is None:
+        return ""
+    return (_decode_process_bytes(completed.stdout) or "").strip()
+
+
+def _run_process(args: list[str], *, timeout_sec: int) -> subprocess.CompletedProcess[bytes] | None:
     try:
         completed = subprocess.run(
-            ["powershell", "-NoProfile", "-Command", payload],
+            args,
             capture_output=True,
             text=False,
             timeout=timeout_sec,
             check=False,
         )
-    except Exception as exc:
-        _LOGGER.warning("调用 PowerShell 检测蓝牙失败: %s", exc)
-        return ""
-    stdout = _decode_powershell_bytes(completed.stdout)
-    stderr = _decode_powershell_bytes(completed.stderr)
+    except Exception as exc:  # noqa: BLE001
+        _LOGGER.warning("failed to run command %s: %s", args[0], exc)
+        return None
+    stderr = _decode_process_bytes(completed.stderr)
     if completed.returncode != 0:
         _LOGGER.warning(
-            "PowerShell 返回错误(%s): %s",
+            "command failed (%s) %s: %s",
             completed.returncode,
+            args[0],
             (stderr or "").strip(),
         )
-    return (stdout or "").strip()
+    return completed
 
 
-def _decode_powershell_bytes(data: bytes | None) -> str:
+def _decode_process_bytes(data: bytes | None) -> str:
     if not data:
         return ""
     for encoding in ("utf-8-sig", "utf-8", "gb18030", "cp936", "utf-16le"):
