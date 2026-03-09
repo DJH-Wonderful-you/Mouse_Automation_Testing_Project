@@ -4,6 +4,7 @@ import csv
 import io
 import json
 import logging
+import os
 import re
 import subprocess
 import time
@@ -651,6 +652,7 @@ def _run_process(args: list[str], *, timeout_sec: int) -> subprocess.CompletedPr
             text=False,
             timeout=timeout_sec,
             check=False,
+            **_build_hidden_subprocess_kwargs(),
         )
     except Exception as exc:  # noqa: BLE001
         _LOGGER.warning("failed to run command %s: %s", args[0], exc)
@@ -675,3 +677,25 @@ def _decode_process_bytes(data: bytes | None) -> str:
         except UnicodeDecodeError:
             continue
     return data.decode("utf-8", errors="ignore")
+
+
+def _build_hidden_subprocess_kwargs() -> dict[str, object]:
+    if os.name != "nt":
+        return {}
+
+    kwargs: dict[str, object] = {}
+    creationflags = getattr(subprocess, "CREATE_NO_WINDOW", 0)
+    if creationflags:
+        kwargs["creationflags"] = creationflags
+
+    startupinfo_cls = getattr(subprocess, "STARTUPINFO", None)
+    if startupinfo_cls is None:
+        return kwargs
+
+    startupinfo = startupinfo_cls()
+    use_show_window = getattr(subprocess, "STARTF_USESHOWWINDOW", 0)
+    if use_show_window:
+        startupinfo.dwFlags |= use_show_window
+    startupinfo.wShowWindow = 0
+    kwargs["startupinfo"] = startupinfo
+    return kwargs
