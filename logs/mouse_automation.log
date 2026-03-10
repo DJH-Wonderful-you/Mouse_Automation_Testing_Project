@@ -1399,3 +1399,25 @@
 2026-03-09 20:50:57,321 [INFO] ui.power_cycle - 仿真设置更新：万用表=开, 继电器=开, 蓝牙=关
 2026-03-09 20:50:57,330 [INFO] ui.power_cycle - 串口刷新完成，共发现 2 个端口。
 2026-03-09 20:56:53,995 [INFO] ui.power_cycle - 配置已保存。
+2026-03-10 22:22:08,583 [INFO] ui.power_cycle - 仿真设置更新：万用表=开, 继电器=开, 蓝牙=关
+2026-03-10 22:22:08,595 [INFO] ui.power_cycle - 串口刷新完成，共发现 0 个端口。
+2026-03-10 22:22:14,020 [INFO] ui.power_cycle - 检测到 5 个蓝牙相关设备（来源: 真实已配对蓝牙）：
+2026-03-10 22:22:14,022 [INFO] ui.power_cycle -   - 名称=Logi M750 | 状态=Disconnected | MAC=D5:E7:15:41:4C:AE | Class=Bluetooth | ID=BTHLE\Dev_d5e715414cae\7&1679758c&0&d5e715414cae
+2026-03-10 22:22:14,023 [INFO] ui.power_cycle -   - 名称=SUNWINON Mouse MOCO | 状态=Disconnected | MAC=D1:02:12:03:7B:B6 | Class=Bluetooth | ID=BTHLE\Dev_d10212037bb6\7&1679758c&0&d10212037bb6
+2026-03-10 22:22:14,024 [INFO] ui.power_cycle -   - 名称=LOWA Mouse | 状态=Disconnected | MAC=F0:61:EE:A2:D5:A0 | Class=Bluetooth | ID=BTHLE\Dev_f061eea2d5a0\7&1679758c&0&f061eea2d5a0
+2026-03-10 22:22:14,025 [INFO] ui.power_cycle -   - 名称=TONEMAC HS1 | 状态=Disconnected | MAC=F4:4E:FE:00:11:4C | Class=Bluetooth | ID=BTHENUM\Dev_F44EFE00114C\7&3b5ef62b&1&BluetoothDevice_F44EFE00114C
+2026-03-10 22:22:14,027 [INFO] ui.power_cycle -   - 名称=HUAWEI FreeBuds 5i | 状态=Disconnected | MAC=14:51:20:FF:A1:14 | Class=Bluetooth | ID=BTHENUM\Dev_145120FFA114\7&3b5ef62b&1&BluetoothDevice_145120FFA114
+2026-03-11 00:03:25,973 [INFO] ui.power_cycle - 配置已保存。
+2026-03-11 00:10:56,782 [INFO] ui.power_cycle - 仿真设置更新：万用表=开, 继电器=开, 蓝牙=关
+2026-03-11 00:10:56,790 [INFO] ui.power_cycle - 串口刷新完成，共发现 0 个端口。
+2026-03-11 00:10:59,769 [INFO] ui.power_cycle - 检测到 5 个蓝牙相关设备（来源: 真实已配对蓝牙）：
+2026-03-11 00:10:59,770 [INFO] ui.power_cycle -   - 名称=Logi M750 | 状态=Disconnected | MAC=D5:E7:15:41:4C:AE | Class=Bluetooth | ID=BTHLE\Dev_d5e715414cae\7&1679758c&0&d5e715414cae
+2026-03-11 00:10:59,771 [INFO] ui.power_cycle -   - 名称=SUNWINON Mouse MOCO | 状态=Disconnected | MAC=D1:02:12:03:7B:B6 | Class=Bluetooth | ID=BTHLE\Dev_d10212037bb6\7&1679758c&0&d10212037bb6
+2026-03-11 00:10:59,771 [INFO] ui.power_cycle -   - 名称=LOWA Mouse | 状态=Disconnected | MAC=F0:61:EE:A2:D5:A0 | Class=Bluetooth | ID=BTHLE\Dev_f061eea2d5a0\7&1679758c&0&f061eea2d5a0
+2026-03-11 00:10:59,772 [INFO] ui.power_cycle -   - 名称=TONEMAC HS1 | 状态=Disconnected | MAC=F4:4E:FE:00:11:4C | Class=Bluetooth | ID=BTHENUM\Dev_F44EFE00114C\7&3b5ef62b&1&BluetoothDevice_F44EFE00114C
+2026-03-11 00:10:59,772 [INFO] ui.power_cycle -   - 名称=HUAWEI FreeBuds 5i | 状态=Disconnected | MAC=14:51:20:FF:A1:14 | Class=Bluetooth | ID=BTHENUM\Dev_145120FFA114\7&3b5ef62b&1&BluetoothDevice_145120FFA114
+2026-03-11 00:11:02,180 [INFO] ui.power_cycle - 手动检查蓝牙连接状态（来源: 真实已配对蓝牙 | 模式: 名称或MAC | 条件: 名称关键字=Logi M750, MAC=D5:E7:15:41:4C:AC）
+2026-03-11 00:11:02,401 [INFO] ui.power_cycle - 匹配到 1 个设备：
+2026-03-11 00:11:02,404 [INFO] ui.power_cycle -   - 名称=Logi M750 | 状态=Disconnected | MAC=D5:E7:15:41:4C:AE | Class=Bluetooth | ID=BTHLE\Dev_d5e715414cae\7&1679758c&0&d5e715414cae | 判定=未连接
+2026-03-11 00:11:02,405 [WARNING] ui.power_cycle - 手动检查结果：未连接
+2026-03-11 00:11:04,397 [INFO] ui.power_cycle - 配置已保存。

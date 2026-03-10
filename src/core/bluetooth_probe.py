@@ -8,6 +8,7 @@ import os
 import re
 import subprocess
 import time
+import xml.etree.ElementTree as ET
 from dataclasses import dataclass, replace
 
 from src.core.types import BtMatchMode
@@ -33,6 +34,7 @@ _BT_PRIMARY_PREFIXES = ("BTHENUM\\DEV_", "BTHLEDEVICE\\DEV_", "BTHLE\\DEV_")
 _PNPUTIL_CLASS_NAMES = ("Bluetooth", "HIDClass", "AudioEndpoint")
 _PNPUTIL_STATUS_OK = "OK"
 _PNPUTIL_PRESENT_FALSE_STATUSES = {"DISCONNECTED", "UNKNOWN", "NOT PRESENT"}
+_PNPUTIL_ENUM_FORMAT_PREFERENCE = "csv"
 
 
 @dataclass(slots=True, frozen=True)
@@ -262,8 +264,8 @@ def _query_bluetooth_rows() -> list[dict[str, object]]:
 def _query_bluetooth_rows_via_pnputil() -> list[dict[str, object]] | None:
     rows: list[dict[str, object]] = []
     for class_name in _PNPUTIL_CLASS_NAMES:
-        class_rows = _run_pnputil_csv(
-            ["pnputil", "/enum-devices", "/class", class_name, "/format", "csv"],
+        class_rows = _run_pnputil_rows(
+            ["pnputil", "/enum-devices", "/class", class_name],
             timeout_sec=10,
         )
         if class_rows is None:
@@ -273,13 +275,59 @@ def _query_bluetooth_rows_via_pnputil() -> list[dict[str, object]] | None:
 
 
 def _query_pnputil_instance_row(instance_id: str) -> dict[str, object] | None:
-    rows = _run_pnputil_csv(
-        ["pnputil", "/enum-devices", "/instanceid", instance_id, "/format", "csv"],
+    rows = _run_pnputil_rows(
+        ["pnputil", "/enum-devices", "/instanceid", instance_id],
         timeout_sec=5,
     )
     if rows is None or not rows:
         return None
     return rows[0]
+
+
+def _run_pnputil_rows(
+    base_args: list[str], *, timeout_sec: int
+) -> list[dict[str, object]] | None:
+    """Run pnputil /enum-devices and return normalized rows.
+
+    Different Windows builds ship different pnputil capabilities. Some Win10 builds
+    do not support `/format csv` (they print usage to stdout and return exit code 1),
+    so we try multiple formats and remember the first one that works to avoid repeated
+    failures during fast connection polling.
+    """
+
+    global _PNPUTIL_ENUM_FORMAT_PREFERENCE  # noqa: PLW0603
+
+    preference = _PNPUTIL_ENUM_FORMAT_PREFERENCE
+    candidates = [preference, "csv", "xml", "txt"]
+    formats_to_try: list[str] = []
+    for fmt in candidates:
+        if fmt not in formats_to_try:
+            formats_to_try.append(fmt)
+
+    for fmt in formats_to_try:
+        if fmt == "csv":
+            rows = _run_pnputil_csv(
+                [*base_args, "/format", "csv"],
+                timeout_sec=timeout_sec,
+            )
+        elif fmt == "xml":
+            rows = _run_pnputil_xml(
+                [*base_args, "/format", "xml"],
+                timeout_sec=timeout_sec,
+            )
+        else:
+            rows = _run_pnputil_text(
+                base_args,
+                timeout_sec=timeout_sec,
+            )
+
+        if rows is None:
+            continue
+
+        _PNPUTIL_ENUM_FORMAT_PREFERENCE = fmt
+        return rows
+
+    return None
 
 
 def _run_pnputil_csv(
@@ -288,9 +336,9 @@ def _run_pnputil_csv(
     completed = _run_process(args, timeout_sec=timeout_sec)
     if completed is None:
         return None
-    output = _decode_process_bytes(completed.stdout)
-    if completed.returncode != 0 and not output.strip():
+    if completed.returncode != 0:
         return None
+    output = _decode_process_bytes(completed.stdout)
     try:
         return _parse_pnputil_csv_output(output)
     except Exception as exc:  # noqa: BLE001
@@ -308,6 +356,123 @@ def _parse_pnputil_csv_output(output: str) -> list[dict[str, object]]:
         normalized_row = _normalize_pnputil_row(raw_row)
         if normalized_row is not None:
             rows.append(normalized_row)
+    return rows
+
+
+def _run_pnputil_xml(
+    args: list[str], *, timeout_sec: int
+) -> list[dict[str, object]] | None:
+    completed = _run_process(args, timeout_sec=timeout_sec)
+    if completed is None:
+        return None
+    if completed.returncode != 0:
+        return None
+    output = _decode_process_bytes(completed.stdout)
+    try:
+        return _parse_pnputil_xml_output(output)
+    except Exception as exc:  # noqa: BLE001
+        _LOGGER.warning("failed to parse pnputil XML output: %s", exc)
+        return None
+
+
+def _parse_pnputil_xml_output(output: str) -> list[dict[str, object]]:
+    payload = (output or "").strip()
+    if not payload:
+        return []
+
+    root = ET.fromstring(payload.lstrip("\ufeff"))
+    rows: list[dict[str, object]] = []
+    for device_node in root.findall(".//Device"):
+        instance_id = str(device_node.get("InstanceId") or "").strip()
+        if not instance_id:
+            continue
+        status = _normalize_pnputil_status(str(device_node.findtext("Status") or ""))
+        rows.append(
+            {
+                "Status": status,
+                "Class": str(device_node.findtext("ClassName") or "").strip(),
+                "FriendlyName": str(device_node.findtext("DeviceDescription") or "").strip(),
+                "InstanceId": instance_id,
+                "Present": _pnputil_status_is_present(status),
+            }
+        )
+    return rows
+
+
+_PNPUTIL_TEXT_KEYS = {
+    # English (current pnputil output on en-US builds).
+    "instance id": "instance_id",
+    "device description": "friendly_name",
+    "class name": "class_name",
+    "status": "status",
+    # Chinese (common translations; keep best-effort to support zh-CN builds).
+    "实例 id": "instance_id",
+    "实例id": "instance_id",
+    "设备说明": "friendly_name",
+    "设备描述": "friendly_name",
+    "类名": "class_name",
+    "状态": "status",
+}
+
+
+def _run_pnputil_text(
+    args: list[str], *, timeout_sec: int
+) -> list[dict[str, object]] | None:
+    completed = _run_process(args, timeout_sec=timeout_sec)
+    if completed is None:
+        return None
+    if completed.returncode != 0:
+        return None
+    output = _decode_process_bytes(completed.stdout)
+    try:
+        return _parse_pnputil_text_output(output)
+    except Exception as exc:  # noqa: BLE001
+        _LOGGER.warning("failed to parse pnputil text output: %s", exc)
+        return None
+
+
+def _parse_pnputil_text_output(output: str) -> list[dict[str, object]]:
+    payload = (output or "").replace("\r\n", "\n").strip()
+    if not payload:
+        return []
+
+    blocks = re.split(r"\n\s*\n+", payload)
+    rows: list[dict[str, object]] = []
+    for block in blocks:
+        instance_id = ""
+        friendly_name = ""
+        class_name = ""
+        status = ""
+        for line in block.splitlines():
+            match = re.match(r"^\s*([^:：]+?)\s*[:：]\s*(.*?)\s*$", line)
+            if not match:
+                continue
+            raw_key = re.sub(r"\s+", " ", match.group(1).strip().lower())
+            value = match.group(2).strip()
+            canonical = _PNPUTIL_TEXT_KEYS.get(raw_key)
+            if canonical == "instance_id":
+                instance_id = value
+            elif canonical == "friendly_name":
+                friendly_name = value
+            elif canonical == "class_name":
+                class_name = value
+            elif canonical == "status":
+                status = value
+
+        instance_id = instance_id.strip()
+        if not instance_id:
+            continue
+
+        normalized_status = _normalize_pnputil_status(status)
+        rows.append(
+            {
+                "Status": normalized_status,
+                "Class": (class_name or "").strip(),
+                "FriendlyName": (friendly_name or "").strip(),
+                "InstanceId": instance_id,
+                "Present": _pnputil_status_is_present(normalized_status),
+            }
+        )
     return rows
 
 
@@ -659,11 +824,14 @@ def _run_process(args: list[str], *, timeout_sec: int) -> subprocess.CompletedPr
         return None
     stderr = _decode_process_bytes(completed.stderr)
     if completed.returncode != 0:
+        stdout = _decode_process_bytes(completed.stdout)
+        detail = (stderr or "").strip() or (stdout or "").strip()
+        detail = detail[:300] if detail else ""
         _LOGGER.warning(
             "command failed (%s) %s: %s",
             completed.returncode,
             args[0],
-            (stderr or "").strip(),
+            detail,
         )
     return completed
 
