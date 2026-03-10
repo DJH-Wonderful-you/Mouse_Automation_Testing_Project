@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import unittest
 
-from src.core.relay_lcus88 import build_switch_command, parse_relay_status
+from src.core.relay_lcus88 import LCUSRelay, build_switch_command, parse_relay_status
 
 
 class TestRelayProtocol(unittest.TestCase):
@@ -31,6 +31,21 @@ class TestRelayProtocol(unittest.TestCase):
         self.assertTrue(states[3])
         self.assertTrue(states[8])
         self.assertFalse(states[2])
+
+    def test_query_channel_state_fallback_to_cache(self) -> None:
+        class _CachedOnlyRelay(LCUSRelay):
+            @property
+            def is_connected(self) -> bool:  # type: ignore[override]
+                return True
+
+            def query_status(self) -> dict[int, bool]:
+                raise RuntimeError("query not supported")
+
+        relay = _CachedOnlyRelay()
+        relay._cached_states[1] = True
+        self.assertTrue(relay.query_channel_state(1))
+        with self.assertRaises(RuntimeError):
+            relay.query_channel_state(2)
 
 
 if __name__ == "__main__":

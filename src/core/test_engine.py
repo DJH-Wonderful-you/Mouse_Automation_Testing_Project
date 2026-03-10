@@ -66,6 +66,7 @@ class PowerCycleRunner:
         self._progress_cb = progress_cb
         self._cycle_cb = cycle_cb
         self._stop_flag = threading.Event()
+        self._skip_relay_state_query = False
 
     def stop(self) -> None:
         self._stop_flag.set()
@@ -119,14 +120,26 @@ class PowerCycleRunner:
         channel = self._settings.relay_channel
         threshold = self._settings.voltage_threshold_v
 
-        try:
-            current_state = self._relay.query_channel_state(channel)
-        except Exception as exc:
-            raise NonRecoverableError(f"读取继电器状态失败: {exc}") from exc
+        current_state: bool | None = None
+        if not self._skip_relay_state_query:
+            try:
+                current_state = self._relay.query_channel_state(channel)
+            except Exception as exc:
+                self._skip_relay_state_query = True
+                self._log(
+                    "WARNING",
+                    f"[第{index}轮] 读取继电器通道{channel}状态失败，将跳过状态查询并直接下发断电命令: {exc}",
+                )
 
-        self._log("INFO", f"[第{index}轮] 当前继电器通道{channel}状态: {'开' if current_state else '关'}")
+        if current_state is None:
+            self._log("INFO", f"[第{index}轮] 当前继电器通道{channel}状态: 未知")
+        else:
+            self._log(
+                "INFO",
+                f"[第{index}轮] 当前继电器通道{channel}状态: {'开' if current_state else '关'}",
+            )
 
-        if current_state:
+        if current_state is None or current_state:
             self._set_power(channel, False, "执行断电准备")
             self._controlled_sleep(0.1)
 
