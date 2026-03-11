@@ -8,6 +8,7 @@ from src.core.bluetooth_probe import (
     BluetoothDeviceInfo,
     _BluetoothInventory,
     _collect_audio_endpoints,
+    _collect_ble_hid_service_instance_ids_by_signature,
     _collect_hid_instance_ids_by_signature,
     _extract_ble_hid_service_link,
     _extract_hid_signature,
@@ -63,6 +64,24 @@ class TestBluetoothMatcher(unittest.TestCase):
             },
         )
 
+    def test_collect_ble_hid_service_instance_ids_by_signature(self) -> None:
+        rows = [
+            {
+                "InstanceId": (
+                    "BTHLEDEVICE\\{00001812-0000-1000-8000-00805F9B34FB}_"
+                    "DEV_VID&02248A_PID&8266_REV&0001_D10212037BB6\\8&E965289&0&0017"
+                )
+            }
+        ]
+        self.assertEqual(
+            _collect_ble_hid_service_instance_ids_by_signature(rows),
+            {
+                "VID&02248A_PID&8266_REV&0001": {
+                    rows[0]["InstanceId"],
+                }
+            },
+        )
+
     def test_normalize_mac(self) -> None:
         self.assertEqual(normalize_mac("aa-bb-cc-11-22-33"), "AA:BB:CC:11:22:33")
         self.assertEqual(normalize_mac("AABBCC112233"), "AA:BB:CC:11:22:33")
@@ -112,6 +131,8 @@ class TestBluetoothMatcher(unittest.TestCase):
             mac_to_hid_signature={"D5E715414CA8": "VID&02046D_PID&B02C_REV&0014"},
             hid_signatures={"VID&02046D_PID&B02C_REV&0014"},
             hid_connected_signatures={"VID&02046D_PID&B02C_REV&0014"},
+            hid_service_signatures={"VID&02046D_PID&B02C_REV&0014"},
+            hid_service_connected_signatures=set(),
             audio_endpoints=[],
         )
         self.assertTrue(hint)
@@ -123,6 +144,8 @@ class TestBluetoothMatcher(unittest.TestCase):
             mac_to_hid_signature={"D5E715414CA8": "VID&02046D_PID&B02C_REV&0014"},
             hid_signatures={"VID&02046D_PID&B02C_REV&0014"},
             hid_connected_signatures=set(),
+            hid_service_signatures={"VID&02046D_PID&B02C_REV&0014"},
+            hid_service_connected_signatures={"VID&02046D_PID&B02C_REV&0014"},
             audio_endpoints=[],
         )
         self.assertFalse(hint2)
@@ -136,6 +159,23 @@ class TestBluetoothMatcher(unittest.TestCase):
             mac_to_hid_signature={"D5E715414CA8": "VID&02046D_PID&B02C_REV&0014"},
             hid_signatures=set(),
             hid_connected_signatures=set(),
+            hid_service_signatures=set(),
+            hid_service_connected_signatures=set(),
+            audio_endpoints=[],
+        )
+        self.assertTrue(hint)
+
+    def test_resolve_connected_hint_uses_ble_hid_service_state_without_hid_node(self) -> None:
+        hint = _resolve_connected_hint(
+            name="LOWA Mouse",
+            status="Disconnected",
+            present=False,
+            mac="D1:02:12:03:7B:B6",
+            mac_to_hid_signature={"D10212037BB6": "VID&02248A_PID&8266_REV&0001"},
+            hid_signatures=set(),
+            hid_connected_signatures=set(),
+            hid_service_signatures={"VID&02248A_PID&8266_REV&0001"},
+            hid_service_connected_signatures={"VID&02248A_PID&8266_REV&0001"},
             audio_endpoints=[],
         )
         self.assertTrue(hint)
@@ -149,7 +189,9 @@ class TestBluetoothMatcher(unittest.TestCase):
             mac_to_hid_signature={"D5E715414CA8": "VID&02046D_PID&B02C_REV&0014"},
             hid_signatures={"VID&02046D_PID&B02C_REV&0014"},
             hid_connected_signatures=set(),
-            audio_endpoints=[("耳机 (logi m750)", True)],
+            hid_service_signatures={"VID&02046D_PID&B02C_REV&0014"},
+            hid_service_connected_signatures={"VID&02046D_PID&B02C_REV&0014"},
+            audio_endpoints=[("headphone (logi m750)", True)],
         )
         self.assertFalse(hint)
 
@@ -158,32 +200,35 @@ class TestBluetoothMatcher(unittest.TestCase):
             {
                 "Class": "AudioEndpoint",
                 "InstanceId": "SWD\\MMDEVAPI\\{x}",
-                "FriendlyName": "耳机 (HUAWEI FreeBuds 5i)",
+                "FriendlyName": "Headphones (HUAWEI FreeBuds 5i)",
                 "Status": "Unknown",
                 "Present": False,
             },
             {
                 "Class": "AudioEndpoint",
                 "InstanceId": "SWD\\MMDEVAPI\\{y}",
-                "FriendlyName": "耳机 (HUAWEI FreeBuds 5i)",
+                "FriendlyName": "Headphones (HUAWEI FreeBuds 5i)",
                 "Status": "OK",
                 "Present": True,
             },
         ]
         self.assertEqual(
             _collect_audio_endpoints(rows),
-            [("耳机 (huawei freebuds 5i)", False), ("耳机 (huawei freebuds 5i)", True)],
+            [
+                ("headphones (huawei freebuds 5i)", False),
+                ("headphones (huawei freebuds 5i)", True),
+            ],
         )
 
     def test_resolve_audio_endpoint_hint(self) -> None:
         endpoints = [
-            ("耳机 (huawei freebuds 5i)", False),
-            ("耳机 (huawei freebuds 5i hands-free)", False),
+            ("headphones (huawei freebuds 5i)", False),
+            ("headphones (huawei freebuds 5i hands-free)", False),
         ]
         self.assertFalse(_resolve_audio_endpoint_hint("HUAWEI FreeBuds 5i", endpoints))
         endpoints2 = [
-            ("耳机 (huawei freebuds 5i)", False),
-            ("扬声器 (huawei freebuds 5i)", True),
+            ("headphones (huawei freebuds 5i)", False),
+            ("speaker (huawei freebuds 5i)", True),
         ]
         self.assertTrue(_resolve_audio_endpoint_hint("HUAWEI FreeBuds 5i", endpoints2))
 
@@ -292,6 +337,66 @@ class TestBluetoothMatcher(unittest.TestCase):
         ):
             connected_first, matched_first = probe.is_target_connected("logi", "", "name_or_mac")
             connected_second, matched_second = probe.is_target_connected("logi", "", "name_or_mac")
+
+        self.assertFalse(connected_first)
+        self.assertFalse(matched_first[0].connected)
+        self.assertTrue(connected_second)
+        self.assertTrue(matched_second[0].connected)
+        self.assertEqual(mock_query.call_count, 1)
+
+    def test_bluetooth_probe_uses_ble_hid_service_watcher_when_hid_node_missing(self) -> None:
+        device = BluetoothDeviceInfo(
+            name="LOWA Mouse",
+            instance_id="BTHLE\\DEV_D10212037BB6\\7&1679758C&0&D10212037BB6",
+            status="Disconnected",
+            class_name="Bluetooth",
+            present=False,
+            mac="D1:02:12:03:7B:B6",
+            connected=False,
+        )
+        service_instance_id = (
+            "BTHLEDEVICE\\{00001812-0000-1000-8000-00805F9B34FB}_"
+            "DEV_VID&02248A_PID&8266_REV&0001_D10212037BB6\\8&E965289&0&0017"
+        )
+        rows = [
+            {
+                "InstanceId": device.instance_id,
+                "FriendlyName": device.name,
+                "Class": "Bluetooth",
+                "Status": "Disconnected",
+                "Present": False,
+            },
+            {
+                "InstanceId": service_instance_id,
+                "FriendlyName": "Bluetooth Low Energy GATT compliant HID device",
+                "Class": "HIDClass",
+                "Status": "Disconnected",
+                "Present": False,
+            },
+        ]
+        inventory = _BluetoothInventory(rows=rows, devices=[device], created_at=0.0)
+        probe = BluetoothProbe(inventory_cache_ttl_sec=60.0, target_cache_ttl_sec=60.0)
+
+        def _fake_run_pnputil_rows(args: list[str], *, timeout_sec: int) -> list[dict[str, object]]:
+            self.assertIn("/instanceid", args)
+            instance_id = args[args.index("/instanceid") + 1]
+            self.assertEqual(instance_id, service_instance_id)
+            return [
+                {
+                    "InstanceId": instance_id,
+                    "FriendlyName": "Bluetooth Low Energy GATT compliant HID device",
+                    "Class": "HIDClass",
+                    "Status": "OK",
+                    "Present": True,
+                }
+            ]
+
+        with (
+            patch("src.core.bluetooth_probe._query_bluetooth_inventory", return_value=inventory) as mock_query,
+            patch("src.core.bluetooth_probe._run_pnputil_rows", side_effect=_fake_run_pnputil_rows),
+        ):
+            connected_first, matched_first = probe.is_target_connected("lowa", "", "name_or_mac")
+            connected_second, matched_second = probe.is_target_connected("lowa", "", "name_or_mac")
 
         self.assertFalse(connected_first)
         self.assertFalse(matched_first[0].connected)

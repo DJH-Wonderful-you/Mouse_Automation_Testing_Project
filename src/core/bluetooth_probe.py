@@ -532,6 +532,8 @@ def _build_devices_from_rows(rows: list[dict[str, object]]) -> list[BluetoothDev
     mac_to_hid_signature = _build_ble_hid_service_links(rows)
     hid_signatures = _collect_hid_signatures(rows)
     hid_connected_signatures = _collect_connected_hid_signatures(rows)
+    hid_service_signatures = _collect_ble_hid_service_signatures(rows)
+    hid_service_connected_signatures = _collect_connected_ble_hid_service_signatures(rows)
     audio_endpoints = _collect_audio_endpoints(rows)
     devices: list[BluetoothDeviceInfo] = []
     for row in rows:
@@ -554,6 +556,8 @@ def _build_devices_from_rows(rows: list[dict[str, object]]) -> list[BluetoothDev
             mac_to_hid_signature=mac_to_hid_signature,
             hid_signatures=hid_signatures,
             hid_connected_signatures=hid_connected_signatures,
+            hid_service_signatures=hid_service_signatures,
+            hid_service_connected_signatures=hid_service_connected_signatures,
             audio_endpoints=audio_endpoints,
         )
         if not _looks_like_mouse_related(name, class_name, instance_id):
@@ -602,6 +606,35 @@ def _collect_connected_hid_signatures(rows: list[object]) -> set[str]:
     return connected_signatures
 
 
+def _collect_ble_hid_service_signatures(rows: list[object]) -> set[str]:
+    signatures: set[str] = set()
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        instance_id = str(row.get("InstanceId") or "")
+        parsed = _extract_ble_hid_service_link(instance_id)
+        if not parsed:
+            continue
+        signature, _ = parsed
+        signatures.add(signature)
+    return signatures
+
+
+def _collect_connected_ble_hid_service_signatures(rows: list[object]) -> set[str]:
+    connected_signatures: set[str] = set()
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        instance_id = str(row.get("InstanceId") or "")
+        parsed = _extract_ble_hid_service_link(instance_id)
+        if not parsed:
+            continue
+        signature, _ = parsed
+        if _row_indicates_connected(row):
+            connected_signatures.add(signature)
+    return connected_signatures
+
+
 def _collect_hid_signatures(rows: list[object]) -> set[str]:
     signatures: set[str] = set()
     for row in rows:
@@ -623,6 +656,20 @@ def _collect_hid_instance_ids_by_signature(rows: list[object]) -> dict[str, set[
         signature = _extract_hid_signature(instance_id)
         if not signature:
             continue
+        instance_ids_by_signature.setdefault(signature, set()).add(instance_id)
+    return instance_ids_by_signature
+
+
+def _collect_ble_hid_service_instance_ids_by_signature(rows: list[object]) -> dict[str, set[str]]:
+    instance_ids_by_signature: dict[str, set[str]] = {}
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        instance_id = str(row.get("InstanceId") or "")
+        parsed = _extract_ble_hid_service_link(instance_id)
+        if not parsed:
+            continue
+        signature, _ = parsed
         instance_ids_by_signature.setdefault(signature, set()).add(instance_id)
     return instance_ids_by_signature
 
@@ -652,6 +699,7 @@ def _build_tracked_devices(
 ) -> list[_TrackedDevice]:
     mac_to_hid_signature = _build_ble_hid_service_links(rows)
     hid_instance_ids_by_signature = _collect_hid_instance_ids_by_signature(rows)
+    hid_service_instance_ids_by_signature = _collect_ble_hid_service_instance_ids_by_signature(rows)
     tracked_devices: list[_TrackedDevice] = []
     for device in matched_devices:
         watcher_ids: list[str] = []
@@ -663,6 +711,8 @@ def _build_tracked_devices(
             if hid_instance_ids:
                 watcher_ids.extend(hid_instance_ids)
                 prefer_hid_watchers = True
+            elif hid_service_instance_ids_by_signature.get(signature):
+                watcher_ids.extend(sorted(hid_service_instance_ids_by_signature[signature]))
         if not watcher_ids and device.instance_id:
             watcher_ids.append(device.instance_id)
         tracked_devices.append(
@@ -714,12 +764,16 @@ def _resolve_connected_hint(
     mac_to_hid_signature: dict[str, str],
     hid_signatures: set[str],
     hid_connected_signatures: set[str],
+    hid_service_signatures: set[str],
+    hid_service_connected_signatures: set[str],
     audio_endpoints: list[tuple[str, bool]],
 ) -> bool | None:
     mac_key = normalize_mac(mac).replace(":", "")
     signature = mac_to_hid_signature.get(mac_key)
     if signature and signature in hid_signatures:
         return signature in hid_connected_signatures
+    if signature and signature in hid_service_signatures:
+        return signature in hid_service_connected_signatures
     audio_hint = _resolve_audio_endpoint_hint(name, audio_endpoints)
     if audio_hint is not None:
         return audio_hint

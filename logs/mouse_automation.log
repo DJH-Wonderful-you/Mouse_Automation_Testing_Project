@@ -1694,3 +1694,21 @@
 2026-03-11 22:16:43,575 [INFO] ui.power_cycle - 测试结束：成功 3，失败 0，成功率 100.00%
 2026-03-11 22:16:43,575 [INFO] ui.power_cycle - 测试完成。成功 3，失败 0，成功率 100.00%
 2026-03-11 22:16:55,687 [INFO] ui.power_cycle - 配置已保存。
+2026-03-11 23:10:23,683 [INFO] ui.power_cycle - 仿真设置更新：万用表=开, 继电器=关, 蓝牙=关
+2026-03-11 23:10:23,704 [INFO] ui.power_cycle - 串口刷新完成，共发现 2 个端口。
+2026-03-11 23:10:28,295 [INFO] ui.power_cycle - 仿真设置更新：万用表=开, 继电器=开, 蓝牙=关
+2026-03-11 23:10:30,609 [INFO] ui.power_cycle - 检测到 5 个蓝牙相关设备（来源: 真实已配对蓝牙）：
+2026-03-11 23:10:30,611 [INFO] ui.power_cycle -   - 名称=Logi M750 | 状态=OK | MAC=D5:E7:15:41:4C:B0 | Class=Bluetooth | ID=BTHLE\Dev_d5e715414cb0\7&1679758c&0&d5e715414cb0
+2026-03-11 23:10:30,612 [INFO] ui.power_cycle -   - 名称=SUNWINON Mouse MOCO | 状态=OK | MAC=D1:02:12:03:7B:B6 | Class=Bluetooth | ID=BTHLE\Dev_d10212037bb6\7&1679758c&0&d10212037bb6
+2026-03-11 23:10:30,613 [INFO] ui.power_cycle -   - 名称=LOWA Mouse | 状态=OK | MAC=F0:61:EE:A2:D5:A0 | Class=Bluetooth | ID=BTHLE\Dev_f061eea2d5a0\7&1679758c&0&f061eea2d5a0
+2026-03-11 23:10:30,614 [INFO] ui.power_cycle -   - 名称=TONEMAC HS1 | 状态=OK | MAC=F4:4E:FE:00:11:4C | Class=Bluetooth | ID=BTHENUM\Dev_F44EFE00114C\7&3b5ef62b&1&BluetoothDevice_F44EFE00114C
+2026-03-11 23:10:30,614 [INFO] ui.power_cycle -   - 名称=HUAWEI FreeBuds 5i | 状态=OK | MAC=14:51:20:FF:A1:14 | Class=Bluetooth | ID=BTHENUM\Dev_145120FFA114\7&3b5ef62b&1&BluetoothDevice_145120FFA114
+2026-03-11 23:10:31,811 [INFO] ui.power_cycle - 手动检查蓝牙连接状态（来源: 真实已配对蓝牙 | 模式: 名称或MAC | 条件: 名称关键字=Logi M750, MAC=D5:E7:15:41:4C:B0）
+2026-03-11 23:10:32,002 [INFO] ui.power_cycle - 匹配到 1 个设备：
+2026-03-11 23:10:32,004 [INFO] ui.power_cycle -   - 名称=Logi M750 | 状态=OK | MAC=D5:E7:15:41:4C:B0 | Class=Bluetooth | ID=BTHLE\Dev_d5e715414cb0\7&1679758c&0&d5e715414cb0 | 判定=未连接
+2026-03-11 23:10:32,005 [WARNING] ui.power_cycle - 手动检查结果：未连接
+2026-03-11 23:10:38,240 [INFO] ui.power_cycle - 手动检查蓝牙连接状态（来源: 真实已配对蓝牙 | 模式: 名称或MAC | 条件: 名称关键字=Logi M750, MAC=D5:E7:15:41:4C:B0）
+2026-03-11 23:10:38,283 [INFO] ui.power_cycle - 匹配到 1 个设备：
+2026-03-11 23:10:38,284 [INFO] ui.power_cycle -   - 名称=Logi M750 | 状态=OK | MAC=D5:E7:15:41:4C:B0 | Class=Bluetooth | ID=BTHLE\Dev_d5e715414cb0\7&1679758c&0&d5e715414cb0 | 判定=已连接
+2026-03-11 23:10:38,285 [INFO] ui.power_cycle - 手动检查结果：已连接
+2026-03-11 23:10:41,177 [INFO] ui.power_cycle - 配置已保存。
