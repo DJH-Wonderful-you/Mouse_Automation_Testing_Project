@@ -492,8 +492,17 @@ def _normalize_pnputil_row(raw_row: dict[str, str | None]) -> dict[str, object] 
 
 def _normalize_pnputil_status(status: str) -> str:
     normalized = (status or "").strip()
-    if normalized.upper() == "STARTED":
+    upper = normalized.upper()
+    if upper in {"STARTED", _PNPUTIL_STATUS_OK}:
         return _PNPUTIL_STATUS_OK
+    if normalized in {"已启动", "已啟動"}:
+        return _PNPUTIL_STATUS_OK
+    if upper == "DISCONNECTED" or "断开" in normalized or "斷開" in normalized or normalized == "未连接":
+        return "DISCONNECTED"
+    if upper == "UNKNOWN" or normalized == "未知":
+        return "UNKNOWN"
+    if upper == "NOT PRESENT" or normalized in {"不存在", "未呈现", "未顯示"}:
+        return "NOT PRESENT"
     return normalized
 
 
@@ -525,7 +534,14 @@ def _query_bluetooth_rows_via_powershell() -> list[dict[str, object]]:
         return []
 
     rows = data if isinstance(data, list) else [data]
-    return [row for row in rows if isinstance(row, dict)]
+    normalized_rows: list[dict[str, object]] = []
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        normalized_row = dict(row)
+        normalized_row["Status"] = _normalize_pnputil_status(str(row.get("Status") or ""))
+        normalized_rows.append(normalized_row)
+    return normalized_rows
 
 
 def _build_devices_from_rows(rows: list[dict[str, object]]) -> list[BluetoothDeviceInfo]:

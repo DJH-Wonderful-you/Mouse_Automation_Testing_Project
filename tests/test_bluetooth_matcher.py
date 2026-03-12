@@ -13,6 +13,7 @@ from src.core.bluetooth_probe import (
     _extract_ble_hid_service_link,
     _extract_hid_signature,
     _parse_pnputil_csv_output,
+    _parse_pnputil_text_output,
     _resolve_audio_endpoint_hint,
     _resolve_connected_hint,
     extract_mac,
@@ -36,7 +37,30 @@ class TestBluetoothMatcher(unittest.TestCase):
         self.assertEqual(len(rows), 2)
         self.assertEqual(rows[0]["Status"], "OK")
         self.assertTrue(rows[0]["Present"])
-        self.assertEqual(rows[1]["Status"], "Disconnected")
+        self.assertEqual(rows[1]["Status"], "DISCONNECTED")
+        self.assertFalse(rows[1]["Present"])
+
+    def test_parse_pnputil_text_output_with_chinese_status(self) -> None:
+        output = "\n".join(
+            [
+                "Microsoft PnP 工具",
+                "",
+                "实例 ID:                BTHLE\\Dev_f061eeaad5a0\\7&704b9f6&0&f061eeaad5a0",
+                "设备描述:         LOWA Mouse",
+                "类名:                 Bluetooth",
+                "状态:                     已启动",
+                "",
+                "实例 ID:                HID\\{00001812-0000-1000-8000-00805f9b34fb}_Dev_VID&01248a_PID&5865_REV&1023_f061eeaad5a0&Col03\\9&2cc36641&0&0002",
+                "设备描述:         符合 HID 标准的用户控制设备",
+                "类名:                 HIDClass",
+                "状态:                     已断开连接",
+            ]
+        )
+        rows = _parse_pnputil_text_output(output)
+        self.assertEqual(len(rows), 2)
+        self.assertEqual(rows[0]["Status"], "OK")
+        self.assertTrue(rows[0]["Present"])
+        self.assertEqual(rows[1]["Status"], "DISCONNECTED")
         self.assertFalse(rows[1]["Present"])
 
     def test_collect_hid_instance_ids_by_signature(self) -> None:
