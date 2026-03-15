@@ -1729,3 +1729,38 @@
 2026-03-12 23:57:38,452 [INFO] ui.power_cycle -   - 名称=Logi M750 | 状态=OK | MAC=D5:E7:15:41:4C:B0 | Class=Bluetooth | ID=BTHLE\Dev_d5e715414cb0\7&1679758c&0&d5e715414cb0 | 判定=已连接
 2026-03-12 23:57:38,452 [INFO] ui.power_cycle - 手动检查结果：已连接
 2026-03-12 23:57:40,859 [INFO] ui.power_cycle - 配置已保存。
+2026-03-15 11:21:38,362 [INFO] ui.power_cycle - 仿真设置更新：万用表=开, 继电器=开, 蓝牙=关
+2026-03-15 11:21:38,392 [INFO] ui.power_cycle - 串口刷新完成，共发现 2 个端口。
+2026-03-15 12:36:12,985 [INFO] ui.power_cycle - 配置已保存。
+2026-03-15 12:36:23,365 [INFO] ui.power_cycle - 仿真设置更新：万用表=开, 继电器=开, 蓝牙=关
+2026-03-15 12:36:23,376 [INFO] ui.power_cycle - 串口刷新完成，共发现 2 个端口。
+2026-03-15 12:36:27,602 [INFO] ui.power_cycle - Multimeter data (simulated multimeter): 0.200 V
+2026-03-15 12:36:40,546 [INFO] ui.power_cycle - Detecting bluetooth devices (paired bluetooth)...
+2026-03-15 12:36:40,749 [INFO] ui.power_cycle - Detected 5 bluetooth-related devices (source: paired bluetooth):
+2026-03-15 12:36:40,751 [INFO] ui.power_cycle -   - 名称=Logi M750 | 状态=OK | MAC=D5:E7:15:41:4C:B0 | Class=Bluetooth | ID=BTHLE\Dev_d5e715414cb0\7&1679758c&0&d5e715414cb0
+2026-03-15 12:36:40,752 [INFO] ui.power_cycle -   - 名称=SUNWINON Mouse MOCO | 状态=OK | MAC=D1:02:12:03:7B:B6 | Class=Bluetooth | ID=BTHLE\Dev_d10212037bb6\7&1679758c&0&d10212037bb6
+2026-03-15 12:36:40,752 [INFO] ui.power_cycle -   - 名称=LOWA Mouse | 状态=OK | MAC=F0:61:EE:A2:D5:A0 | Class=Bluetooth | ID=BTHLE\Dev_f061eea2d5a0\7&1679758c&0&f061eea2d5a0
+2026-03-15 12:36:40,754 [INFO] ui.power_cycle -   - 名称=TONEMAC HS1 | 状态=OK | MAC=F4:4E:FE:00:11:4C | Class=Bluetooth | ID=BTHENUM\Dev_F44EFE00114C\7&3b5ef62b&1&BluetoothDevice_F44EFE00114C
+2026-03-15 12:36:40,755 [INFO] ui.power_cycle -   - 名称=HUAWEI FreeBuds 5i | 状态=OK | MAC=14:51:20:FF:A1:14 | Class=Bluetooth | ID=BTHENUM\Dev_145120FFA114\7&3b5ef62b&1&BluetoothDevice_145120FFA114
+2026-03-15 12:36:44,715 [INFO] ui.power_cycle - Checking bluetooth connection (paired bluetooth | mode: name_or_mac | criteria: name=Logi M750, mac=D5:E7:15:41:4C:B0)...
+2026-03-15 12:36:44,907 [INFO] ui.power_cycle - Matched 1 device(s):
+2026-03-15 12:36:44,910 [INFO] ui.power_cycle -   - 名称=Logi M750 | 状态=OK | MAC=D5:E7:15:41:4C:B0 | Class=Bluetooth | ID=BTHLE\Dev_d5e715414cb0\7&1679758c&0&d5e715414cb0 | status=disconnected
+2026-03-15 12:36:44,911 [WARNING] ui.power_cycle - Bluetooth check result: disconnected
+2026-03-15 12:36:48,531 [INFO] ui.power_cycle - Checking bluetooth connection (paired bluetooth | mode: name_or_mac | criteria: name=Logi M750, mac=D5:E7:15:41:4C:B0)...
+2026-03-15 12:36:48,575 [INFO] ui.power_cycle - Matched 1 device(s):
+2026-03-15 12:36:48,577 [INFO] ui.power_cycle -   - 名称=Logi M750 | 状态=OK | MAC=D5:E7:15:41:4C:B0 | Class=Bluetooth | ID=BTHLE\Dev_d5e715414cb0\7&1679758c&0&d5e715414cb0 | status=disconnected
+2026-03-15 12:36:48,579 [WARNING] ui.power_cycle - Bluetooth check result: disconnected
+2026-03-15 12:36:48,999 [INFO] ui.power_cycle - Checking bluetooth connection (paired bluetooth | mode: name_or_mac | criteria: name=Logi M750, mac=D5:E7:15:41:4C:B0)...
+2026-03-15 12:36:49,044 [INFO] ui.power_cycle - Matched 1 device(s):
+2026-03-15 12:36:49,045 [INFO] ui.power_cycle -   - 名称=Logi M750 | 状态=OK | MAC=D5:E7:15:41:4C:B0 | Class=Bluetooth | ID=BTHLE\Dev_d5e715414cb0\7&1679758c&0&d5e715414cb0 | status=disconnected
+2026-03-15 12:36:49,046 [WARNING] ui.power_cycle - Bluetooth check result: disconnected
+2026-03-15 12:37:28,382 [INFO] ui.power_cycle - 配置已保存。
+2026-03-15 12:38:45,563 [INFO] ui.power_cycle - 仿真设置更新：万用表=开, 继电器=开, 蓝牙=关
+2026-03-15 12:38:45,574 [INFO] ui.power_cycle - 串口刷新完成，共发现 2 个端口。
+2026-03-15 12:38:52,888 [INFO] ui.power_cycle - Detecting bluetooth devices (paired bluetooth)...
+2026-03-15 12:38:53,091 [INFO] ui.power_cycle - Detected 5 bluetooth-related devices (source: paired bluetooth):
+2026-03-15 12:38:53,093 [INFO] ui.power_cycle -   - 名称=Logi M750 | 状态=OK | MAC=D5:E7:15:41:4C:B0 | Class=Bluetooth | ID=BTHLE\Dev_d5e715414cb0\7&1679758c&0&d5e715414cb0
+2026-03-15 12:38:53,094 [INFO] ui.power_cycle -   - 名称=SUNWINON Mouse MOCO | 状态=OK | MAC=D1:02:12:03:7B:B6 | Class=Bluetooth | ID=BTHLE\Dev_d10212037bb6\7&1679758c&0&d10212037bb6
+2026-03-15 12:38:53,095 [INFO] ui.power_cycle -   - 名称=LOWA Mouse | 状态=OK | MAC=F0:61:EE:A2:D5:A0 | Class=Bluetooth | ID=BTHLE\Dev_f061eea2d5a0\7&1679758c&0&f061eea2d5a0
+2026-03-15 12:38:53,096 [INFO] ui.power_cycle -   - 名称=TONEMAC HS1 | 状态=OK | MAC=F4:4E:FE:00:11:4C | Class=Bluetooth | ID=BTHENUM\Dev_F44EFE00114C\7&3b5ef62b&1&BluetoothDevice_F44EFE00114C
+2026-03-15 12:38:53,096 [INFO] ui.power_cycle -   - 名称=HUAWEI FreeBuds 5i | 状态=OK | MAC=14:51:20:FF:A1:14 | Class=Bluetooth | ID=BTHENUM\Dev_145120FFA114\7&3b5ef62b&1&BluetoothDevice_145120FFA114

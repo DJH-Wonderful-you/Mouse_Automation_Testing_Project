@@ -1,10 +1,12 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
 from html import escape
 import logging
 from datetime import datetime
+from typing import Callable
 
-from PySide6.QtCore import QThread, Qt, Slot
+from PySide6.QtCore import QObject, QThread, Qt, Signal, Slot
 from PySide6.QtWidgets import (
     QCheckBox,
     QComboBox,
@@ -26,7 +28,7 @@ from PySide6.QtWidgets import (
     QDoubleSpinBox,
 )
 
-from src.core.bluetooth_probe import BluetoothProbe, normalize_mac
+from src.core.bluetooth_probe import BluetoothDeviceInfo, BluetoothProbe, normalize_mac
 from src.core.config_store import ConfigStore
 from src.core.multimeter_victor86e import Victor86EMultimeter
 from src.core.relay_lcus88 import LCUSRelay
@@ -51,6 +53,40 @@ class NoWheelDoubleSpinBox(QDoubleSpinBox):
 class NoWheelComboBox(QComboBox):
     def wheelEvent(self, event) -> None:  # noqa: N802
         event.ignore()
+
+
+@dataclass(slots=True)
+class _BluetoothDetectResult:
+    source: str
+    devices: list[BluetoothDeviceInfo]
+
+
+@dataclass(slots=True)
+class _BluetoothCheckResult:
+    source: str
+    mode_text: str
+    criteria: list[str]
+    connected: bool
+    matched: list[BluetoothDeviceInfo]
+
+
+class _AsyncTaskWorker(QObject):
+    sig_success = Signal(object)
+    sig_error = Signal(str)
+    sig_finished = Signal()
+
+    def __init__(self, task: Callable[[], object]) -> None:
+        super().__init__()
+        self._task = task
+
+    @Slot()
+    def run(self) -> None:
+        try:
+            self.sig_success.emit(self._task())
+        except Exception as exc:  # noqa: BLE001
+            self.sig_error.emit(str(exc))
+        finally:
+            self.sig_finished.emit()
 
 
 class PowerCycleTab(QWidget):
@@ -78,6 +114,11 @@ class PowerCycleTab(QWidget):
         self._bt_name_before_sim = ""
         self._bt_mac_before_sim = ""
         self._suspend_auto_save = True
+        self._bt_task_running = False
+        self._bt_task_name = ""
+        self._bt_task_thread: QThread | None = None
+        self._bt_task_worker: _AsyncTaskWorker | None = None
+        self._bt_task_success_handler: Callable[[object], None] | None = None
 
         self._build_ui()
         self._bind_auto_save_signals()
@@ -152,15 +193,19 @@ class PowerCycleTab(QWidget):
         self.input_test_count.setRange(1, 1_000_000)
         self.input_test_count.setValue(100)
 
-        self.input_state_timeout = NoWheelSpinBox()
-        self.input_state_timeout.setRange(500, 120_000)
-        self.input_state_timeout.setSuffix(" ms")
-        self.input_state_timeout.setValue(5000)
+        self.input_state_timeout = NoWheelDoubleSpinBox()
+        self.input_state_timeout.setRange(0.5, 120.0)
+        self.input_state_timeout.setDecimals(3)
+        self.input_state_timeout.setSingleStep(0.1)
+        self.input_state_timeout.setSuffix(" s")
+        self.input_state_timeout.setValue(5.0)
 
-        self.input_sample_interval = NoWheelSpinBox()
-        self.input_sample_interval.setRange(50, 10_000)
-        self.input_sample_interval.setSuffix(" ms")
-        self.input_sample_interval.setValue(200)
+        self.input_sample_interval = NoWheelDoubleSpinBox()
+        self.input_sample_interval.setRange(0.05, 10.0)
+        self.input_sample_interval.setDecimals(3)
+        self.input_sample_interval.setSingleStep(0.05)
+        self.input_sample_interval.setSuffix(" s")
+        self.input_sample_interval.setValue(0.2)
 
         self.input_consecutive_pass = NoWheelSpinBox()
         self.input_consecutive_pass.setRange(1, 20)
@@ -237,6 +282,8 @@ class PowerCycleTab(QWidget):
         self.btn_meter_disconnect = QPushButton("断开设备")
         self.btn_meter_disconnect.setObjectName("DangerButton")
         self.btn_meter_disconnect.clicked.connect(self._disconnect_multimeter)
+        self.btn_meter_fetch = QPushButton("获取万用表数据")
+        self.btn_meter_fetch.clicked.connect(self._read_multimeter_data)
         self.label_meter_status = QLabel("未连接")
         self.combo_multimeter_port.setMinimumWidth(240)
 
@@ -254,6 +301,7 @@ class PowerCycleTab(QWidget):
         row_actions = QHBoxLayout()
         row_actions.addWidget(self.btn_meter_connect)
         row_actions.addWidget(self.btn_meter_disconnect)
+        row_actions.addWidget(self.btn_meter_fetch)
         row_actions.addStretch(1)
 
         row_status = QHBoxLayout()
@@ -272,10 +320,12 @@ class PowerCycleTab(QWidget):
         layout.setContentsMargins(12, 14, 12, 12)
         layout.setSpacing(8)
 
-        self.input_interval = NoWheelSpinBox()
-        self.input_interval.setRange(0, 3600_000)
-        self.input_interval.setValue(1000)
-        self.input_interval.setSuffix(" ms")
+        self.input_interval = NoWheelDoubleSpinBox()
+        self.input_interval.setRange(0.0, 3600.0)
+        self.input_interval.setDecimals(3)
+        self.input_interval.setSingleStep(0.1)
+        self.input_interval.setValue(1.0)
+        self.input_interval.setSuffix(" s")
 
         self.input_relay_channel = NoWheelSpinBox()
         self.input_relay_channel.setRange(1, 8)
@@ -290,6 +340,10 @@ class PowerCycleTab(QWidget):
         self.btn_relay_disconnect = QPushButton("断开设备")
         self.btn_relay_disconnect.setObjectName("DangerButton")
         self.btn_relay_disconnect.clicked.connect(self._disconnect_relay)
+        self.btn_relay_open_switch = QPushButton("打开端口开关")
+        self.btn_relay_open_switch.clicked.connect(self._open_relay_port_switch)
+        self.btn_relay_close_switch = QPushButton("关闭端口开关")
+        self.btn_relay_close_switch.clicked.connect(self._close_relay_port_switch)
         self.label_relay_status = QLabel("未连接")
         self.combo_relay_port.setMinimumWidth(240)
 
@@ -308,6 +362,8 @@ class PowerCycleTab(QWidget):
         row_actions = QHBoxLayout()
         row_actions.addWidget(self.btn_relay_connect)
         row_actions.addWidget(self.btn_relay_disconnect)
+        row_actions.addWidget(self.btn_relay_open_switch)
+        row_actions.addWidget(self.btn_relay_close_switch)
         row_actions.addStretch(1)
 
         row_status = QHBoxLayout()
@@ -396,7 +452,7 @@ class PowerCycleTab(QWidget):
         cfg = self._config_store.load()
         self.input_test_count.setValue(cfg.test_count)
         self.input_voltage_threshold.setValue(cfg.voltage_threshold_v)
-        self.input_interval.setValue(cfg.interval_ms)
+        self.input_interval.setValue(cfg.interval_ms / 1000.0)
         self.input_relay_channel.setValue(cfg.relay_channel)
         self._preferred_meter_port = cfg.multimeter_port
         self._preferred_relay_port = cfg.relay_port
@@ -410,8 +466,8 @@ class PowerCycleTab(QWidget):
             old = checkbox.blockSignals(True)
             checkbox.setChecked(value)
             checkbox.blockSignals(old)
-        self.input_state_timeout.setValue(cfg.state_timeout_ms)
-        self.input_sample_interval.setValue(cfg.sample_interval_ms)
+        self.input_state_timeout.setValue(cfg.state_timeout_ms / 1000.0)
+        self.input_sample_interval.setValue(cfg.sample_interval_ms / 1000.0)
         self.input_consecutive_pass.setValue(cfg.consecutive_pass_needed)
 
         mode_index = self.combo_bt_mode.findData(cfg.bt_match_mode)
@@ -455,7 +511,7 @@ class PowerCycleTab(QWidget):
         return AppSettings(
             test_count=self.input_test_count.value(),
             voltage_threshold_v=self.input_voltage_threshold.value(),
-            interval_ms=self.input_interval.value(),
+            interval_ms=max(0, int(round(self.input_interval.value() * 1000))),
             relay_channel=self.input_relay_channel.value(),
             multimeter_port=self.combo_multimeter_port.currentData() or "",
             relay_port=self.combo_relay_port.currentData() or "",
@@ -470,8 +526,8 @@ class PowerCycleTab(QWidget):
                 and self.check_sim_relay.isChecked()
                 and self.check_sim_bluetooth.isChecked()
             ),
-            state_timeout_ms=self.input_state_timeout.value(),
-            sample_interval_ms=self.input_sample_interval.value(),
+            state_timeout_ms=max(100, int(round(self.input_state_timeout.value() * 1000))),
+            sample_interval_ms=max(10, int(round(self.input_sample_interval.value() * 1000))),
             consecutive_pass_needed=self.input_consecutive_pass.value(),
         )
 
@@ -535,6 +591,31 @@ class PowerCycleTab(QWidget):
         self.label_meter_status.setText("未连接")
         self._append_log("INFO", "万用表已断开。")
 
+    def _read_multimeter_data(self) -> None:
+        meter_sim = self.check_sim_multimeter.isChecked()
+        meter = self._sim_multimeter if meter_sim else self._multimeter_real
+        source = "simulated multimeter" if meter_sim else "real multimeter"
+
+        if meter_sim:
+            if not self._sim_multimeter.is_connected:
+                self._sim_multimeter.connect()
+                self.label_meter_status.setText("Simulated device ready")
+        elif not self._multimeter_real.is_connected:
+            QMessageBox.warning(self, "Device not connected", "Multimeter is not connected.")
+            return
+
+        try:
+            voltage = meter.read_voltage(attempts=3)
+        except Exception as exc:  # noqa: BLE001
+            self._append_log("ERROR", f"Failed to read multimeter data ({source}): {exc}")
+            return
+
+        if voltage is None:
+            self._append_log("WARNING", f"No valid voltage from multimeter ({source}).")
+            return
+
+        self._append_log("INFO", f"Multimeter data ({source}): {voltage:.3f} V")
+
     def _connect_relay(self) -> None:
         if self.check_sim_relay.isChecked():
             self._sim_relay.connect()
@@ -561,6 +642,35 @@ class PowerCycleTab(QWidget):
         self._relay_real.disconnect()
         self.label_relay_status.setText("未连接")
         self._append_log("INFO", "继电器已断开。")
+
+    def _open_relay_port_switch(self) -> None:
+        self._set_relay_port_switch(True)
+
+    def _close_relay_port_switch(self) -> None:
+        self._set_relay_port_switch(False)
+
+    def _set_relay_port_switch(self, on: bool) -> None:
+        relay_sim = self.check_sim_relay.isChecked()
+        relay = self._sim_relay if relay_sim else self._relay_real
+        source = "simulated relay" if relay_sim else "real relay"
+        channel = self.input_relay_channel.value()
+
+        if relay_sim:
+            if not self._sim_relay.is_connected:
+                self._sim_relay.connect()
+                self.label_relay_status.setText("Simulated device ready")
+        elif not self._relay_real.is_connected:
+            QMessageBox.warning(self, "Device not connected", "Relay is not connected.")
+            return
+
+        action_text = "open" if on else "close"
+        try:
+            relay.set_channel_state(channel, on)
+        except Exception as exc:  # noqa: BLE001
+            self._append_log("ERROR", f"Failed to {action_text} relay channel {channel} ({source}): {exc}")
+            return
+
+        self._append_log("INFO", f"Manual relay command sent: channel={channel}, state={action_text} ({source})")
 
     def _auto_connect_devices(self) -> None:
         use_sim_meter = self.check_sim_multimeter.isChecked()
@@ -618,21 +728,27 @@ class PowerCycleTab(QWidget):
 
     def _detect_bluetooth_devices(self) -> None:
         probe = self._sim_bt_probe if self.check_sim_bluetooth.isChecked() else self._bt_probe_real
-        devices = probe.query_devices()
-        if not devices:
-            self._append_log("WARNING", "未检测到蓝牙设备信息。")
+        source = "simulated bluetooth" if self.check_sim_bluetooth.isChecked() else "paired bluetooth"
+        self._append_log("INFO", f"Detecting bluetooth devices ({source})...")
+
+        def task() -> object:
+            return _BluetoothDetectResult(source=source, devices=probe.query_devices())
+
+        self._start_bt_task("检测已配对蓝牙名称", task, self._on_detect_bluetooth_devices_done)
+
+    def _on_detect_bluetooth_devices_done(self, payload: object) -> None:
+        if not isinstance(payload, _BluetoothDetectResult):
+            self._append_log("ERROR", "Bluetooth detect result payload is invalid.")
             return
 
-        source = "仿真蓝牙" if self.check_sim_bluetooth.isChecked() else "真实已配对蓝牙"
-        self._append_log("INFO", f"检测到 {len(devices)} 个蓝牙相关设备（来源: {source}）：")
+        devices = payload.devices
+        if not devices:
+            self._append_log("WARNING", "No bluetooth device information detected.")
+            return
+
+        self._append_log("INFO", f"Detected {len(devices)} bluetooth-related devices (source: {payload.source}):")
         for device in devices:
             self._append_log("INFO", f"  - {device.summary}")
-
-        if not self.input_bt_name.text().strip():
-            self.input_bt_name.setText(devices[0].name)
-        if not self.input_bt_mac.text().strip() and devices[0].mac:
-            self.input_bt_mac.setText(devices[0].mac)
-        self._on_settings_changed_auto_save()
 
     def _check_bluetooth_connection(self) -> None:
         mode_data = self.combo_bt_mode.currentData()
@@ -641,40 +757,106 @@ class PowerCycleTab(QWidget):
         raw_mac = self.input_bt_mac.text().strip()
         bt_mac = normalize_mac(raw_mac)
         if raw_mac and not bt_mac:
-            QMessageBox.warning(self, "参数错误", "蓝牙MAC格式无效，请输入12位十六进制地址。")
+            QMessageBox.warning(self, "Invalid input", "Bluetooth MAC format is invalid.")
             return
 
         if not bt_name and not bt_mac:
-            QMessageBox.warning(self, "参数错误", "请至少填写蓝牙名称关键字或MAC后再检查。")
+            QMessageBox.warning(self, "Invalid input", "Please provide bluetooth name keyword or MAC.")
             return
 
         probe = self._sim_bt_probe if self.check_sim_bluetooth.isChecked() else self._bt_probe_real
-        source = "仿真蓝牙" if self.check_sim_bluetooth.isChecked() else "真实已配对蓝牙"
-        mode_text = "名称且MAC" if bt_match_mode == "name_and_mac" else "名称或MAC"
+        source = "simulated bluetooth" if self.check_sim_bluetooth.isChecked() else "paired bluetooth"
+        mode_text = "name_and_mac" if bt_match_mode == "name_and_mac" else "name_or_mac"
         criteria: list[str] = []
         if bt_name:
-            criteria.append(f"名称关键字={bt_name}")
+            criteria.append(f"name={bt_name}")
         if bt_mac:
-            criteria.append(f"MAC={bt_mac}")
+            criteria.append(f"mac={bt_mac}")
         self._append_log(
             "INFO",
-            f"手动检查蓝牙连接状态（来源: {source} | 模式: {mode_text} | 条件: {', '.join(criteria)}）",
+            f"Checking bluetooth connection ({source} | mode: {mode_text} | criteria: {', '.join(criteria)})...",
         )
 
-        connected, matched = probe.is_target_connected(bt_name, bt_mac, bt_match_mode)
-        if matched:
-            self._append_log("INFO", f"匹配到 {len(matched)} 个设备：")
-            for device in matched:
-                connected_hint = getattr(device, "connected", None)
-                if connected_hint is None:
-                    connected_text = "未知"
-                else:
-                    connected_text = "已连接" if connected_hint else "未连接"
-                self._append_log("INFO", f"  - {device.summary} | 判定={connected_text}")
-        else:
-            self._append_log("WARNING", "未匹配到目标设备，请检查名称关键字/MAC。")
+        def task() -> object:
+            connected, matched = probe.is_target_connected(bt_name, bt_mac, bt_match_mode)
+            return _BluetoothCheckResult(
+                source=source,
+                mode_text=mode_text,
+                criteria=criteria,
+                connected=connected,
+                matched=matched,
+            )
 
-        self._append_log("INFO" if connected else "WARNING", f"手动检查结果：{'已连接' if connected else '未连接'}")
+        self._start_bt_task("检查蓝牙连接状态", task, self._on_check_bluetooth_connection_done)
+
+    def _on_check_bluetooth_connection_done(self, payload: object) -> None:
+        if not isinstance(payload, _BluetoothCheckResult):
+            self._append_log("ERROR", "Bluetooth check result payload is invalid.")
+            return
+
+        if payload.matched:
+            self._append_log("INFO", f"Matched {len(payload.matched)} device(s):")
+            for device in payload.matched:
+                connected_hint = getattr(device, "connected", None)
+                connected_text = "unknown" if connected_hint is None else ("connected" if connected_hint else "disconnected")
+                self._append_log("INFO", f"  - {device.summary} | status={connected_text}")
+        else:
+            self._append_log("WARNING", "No target bluetooth device matched; please check name keyword/MAC.")
+
+        self._append_log("INFO" if payload.connected else "WARNING", f"Bluetooth check result: {'connected' if payload.connected else 'disconnected'}")
+
+    def _start_bt_task(
+        self,
+        task_name: str,
+        task: Callable[[], object],
+        on_success: Callable[[object], None],
+    ) -> None:
+        if self._bt_task_running:
+            self._append_log("WARNING", f"{self._bt_task_name} is already running. Please wait.")
+            return
+
+        thread = QThread(self)
+        worker = _AsyncTaskWorker(task)
+        worker.moveToThread(thread)
+
+        thread.started.connect(worker.run)
+        worker.sig_success.connect(self._on_bt_task_success)
+        worker.sig_error.connect(self._on_bt_task_error)
+        worker.sig_finished.connect(thread.quit)
+        thread.finished.connect(worker.deleteLater)
+        thread.finished.connect(thread.deleteLater)
+        thread.finished.connect(self._on_bt_task_thread_finished)
+
+        self._bt_task_running = True
+        self._bt_task_name = task_name
+        self._bt_task_success_handler = on_success
+        self._bt_task_thread = thread
+        self._bt_task_worker = worker
+        self._update_device_control_state()
+        thread.start()
+
+    @Slot(object)
+    def _on_bt_task_success(self, payload: object) -> None:
+        if self._bt_task_success_handler is None:
+            return
+        try:
+            self._bt_task_success_handler(payload)
+        except Exception as exc:  # noqa: BLE001
+            self._append_log("ERROR", f"{self._bt_task_name} result processing failed: {exc}")
+
+    @Slot(str)
+    def _on_bt_task_error(self, message: str) -> None:
+        task_name = self._bt_task_name or "bluetooth operation"
+        self._append_log("ERROR", f"{task_name} failed: {message}")
+
+    @Slot()
+    def _on_bt_task_thread_finished(self) -> None:
+        self._bt_task_running = False
+        self._bt_task_name = ""
+        self._bt_task_success_handler = None
+        self._bt_task_thread = None
+        self._bt_task_worker = None
+        self._update_device_control_state()
 
     def _start_test(self) -> None:
         if self._running:
@@ -947,29 +1129,33 @@ class PowerCycleTab(QWidget):
 
     def _update_device_control_state(self) -> None:
         busy = self._running
+        control_busy = self._running or self._bt_task_running
         meter_real_mode = not self.check_sim_multimeter.isChecked()
         relay_real_mode = not self.check_sim_relay.isChecked()
 
-        self.combo_multimeter_port.setEnabled((not busy) and meter_real_mode)
-        self.btn_meter_connect.setEnabled((not busy) and meter_real_mode)
-        self.btn_meter_disconnect.setEnabled((not busy) and meter_real_mode)
+        self.combo_multimeter_port.setEnabled((not control_busy) and meter_real_mode)
+        self.btn_meter_connect.setEnabled((not control_busy) and meter_real_mode)
+        self.btn_meter_disconnect.setEnabled((not control_busy) and meter_real_mode)
+        self.btn_meter_fetch.setEnabled(not control_busy)
 
-        self.combo_relay_port.setEnabled((not busy) and relay_real_mode)
-        self.btn_relay_connect.setEnabled((not busy) and relay_real_mode)
-        self.btn_relay_disconnect.setEnabled((not busy) and relay_real_mode)
+        self.combo_relay_port.setEnabled((not control_busy) and relay_real_mode)
+        self.btn_relay_connect.setEnabled((not control_busy) and relay_real_mode)
+        self.btn_relay_disconnect.setEnabled((not control_busy) and relay_real_mode)
+        self.btn_relay_open_switch.setEnabled(not control_busy)
+        self.btn_relay_close_switch.setEnabled(not control_busy)
 
-        allow_refresh = (not busy) and (meter_real_mode or relay_real_mode)
+        allow_refresh = (not control_busy) and (meter_real_mode or relay_real_mode)
         self.btn_refresh_ports.setEnabled(allow_refresh)
         self.btn_refresh_relay_ports.setEnabled(allow_refresh)
-        self.btn_auto_connect.setEnabled(not busy)
+        self.btn_auto_connect.setEnabled(not control_busy)
 
-        self.btn_start.setEnabled(not busy)
+        self.btn_start.setEnabled(not control_busy)
         self.btn_stop.setEnabled(busy)
-        self.check_sim_multimeter.setEnabled(not busy)
-        self.check_sim_relay.setEnabled(not busy)
-        self.check_sim_bluetooth.setEnabled(not busy)
-        self.btn_bt_detect.setEnabled(not busy)
-        self.btn_bt_check.setEnabled(not busy)
+        self.check_sim_multimeter.setEnabled(not control_busy)
+        self.check_sim_relay.setEnabled(not control_busy)
+        self.check_sim_bluetooth.setEnabled(not control_busy)
+        self.btn_bt_detect.setEnabled(not control_busy)
+        self.btn_bt_check.setEnabled(not control_busy)
 
     def _update_running_state(self) -> None:
         self._update_device_control_state()
@@ -989,6 +1175,9 @@ class PowerCycleTab(QWidget):
         if self._thread:
             self._thread.quit()
             self._thread.wait(1500)
+        if self._bt_task_thread:
+            self._bt_task_thread.quit()
+            self._bt_task_thread.wait(1500)
         self._multimeter_real.disconnect()
         self._relay_real.disconnect()
         self._sim_multimeter.disconnect()
