@@ -54,9 +54,19 @@ class BluetoothDeviceInfo:
     @property
     def summary(self) -> str:
         mac_part = self.mac if self.mac else "-"
+        status_text = (self.status or "-").strip()
+        normalized_status = status_text.upper()
+        if normalized_status == "OK":
+            status_text = "已连接"
+        elif normalized_status == "DISCONNECTED":
+            status_text = "未连接"
+        elif normalized_status == "UNKNOWN":
+            status_text = "未知"
+        elif normalized_status == "NOT PRESENT":
+            status_text = "未呈现"
         return (
-            f"名称={self.name or '-'} | 状态={self.status or '-'} | "
-            f"MAC={mac_part} | Class={self.class_name or '-'} | ID={self.instance_id or '-'}"
+            f"名称={self.name or '-'} | 状态={status_text or '-'} | "
+            f"MAC={mac_part} | 类别={self.class_name or '-'} | 实例ID={self.instance_id or '-'}"
         )
 
 
@@ -342,7 +352,7 @@ def _run_pnputil_csv(
     try:
         return _parse_pnputil_csv_output(output)
     except Exception as exc:  # noqa: BLE001
-        _LOGGER.warning("failed to parse pnputil output: %s", exc)
+        _LOGGER.warning("解析 pnputil 输出失败: %s", exc)
         return None
 
 
@@ -371,7 +381,7 @@ def _run_pnputil_xml(
     try:
         return _parse_pnputil_xml_output(output)
     except Exception as exc:  # noqa: BLE001
-        _LOGGER.warning("failed to parse pnputil XML output: %s", exc)
+        _LOGGER.warning("解析 pnputil XML 输出失败: %s", exc)
         return None
 
 
@@ -427,7 +437,7 @@ def _run_pnputil_text(
     try:
         return _parse_pnputil_text_output(output)
     except Exception as exc:  # noqa: BLE001
-        _LOGGER.warning("failed to parse pnputil text output: %s", exc)
+        _LOGGER.warning("解析 pnputil 文本输出失败: %s", exc)
         return None
 
 
@@ -530,7 +540,7 @@ def _query_bluetooth_rows_via_powershell() -> list[dict[str, object]]:
     try:
         data = json.loads(output)
     except json.JSONDecodeError:
-        _LOGGER.warning("bluetooth probe returned non-JSON content: %s", output[:300])
+        _LOGGER.warning("蓝牙探测返回了非 JSON 内容: %s", output[:300])
         return []
 
     rows = data if isinstance(data, list) else [data]
@@ -890,7 +900,7 @@ def _run_process(args: list[str], *, timeout_sec: int) -> subprocess.CompletedPr
             **_build_hidden_subprocess_kwargs(),
         )
     except Exception as exc:  # noqa: BLE001
-        _LOGGER.warning("failed to run command %s: %s", args[0], exc)
+        _LOGGER.warning("执行命令失败 %s: %s", args[0], exc)
         return None
     stderr = _decode_process_bytes(completed.stderr)
     if completed.returncode != 0:
@@ -898,7 +908,7 @@ def _run_process(args: list[str], *, timeout_sec: int) -> subprocess.CompletedPr
         detail = (stderr or "").strip() or (stdout or "").strip()
         detail = detail[:300] if detail else ""
         _LOGGER.warning(
-            "command failed (%s) %s: %s",
+            "命令执行失败（返回码=%s）%s: %s",
             completed.returncode,
             args[0],
             detail,

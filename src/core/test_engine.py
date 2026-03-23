@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 import logging
 import threading
@@ -216,7 +216,7 @@ class PowerCycleRunner:
 
         status_text = "上电" if expected_power_on else "断电"
         reason = (
-            f"{status_text}状态等待超时(last: voltage={last_voltage}, bt_connected={last_bt})"
+            f"{status_text}状态等待超时（最后一次采样: 电压={last_voltage}, 蓝牙连接={last_bt}）"
         )
         return _WaitResult(False, reason, last_voltage, last_bt)
 
@@ -224,7 +224,7 @@ class PowerCycleRunner:
         try:
             voltage = self._multimeter.read_voltage(attempts=1)
             if voltage is not None:
-                self._log("DEBUG", f"采样电压: {voltage:.4f}V")
+                self._log("TRACE", f"采样电压: {voltage:.4f}V")
             return voltage
         except Exception as exc:  # noqa: BLE001
             self._log("WARNING", f"读取电压失败: {exc}")
@@ -237,7 +237,7 @@ class PowerCycleRunner:
                 self._settings.bt_mac,
                 self._settings.bt_match_mode,
             )
-            self._log("DEBUG", f"蓝牙连接状态: {'已连接' if connected else '未连接'}")
+            self._log("TRACE", f"蓝牙连接状态: {'已连接' if connected else '未连接'}")
             return connected
         except Exception as exc:  # noqa: BLE001
             self._log("WARNING", f"读取蓝牙状态失败: {exc}")

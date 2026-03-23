@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 from dataclasses import dataclass
 from html import escape
@@ -70,14 +70,31 @@ class _BluetoothCheckResult:
     matched: list[BluetoothDeviceInfo]
 
 
+@dataclass(slots=True)
+class _AutoConnectResult:
+    ports: list[str]
+    use_sim_meter: bool
+    use_sim_relay: bool
+    found_meter: str = ""
+    found_relay: str = ""
+    meter_connected: bool = False
+    relay_connected: bool = False
+    meter_attempts: list[str] | None = None
+    relay_attempts: list[str] | None = None
+
+
 class _AsyncTaskWorker(QObject):
     sig_success = Signal(object)
     sig_error = Signal(str)
     sig_finished = Signal()
+    sig_log = Signal(str, str)
 
     def __init__(self, task: Callable[[], object]) -> None:
         super().__init__()
         self._task = task
+
+    def emit_log(self, level: str, message: str) -> None:
+        self.sig_log.emit(level, message)
 
     @Slot()
     def run(self) -> None:
@@ -119,6 +136,9 @@ class PowerCycleTab(QWidget):
         self._bt_task_thread: QThread | None = None
         self._bt_task_worker: _AsyncTaskWorker | None = None
         self._bt_task_success_handler: Callable[[object], None] | None = None
+        self._auto_task_running = False
+        self._auto_task_thread: QThread | None = None
+        self._auto_task_worker: _AsyncTaskWorker | None = None
 
         self._build_ui()
         self._bind_auto_save_signals()
@@ -594,27 +614,27 @@ class PowerCycleTab(QWidget):
     def _read_multimeter_data(self) -> None:
         meter_sim = self.check_sim_multimeter.isChecked()
         meter = self._sim_multimeter if meter_sim else self._multimeter_real
-        source = "simulated multimeter" if meter_sim else "real multimeter"
+        source = "仿真万用表" if meter_sim else "真实万用表"
 
         if meter_sim:
             if not self._sim_multimeter.is_connected:
                 self._sim_multimeter.connect()
-                self.label_meter_status.setText("Simulated device ready")
+                self.label_meter_status.setText("仿真设备已就绪")
         elif not self._multimeter_real.is_connected:
-            QMessageBox.warning(self, "Device not connected", "Multimeter is not connected.")
+            QMessageBox.warning(self, "设备未连接", "万用表尚未连接。")
             return
 
         try:
             voltage = meter.read_voltage(attempts=3)
         except Exception as exc:  # noqa: BLE001
-            self._append_log("ERROR", f"Failed to read multimeter data ({source}): {exc}")
+            self._append_log("ERROR", f"读取{source}数据失败: {exc}")
             return
 
         if voltage is None:
-            self._append_log("WARNING", f"No valid voltage from multimeter ({source}).")
+            self._append_log("WARNING", f"未读取到有效的{source}电压数据。")
             return
 
-        self._append_log("INFO", f"Multimeter data ({source}): {voltage:.3f} V")
+        self._append_log("INFO", f"{source}电压数据: {voltage:.3f} V")
 
     def _connect_relay(self) -> None:
         if self.check_sim_relay.isChecked():
@@ -652,84 +672,162 @@ class PowerCycleTab(QWidget):
     def _set_relay_port_switch(self, on: bool) -> None:
         relay_sim = self.check_sim_relay.isChecked()
         relay = self._sim_relay if relay_sim else self._relay_real
-        source = "simulated relay" if relay_sim else "real relay"
+        source = "仿真继电器" if relay_sim else "真实继电器"
         channel = self.input_relay_channel.value()
 
         if relay_sim:
             if not self._sim_relay.is_connected:
                 self._sim_relay.connect()
-                self.label_relay_status.setText("Simulated device ready")
+                self.label_relay_status.setText("仿真设备已就绪")
         elif not self._relay_real.is_connected:
-            QMessageBox.warning(self, "Device not connected", "Relay is not connected.")
+            QMessageBox.warning(self, "设备未连接", "继电器尚未连接。")
             return
 
-        action_text = "open" if on else "close"
+        action_text = "打开" if on else "关闭"
         try:
             relay.set_channel_state(channel, on)
         except Exception as exc:  # noqa: BLE001
-            self._append_log("ERROR", f"Failed to {action_text} relay channel {channel} ({source}): {exc}")
+            self._append_log("ERROR", f"{source}{action_text}通道 {channel} 失败: {exc}")
             return
 
-        self._append_log("INFO", f"Manual relay command sent: channel={channel}, state={action_text} ({source})")
+        self._append_log("INFO", f"已发送手动继电器命令: 来源={source}，通道={channel}，状态={action_text}")
 
     def _auto_connect_devices(self) -> None:
+        if self._auto_task_running:
+            self._append_log("WARNING", "\u81ea\u52a8\u8fde\u63a5\u4efb\u52a1\u6b63\u5728\u6267\u884c\uff0c\u8bf7\u7a0d\u5019\u3002")
+            return
+
         use_sim_meter = self.check_sim_multimeter.isChecked()
         use_sim_relay = self.check_sim_relay.isChecked()
+        self._append_log("INFO", "\u5f00\u59cb\u81ea\u52a8\u8fde\u63a5\u8bbe\u5907\uff0c\u8bf7\u7a0d\u5019...")
 
-        if use_sim_meter:
-            self._sim_multimeter.connect()
+        worker_box: dict[str, _AsyncTaskWorker | None] = {"worker": None}
+
+        def emit_auto_log(level: str, message: str) -> None:
+            self._emit_async_task_log(worker_box["worker"], level, message)
+
+        def task() -> object:
+            result = _AutoConnectResult(
+                ports=[],
+                use_sim_meter=use_sim_meter,
+                use_sim_relay=use_sim_relay,
+                meter_attempts=[],
+                relay_attempts=[],
+            )
+
+            if result.use_sim_meter:
+                self._sim_multimeter.connect()
+                emit_auto_log("INFO", "\u4e07\u7528\u8868\u4f7f\u7528\u4eff\u771f\u8bbe\u5907\u3002")
+            if result.use_sim_relay:
+                self._sim_relay.connect()
+                emit_auto_log("INFO", "\u7ee7\u7535\u5668\u4f7f\u7528\u4eff\u771f\u8bbe\u5907\u3002")
+            if result.use_sim_meter and result.use_sim_relay:
+                return result
+
+            port_infos = list_serial_ports()
+            result.ports = [port.device for port in port_infos]
+            if not result.ports:
+                return result
+
+            emit_auto_log("INFO", f"\u68c0\u6d4b\u5230\u4e32\u53e3\uff1a{', '.join(port.label for port in port_infos)}")
+            filtered_infos = [
+                port
+                for port in port_infos
+                if not any(keyword in f"{port.description} {port.hwid}".lower() for keyword in ("bluetooth", "bth"))
+            ]
+            if filtered_infos and len(filtered_infos) != len(port_infos):
+                emit_auto_log("INFO", f"\u5df2\u8df3\u8fc7\u84dd\u7259\u865a\u62df\u4e32\u53e3\uff0c\u4ec5\u5c1d\u8bd5\uff1a{', '.join(port.device for port in filtered_infos)}")
+            candidate_infos = filtered_infos or port_infos
+            relay_allow_open_only = len(candidate_infos) == 1
+            if relay_allow_open_only and not result.use_sim_relay:
+                emit_auto_log("INFO", "\u7ee7\u7535\u5668\u4ec5\u6709\u4e00\u4e2a\u5019\u9009\u4e32\u53e3\uff0c\u82e5\u72b6\u6001\u67e5\u8be2\u4e0d\u652f\u6301\uff0c\u5c06\u6309\u4e32\u53e3\u6253\u5f00\u6210\u529f\u5904\u7406\u3002")
+
+            if not result.use_sim_meter:
+                for port_info in candidate_infos:
+                    port = port_info.device
+                    result.meter_attempts.append(port)
+                    emit_auto_log("INFO", f"\u6b63\u5728\u8bc6\u522b\u4e07\u7528\u8868\u7aef\u53e3: {port}")
+                    if self._multimeter_real.auto_connect(port):
+                        result.found_meter = port
+                        result.meter_connected = True
+                        emit_auto_log("INFO", f"\u4e07\u7528\u8868\u8bc6\u522b\u6210\u529f: {port}")
+                        break
+                if not result.meter_connected:
+                    emit_auto_log("WARNING", "\u672a\u8bc6\u522b\u5230\u4e07\u7528\u8868\u8bbe\u5907\u3002")
+
+            if not result.use_sim_relay:
+                for port_info in candidate_infos:
+                    port = port_info.device
+                    if port == result.found_meter:
+                        continue
+                    result.relay_attempts.append(port)
+                    emit_auto_log("INFO", f"\u6b63\u5728\u8bc6\u522b\u7ee7\u7535\u5668\u7aef\u53e3: {port}")
+                    if self._relay_real.auto_connect(port, allow_open_only=relay_allow_open_only):
+                        result.found_relay = port
+                        result.relay_connected = True
+                        emit_auto_log("INFO", f"\u7ee7\u7535\u5668\u8bc6\u522b\u6210\u529f: {port}")
+                        break
+                if not result.relay_connected:
+                    emit_auto_log("WARNING", "\u672a\u8bc6\u522b\u5230\u7ee7\u7535\u5668\u8bbe\u5907\u3002")
+            return result
+
+        self._start_auto_task(task, self._on_auto_connect_devices_done, worker_box)
+
+    def _on_auto_connect_devices_done(self, payload: object) -> None:
+        if not isinstance(payload, _AutoConnectResult):
+            self._append_log("ERROR", "自动连接结果无效。")
+            return
+
+        if payload.use_sim_meter:
             self.label_meter_status.setText("仿真设备已就绪")
             self._append_log("INFO", "万用表已切换为仿真设备。")
-        if use_sim_relay:
-            self._sim_relay.connect()
+        if payload.use_sim_relay:
             self.label_relay_status.setText("仿真设备已就绪")
             self._append_log("INFO", "继电器已切换为仿真设备。")
 
-        if use_sim_meter and use_sim_relay:
-            self._append_log("INFO", "自动连接完成：万用表/继电器均为仿真模式。")
+        if payload.use_sim_meter and payload.use_sim_relay:
+            self._append_log("INFO", "自动连接完成：万用表和继电器均为仿真模式。")
             return
 
-        ports = [port.device for port in list_serial_ports()]
-        if not ports and (not use_sim_meter or not use_sim_relay):
+        if not payload.ports and (not payload.use_sim_meter or not payload.use_sim_relay):
             self._append_log("WARNING", "未发现可用串口，无法自动连接。")
             return
 
-        found_meter = ""
-        found_relay = ""
-
-        self._append_log("INFO", f"开始自动识别真实串口设备，候选端口: {', '.join(ports)}")
-        if not use_sim_meter:
-            for port in ports:
-                if self._multimeter_real.probe_device(port):
-                    found_meter = port
-                    break
-            if found_meter:
-                self._select_combo_value(self.combo_multimeter_port, found_meter)
-                if self._multimeter_real.connect(found_meter):
-                    self.label_meter_status.setText(f"已连接({found_meter})")
-                    self._append_log("INFO", f"自动识别万用表成功: {found_meter}")
+        self._append_log("INFO", f"开始自动识别真实串口设备，候选端口：{', '.join(payload.ports)}")
+        if payload.meter_attempts:
+            self._append_log("INFO", f"\u5df2\u5c1d\u8bd5\u4e07\u7528\u8868\u7aef\u53e3\uff1a{', '.join(payload.meter_attempts)}")
+        if payload.relay_attempts:
+            self._append_log("INFO", f"\u5df2\u5c1d\u8bd5\u7ee7\u7535\u5668\u7aef\u53e3\uff1a{', '.join(payload.relay_attempts)}")
+        if not payload.use_sim_meter:
+            if payload.found_meter:
+                self._ensure_combo_has_value(self.combo_multimeter_port, payload.found_meter)
+                self._select_combo_value(self.combo_multimeter_port, payload.found_meter)
+                if payload.meter_connected:
+                    self.label_meter_status.setText(f"已连接({payload.found_meter})")
+                    self._append_log("INFO", f"自动识别万用表成功: {payload.found_meter}")
+                else:
+                    self.label_meter_status.setText("连接失败")
+                    self._append_log("ERROR", f"已识别到万用表端口，但连接失败: {payload.found_meter}")
             else:
                 self._append_log("WARNING", "自动识别万用表失败。")
 
-        if not use_sim_relay:
-            for port in ports:
-                if port == found_meter:
-                    continue
-                if self._relay_real.probe_device(port):
-                    found_relay = port
-                    break
-            if found_relay:
-                self._select_combo_value(self.combo_relay_port, found_relay)
-                if self._relay_real.connect(found_relay):
-                    self.label_relay_status.setText(f"已连接({found_relay})")
-                    self._append_log("INFO", f"自动识别继电器成功: {found_relay}")
+        if not payload.use_sim_relay:
+            if payload.found_relay:
+                self._ensure_combo_has_value(self.combo_relay_port, payload.found_relay)
+                self._select_combo_value(self.combo_relay_port, payload.found_relay)
+                if payload.relay_connected:
+                    self.label_relay_status.setText(f"已连接({payload.found_relay})")
+                    self._append_log("INFO", f"自动识别继电器成功: {payload.found_relay}")
+                else:
+                    self.label_relay_status.setText("连接失败")
+                    self._append_log("ERROR", f"已识别到继电器端口，但连接失败: {payload.found_relay}")
             else:
                 self._append_log("WARNING", "自动识别继电器失败。")
 
     def _detect_bluetooth_devices(self) -> None:
         probe = self._sim_bt_probe if self.check_sim_bluetooth.isChecked() else self._bt_probe_real
-        source = "simulated bluetooth" if self.check_sim_bluetooth.isChecked() else "paired bluetooth"
-        self._append_log("INFO", f"Detecting bluetooth devices ({source})...")
+        source = "仿真蓝牙" if self.check_sim_bluetooth.isChecked() else "已配对蓝牙"
+        self._append_log("INFO", f"开始检测蓝牙设备（来源: {source}）...")
 
         def task() -> object:
             return _BluetoothDetectResult(source=source, devices=probe.query_devices())
@@ -738,15 +836,15 @@ class PowerCycleTab(QWidget):
 
     def _on_detect_bluetooth_devices_done(self, payload: object) -> None:
         if not isinstance(payload, _BluetoothDetectResult):
-            self._append_log("ERROR", "Bluetooth detect result payload is invalid.")
+            self._append_log("ERROR", "蓝牙检测结果无效。")
             return
 
         devices = payload.devices
         if not devices:
-            self._append_log("WARNING", "No bluetooth device information detected.")
+            self._append_log("WARNING", "未检测到蓝牙设备信息。")
             return
 
-        self._append_log("INFO", f"Detected {len(devices)} bluetooth-related devices (source: {payload.source}):")
+        self._append_log("INFO", f"检测到 {len(devices)} 个蓝牙相关设备（来源: {payload.source}）：")
         for device in devices:
             self._append_log("INFO", f"  - {device.summary}")
 
@@ -757,24 +855,24 @@ class PowerCycleTab(QWidget):
         raw_mac = self.input_bt_mac.text().strip()
         bt_mac = normalize_mac(raw_mac)
         if raw_mac and not bt_mac:
-            QMessageBox.warning(self, "Invalid input", "Bluetooth MAC format is invalid.")
+            QMessageBox.warning(self, "输入无效", "蓝牙 MAC 格式无效。")
             return
 
         if not bt_name and not bt_mac:
-            QMessageBox.warning(self, "Invalid input", "Please provide bluetooth name keyword or MAC.")
+            QMessageBox.warning(self, "输入无效", "请填写蓝牙名称关键字或 MAC。")
             return
 
         probe = self._sim_bt_probe if self.check_sim_bluetooth.isChecked() else self._bt_probe_real
-        source = "simulated bluetooth" if self.check_sim_bluetooth.isChecked() else "paired bluetooth"
-        mode_text = "name_and_mac" if bt_match_mode == "name_and_mac" else "name_or_mac"
+        source = "仿真蓝牙" if self.check_sim_bluetooth.isChecked() else "已配对蓝牙"
+        mode_text = "名称+MAC" if bt_match_mode == "name_and_mac" else "名称或MAC"
         criteria: list[str] = []
         if bt_name:
-            criteria.append(f"name={bt_name}")
+            criteria.append(f"名称关键字={bt_name}")
         if bt_mac:
-            criteria.append(f"mac={bt_mac}")
+            criteria.append(f"MAC={bt_mac}")
         self._append_log(
             "INFO",
-            f"Checking bluetooth connection ({source} | mode: {mode_text} | criteria: {', '.join(criteria)})...",
+            f"开始检查蓝牙连接状态（来源: {source} | 匹配模式: {mode_text} | 条件: {', '.join(criteria)}）...",
         )
 
         def task() -> object:
@@ -791,19 +889,64 @@ class PowerCycleTab(QWidget):
 
     def _on_check_bluetooth_connection_done(self, payload: object) -> None:
         if not isinstance(payload, _BluetoothCheckResult):
-            self._append_log("ERROR", "Bluetooth check result payload is invalid.")
+            self._append_log("ERROR", "蓝牙检查结果无效。")
             return
 
         if payload.matched:
-            self._append_log("INFO", f"Matched {len(payload.matched)} device(s):")
+            self._append_log("INFO", f"匹配到 {len(payload.matched)} 个设备：")
             for device in payload.matched:
                 connected_hint = getattr(device, "connected", None)
-                connected_text = "unknown" if connected_hint is None else ("connected" if connected_hint else "disconnected")
-                self._append_log("INFO", f"  - {device.summary} | status={connected_text}")
+                connected_text = "未知" if connected_hint is None else ("已连接" if connected_hint else "未连接")
+                self._append_log("INFO", f"  - {device.summary} | 连接状态={connected_text}")
         else:
-            self._append_log("WARNING", "No target bluetooth device matched; please check name keyword/MAC.")
+            self._append_log("WARNING", "未匹配到目标蓝牙设备，请检查名称关键字或 MAC。")
 
-        self._append_log("INFO" if payload.connected else "WARNING", f"Bluetooth check result: {'connected' if payload.connected else 'disconnected'}")
+        self._append_log("INFO" if payload.connected else "WARNING", f"蓝牙检查结果: {'已连接' if payload.connected else '未连接'}")
+
+    def _start_auto_task(
+        self,
+        task: Callable[[], object],
+        on_success: Callable[[object], None],
+        worker_box: dict[str, _AsyncTaskWorker | None] | None = None,
+    ) -> None:
+        thread = QThread(self)
+        worker = _AsyncTaskWorker(task)
+        worker.moveToThread(thread)
+        if worker_box is not None:
+            worker_box["worker"] = worker
+
+        thread.started.connect(worker.run)
+        worker.sig_success.connect(on_success)
+        worker.sig_error.connect(self._on_auto_task_error)
+        worker.sig_log.connect(self._append_log)
+        worker.sig_finished.connect(thread.quit)
+        thread.finished.connect(worker.deleteLater)
+        thread.finished.connect(thread.deleteLater)
+        thread.finished.connect(self._on_auto_task_thread_finished)
+
+        self._auto_task_running = True
+        self._auto_task_thread = thread
+        self._auto_task_worker = worker
+        self._update_device_control_state()
+        thread.start()
+
+    @Slot(str)
+    def _on_auto_task_error(self, message: str) -> None:
+        self._append_log("ERROR", f"自动连接失败: {message}")
+
+    @Slot()
+    def _on_auto_task_thread_finished(self) -> None:
+        self._auto_task_running = False
+        self._auto_task_thread = None
+        self._auto_task_worker = None
+        self._update_device_control_state()
+
+    def _emit_async_task_log(
+        self, worker: _AsyncTaskWorker | None, level: str, message: str
+    ) -> None:
+        if worker is None:
+            return
+        worker.sig_log.emit(level, message)
 
     def _start_bt_task(
         self,
@@ -812,7 +955,7 @@ class PowerCycleTab(QWidget):
         on_success: Callable[[object], None],
     ) -> None:
         if self._bt_task_running:
-            self._append_log("WARNING", f"{self._bt_task_name} is already running. Please wait.")
+            self._append_log("WARNING", f"{self._bt_task_name}正在执行，请稍候。")
             return
 
         thread = QThread(self)
@@ -842,12 +985,12 @@ class PowerCycleTab(QWidget):
         try:
             self._bt_task_success_handler(payload)
         except Exception as exc:  # noqa: BLE001
-            self._append_log("ERROR", f"{self._bt_task_name} result processing failed: {exc}")
+            self._append_log("ERROR", f"{self._bt_task_name}结果处理失败: {exc}")
 
     @Slot(str)
     def _on_bt_task_error(self, message: str) -> None:
-        task_name = self._bt_task_name or "bluetooth operation"
-        self._append_log("ERROR", f"{task_name} failed: {message}")
+        task_name = self._bt_task_name or "蓝牙操作"
+        self._append_log("ERROR", f"{task_name}失败: {message}")
 
     @Slot()
     def _on_bt_task_thread_finished(self) -> None:
@@ -967,7 +1110,11 @@ class PowerCycleTab(QWidget):
         self.log_view.append(
             f'<span style="color:{color}; white-space:pre;">{escape(line)}</span>'
         )
-        log_level = getattr(logging, level_upper, logging.INFO)
+        log_level = (
+            logging.INFO
+            if level_upper == "TRACE"
+            else getattr(logging, level_upper, logging.INFO)
+        )
         _LOGGER.log(log_level, message)
 
     @staticmethod
@@ -976,7 +1123,7 @@ class PowerCycleTab(QWidget):
             return "#c62828"
         if level == "WARNING":
             return "#b26a00"
-        if level == "DEBUG":
+        if level in {"DEBUG", "TRACE"}:
             return "#546e7a"
         return "#1f5e94"
 
@@ -1129,7 +1276,7 @@ class PowerCycleTab(QWidget):
 
     def _update_device_control_state(self) -> None:
         busy = self._running
-        control_busy = self._running or self._bt_task_running
+        control_busy = self._running or self._bt_task_running or self._auto_task_running
         meter_real_mode = not self.check_sim_multimeter.isChecked()
         relay_real_mode = not self.check_sim_relay.isChecked()
 
@@ -1168,6 +1315,11 @@ class PowerCycleTab(QWidget):
         idx = combo.findData(value)
         combo.setCurrentIndex(idx if idx >= 0 else 0)
 
+    @staticmethod
+    def _ensure_combo_has_value(combo: QComboBox, value: str) -> None:
+        if value and combo.findData(value) < 0:
+            combo.addItem(value, value)
+
     def shutdown(self) -> None:
         self._save_current_settings()
         if self._worker:
@@ -1178,6 +1330,9 @@ class PowerCycleTab(QWidget):
         if self._bt_task_thread:
             self._bt_task_thread.quit()
             self._bt_task_thread.wait(1500)
+        if self._auto_task_thread:
+            self._auto_task_thread.quit()
+            self._auto_task_thread.wait(1500)
         self._multimeter_real.disconnect()
         self._relay_real.disconnect()
         self._sim_multimeter.disconnect()

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+import threading
 import time
 from dataclasses import dataclass
 
@@ -219,7 +220,12 @@ class Victor86EMultimeter:
             "stopbits": None if serial is None else serial.STOPBITS_ONE,
             "bytesize": None if serial is None else serial.EIGHTBITS,
             "timeout": 0.6,
+            "write_timeout": 0.6,
+            "xonxoff": False,
+            "rtscts": False,
+            "dsrdtr": False,
         }
+        self._open_timeout_s = 1.2
 
     @property
     def is_connected(self) -> bool:
@@ -229,25 +235,57 @@ class Victor86EMultimeter:
         if serial is None:
             raise RuntimeError("pyserial 未安装，无法连接万用表。")
         self.disconnect()
-        try:
-            self._serial = serial.Serial(  # type: ignore[attr-defined]
-                port=port,
-                baudrate=self._serial_params["baudrate"],
-                parity=self._serial_params["parity"],
-                stopbits=self._serial_params["stopbits"],
-                bytesize=self._serial_params["bytesize"],
-                timeout=self._serial_params["timeout"],
-            )
+        serial_instance, error = self._open_serial_with_timeout(port)
+        if serial_instance is not None:
+            self._serial = serial_instance
             return True
-        except Exception as exc:
-            _LOGGER.warning("万用表连接失败(%s): %s", port, exc)
-            self._serial = None
-            return False
+        _LOGGER.warning("万用表连接失败(%s): %s", port, error or "未知错误")
+        self._serial = None
+        return False
 
     def disconnect(self) -> None:
         if self._serial and getattr(self._serial, "is_open", False):
             self._serial.close()
         self._serial = None
+
+    def _open_serial_with_timeout(self, port: str) -> tuple[object | None, str | None]:
+        holder: dict[str, object] = {}
+        done = threading.Event()
+        cancelled = threading.Event()
+
+        def open_port() -> None:
+            try:
+                serial_instance = serial.Serial(  # type: ignore[attr-defined]
+                    port=port,
+                    baudrate=self._serial_params["baudrate"],
+                    parity=self._serial_params["parity"],
+                    stopbits=self._serial_params["stopbits"],
+                    bytesize=self._serial_params["bytesize"],
+                    timeout=self._serial_params["timeout"],
+                    write_timeout=self._serial_params["write_timeout"],
+                    xonxoff=self._serial_params["xonxoff"],
+                    rtscts=self._serial_params["rtscts"],
+                    dsrdtr=self._serial_params["dsrdtr"],
+                )
+                if cancelled.is_set():
+                    try:
+                        serial_instance.close()
+                    except Exception:
+                        pass
+                    return
+                holder["serial"] = serial_instance
+            except Exception as exc:  # noqa: BLE001
+                holder["error"] = str(exc)
+            finally:
+                done.set()
+
+        opener = threading.Thread(target=open_port, name=f"meter-open-{port}", daemon=True)
+        opener.start()
+        if not done.wait(self._open_timeout_s):
+            cancelled.set()
+            return None, f"打开串口超时（>{self._open_timeout_s:.1f}s）"
+        error = holder.get("error")
+        return holder.get("serial"), error if isinstance(error, str) else None
 
     def read_measurement(self, attempts: int = 3) -> Measurement | None:
         if not self.is_connected:
@@ -284,6 +322,20 @@ class Victor86EMultimeter:
             return False
         finally:
             self.disconnect()
+
+    def auto_connect(self, port: str) -> bool:
+        if not self.connect(port):
+            return False
+        try:
+            for _ in range(3):
+                measurement = self.read_measurement(attempts=1)
+                if measurement is not None:
+                    return True
+                time.sleep(0.15)
+        except Exception as exc:
+            _LOGGER.warning("\u4e07\u7528\u8868\u81ea\u52a8\u8fde\u63a5\u9a8c\u8bc1\u5931\u8d25(%s): %s", port, exc)
+        self.disconnect()
+        return False
 
     def _read_frame(self) -> bytes | None:
         if not self.is_connected:

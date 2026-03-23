@@ -28,7 +28,7 @@ def _handle_uncaught_exception(
         return
 
     details = "".join(traceback.format_exception(exc_type, exc, tb))
-    _LOGGER.error("Unhandled exception:\n%s", details)
+    _LOGGER.error("发生未处理异常:\n%s", details)
     QMessageBox.critical(
         None,
         "程序异常",

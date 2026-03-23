@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import logging
 import re
+import threading
 import time
 
 try:
@@ -24,6 +25,7 @@ class LCUSRelay:
     def __init__(self) -> None:
         self._serial = None
         self._timeout = 0.5
+        self._open_timeout_s = 1.2
         self._cached_states: dict[int, bool] = {}
         self._query_supported: bool | None = None
 
@@ -35,29 +37,22 @@ class LCUSRelay:
         if serial is None:
             raise RuntimeError("pyserial 未安装，无法连接继电器。")
         self.disconnect()
-        try:
-            self._serial = serial.Serial(  # type: ignore[attr-defined]
-                port=port,
-                baudrate=9600,
-                bytesize=serial.EIGHTBITS,
-                parity=serial.PARITY_NONE,
-                stopbits=serial.STOPBITS_ONE,
-                timeout=self._timeout,
-            )
-            self._cached_states.clear()
-            self._query_supported = None
-            try:
-                self._serial.reset_input_buffer()
-            except Exception:
-                pass
-            time.sleep(0.05)
-            return True
-        except Exception as exc:
-            _LOGGER.warning("继电器连接失败(%s): %s", port, exc)
+        serial_instance, error = self._open_serial_with_timeout(port)
+        if serial_instance is None:
+            _LOGGER.warning("继电器连接失败(%s): %s", port, error or "未知错误")
             self._serial = None
             self._cached_states.clear()
             self._query_supported = None
             return False
+        self._serial = serial_instance
+        self._cached_states.clear()
+        self._query_supported = None
+        try:
+            self._serial.reset_input_buffer()
+        except Exception:
+            pass
+        time.sleep(0.05)
+        return True
 
     def disconnect(self) -> None:
         if self._serial and getattr(self._serial, "is_open", False):
@@ -65,6 +60,45 @@ class LCUSRelay:
         self._serial = None
         self._cached_states.clear()
         self._query_supported = None
+
+    def _open_serial_with_timeout(self, port: str) -> tuple[object | None, str | None]:
+        holder: dict[str, object] = {}
+        done = threading.Event()
+        cancelled = threading.Event()
+
+        def open_port() -> None:
+            try:
+                serial_instance = serial.Serial(  # type: ignore[attr-defined]
+                    port=port,
+                    baudrate=9600,
+                    bytesize=serial.EIGHTBITS,
+                    parity=serial.PARITY_NONE,
+                    stopbits=serial.STOPBITS_ONE,
+                    timeout=self._timeout,
+                    write_timeout=self._timeout,
+                    xonxoff=False,
+                    rtscts=False,
+                    dsrdtr=False,
+                )
+                if cancelled.is_set():
+                    try:
+                        serial_instance.close()
+                    except Exception:
+                        pass
+                    return
+                holder["serial"] = serial_instance
+            except Exception as exc:  # noqa: BLE001
+                holder["error"] = str(exc)
+            finally:
+                done.set()
+
+        opener = threading.Thread(target=open_port, name=f"relay-open-{port}", daemon=True)
+        opener.start()
+        if not done.wait(self._open_timeout_s):
+            cancelled.set()
+            return None, f"打开串口超时（>{self._open_timeout_s:.1f}s）"
+        error = holder.get("error")
+        return holder.get("serial"), error if isinstance(error, str) else None
 
     def set_channel_state(self, channel: int, on: bool) -> None:
         self._write(build_switch_command(channel, on))
@@ -118,6 +152,25 @@ class LCUSRelay:
                 return False
         finally:
             self.disconnect()
+
+    def auto_connect(self, port: str, *, allow_open_only: bool = False) -> bool:
+        if not self.connect(port):
+            return False
+        try:
+            self.query_status()
+            return True
+        except Exception as exc:
+            if allow_open_only:
+                self._query_supported = False
+                _LOGGER.warning(
+                    "\u7ee7\u7535\u5668\u81ea\u52a8\u8fde\u63a5\u9a8c\u8bc1\u5931\u8d25(%s): %s\uff1b\u7531\u4e8e\u4ec5\u5269\u5355\u4e00\u5019\u9009\u4e32\u53e3\uff0c\u5c06\u6309\u4e32\u53e3\u6253\u5f00\u6210\u529f\u5904\u7406",
+                    port,
+                    exc,
+                )
+                return True
+            _LOGGER.warning("\u7ee7\u7535\u5668\u81ea\u52a8\u8fde\u63a5\u9a8c\u8bc1\u5931\u8d25(%s): %s", port, exc)
+            self.disconnect()
+            return False
 
     def _write(self, data: bytes) -> None:
         if not self.is_connected:
