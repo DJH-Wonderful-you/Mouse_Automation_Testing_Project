@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 from dataclasses import dataclass
 from html import escape
@@ -206,7 +206,7 @@ class PowerCycleTab(QWidget):
     def _create_main_control_group(self) -> QGroupBox:
         group = QGroupBox("主控区")
         layout = QVBoxLayout(group)
-        layout.setContentsMargins(12, 14, 12, 12)
+        layout.setContentsMargins(12, 10, 12, 12)
         layout.setSpacing(8)
 
         self.input_test_count = NoWheelSpinBox()
@@ -250,11 +250,6 @@ class PowerCycleTab(QWidget):
         self.btn_auto_connect = QPushButton("自动连接设备")
         self.btn_auto_connect.clicked.connect(self._auto_connect_devices)
 
-        top_row = QHBoxLayout()
-        top_row.addWidget(QLabel("测试次数："))
-        top_row.addWidget(self.input_test_count)
-        top_row.addStretch(1)
-
         sim_row = QHBoxLayout()
         sim_row.addWidget(QLabel("仿真开关："))
         sim_row.addWidget(self.check_sim_multimeter)
@@ -262,37 +257,26 @@ class PowerCycleTab(QWidget):
         sim_row.addWidget(self.check_sim_bluetooth)
         sim_row.addStretch(1)
 
-        policy_grid = QGridLayout()
-        policy_grid.addWidget(QLabel("状态超时："), 0, 0)
-        policy_grid.addWidget(self.input_state_timeout, 0, 1)
-        policy_grid.addWidget(QLabel("采样间隔："), 0, 2)
-        policy_grid.addWidget(self.input_sample_interval, 0, 3)
-        policy_grid.addWidget(QLabel("连续通过次数："), 1, 0)
-        policy_grid.addWidget(self.input_consecutive_pass, 1, 1)
-        policy_grid.setColumnStretch(4, 1)
-
         button_row = QHBoxLayout()
         button_row.addWidget(self.btn_auto_connect)
         button_row.addWidget(self.btn_start)
         button_row.addWidget(self.btn_stop)
         button_row.addStretch(1)
 
-        layout.addLayout(top_row)
         layout.addLayout(sim_row)
-        layout.addLayout(policy_grid)
         layout.addLayout(button_row)
         return group
-
     def _create_multimeter_group(self) -> QGroupBox:
         group = QGroupBox("万用表控制区")
         layout = QVBoxLayout(group)
-        layout.setContentsMargins(12, 14, 12, 12)
+        layout.setContentsMargins(12, 10, 12, 12)
         layout.setSpacing(8)
 
         self.input_voltage_threshold = NoWheelDoubleSpinBox()
         self.input_voltage_threshold.setRange(0.01, 1000.0)
         self.input_voltage_threshold.setDecimals(3)
         self.input_voltage_threshold.setValue(3.0)
+        self.input_voltage_threshold.setSuffix(" V")
 
         self.combo_multimeter_port = NoWheelComboBox()
         self.btn_refresh_ports = QPushButton("刷新串口")
@@ -307,12 +291,6 @@ class PowerCycleTab(QWidget):
         self.label_meter_status = QLabel("未连接")
         self.combo_multimeter_port.setMinimumWidth(240)
 
-        row_threshold = QHBoxLayout()
-        row_threshold.addWidget(QLabel("运行状态检测阈值（电压）："))
-        row_threshold.addWidget(self.input_voltage_threshold)
-        row_threshold.addWidget(QLabel("V"))
-        row_threshold.addStretch(1)
-
         row_port = QHBoxLayout()
         row_port.addWidget(QLabel("万用表串口："))
         row_port.addWidget(self.combo_multimeter_port, 1)
@@ -323,21 +301,16 @@ class PowerCycleTab(QWidget):
         row_actions.addWidget(self.btn_meter_disconnect)
         row_actions.addWidget(self.btn_meter_fetch)
         row_actions.addStretch(1)
+        row_actions.addWidget(QLabel("状态："))
+        row_actions.addWidget(self.label_meter_status)
 
-        row_status = QHBoxLayout()
-        row_status.addWidget(QLabel("状态："))
-        row_status.addWidget(self.label_meter_status, 1)
-
-        layout.addLayout(row_threshold)
         layout.addLayout(row_port)
         layout.addLayout(row_actions)
-        layout.addLayout(row_status)
         return group
-
     def _create_relay_group(self) -> QGroupBox:
         group = QGroupBox("继电器控制区")
         layout = QVBoxLayout(group)
-        layout.setContentsMargins(12, 14, 12, 12)
+        layout.setContentsMargins(12, 10, 12, 12)
         layout.setSpacing(8)
 
         self.input_interval = NoWheelDoubleSpinBox()
@@ -367,35 +340,23 @@ class PowerCycleTab(QWidget):
         self.label_relay_status = QLabel("未连接")
         self.combo_relay_port.setMinimumWidth(240)
 
-        row_basic = QHBoxLayout()
-        row_basic.addWidget(QLabel("上下电间隔时间："))
-        row_basic.addWidget(self.input_interval)
-        row_basic.addSpacing(10)
-        row_basic.addWidget(QLabel("被控继电器端口："))
-        row_basic.addWidget(self.input_relay_channel)
-        row_basic.addStretch(1)
-
         row_port = QHBoxLayout()
         row_port.addWidget(QLabel("继电器串口："))
         row_port.addWidget(self.combo_relay_port, 1)
         row_port.addWidget(self.btn_refresh_relay_ports)
+
         row_actions = QHBoxLayout()
         row_actions.addWidget(self.btn_relay_connect)
         row_actions.addWidget(self.btn_relay_disconnect)
         row_actions.addWidget(self.btn_relay_open_switch)
         row_actions.addWidget(self.btn_relay_close_switch)
         row_actions.addStretch(1)
+        row_actions.addWidget(QLabel("状态："))
+        row_actions.addWidget(self.label_relay_status)
 
-        row_status = QHBoxLayout()
-        row_status.addWidget(QLabel("状态："))
-        row_status.addWidget(self.label_relay_status, 1)
-
-        layout.addLayout(row_basic)
         layout.addLayout(row_port)
         layout.addLayout(row_actions)
-        layout.addLayout(row_status)
         return group
-
     def _create_bluetooth_group(self) -> QGroupBox:
         group = QGroupBox("蓝牙设备定位区")
         form = QFormLayout(group)
@@ -434,7 +395,7 @@ class PowerCycleTab(QWidget):
     def _create_progress_group(self) -> QGroupBox:
         group = QGroupBox("进度与统计")
         layout = QGridLayout(group)
-        layout.setContentsMargins(12, 14, 12, 12)
+        layout.setContentsMargins(12, 10, 12, 12)
         layout.setHorizontalSpacing(12)
         layout.setVerticalSpacing(6)
         self.progress = QProgressBar()
@@ -456,7 +417,7 @@ class PowerCycleTab(QWidget):
     def _create_log_group(self) -> QGroupBox:
         group = QGroupBox("运行日志")
         layout = QVBoxLayout(group)
-        layout.setContentsMargins(12, 14, 12, 12)
+        layout.setContentsMargins(12, 10, 12, 12)
         self.log_view = QTextEdit()
         self.log_view.setReadOnly(True)
         self.log_view.setPlaceholderText("日志将在此显示运行情况与错误提示。")
@@ -466,6 +427,65 @@ class PowerCycleTab(QWidget):
 
         layout.addWidget(self.log_view)
         layout.addWidget(btn_clear, alignment=Qt.AlignmentFlag.AlignRight)
+        return group
+
+    def create_settings_section(self) -> QGroupBox:
+        group = QGroupBox("上下电测试")
+        layout = QVBoxLayout(group)
+        layout.setContentsMargins(12, 10, 12, 12)
+        layout.setSpacing(10)
+
+        summary = QLabel("集中配置循环计划、状态判定和继电器执行参数，修改后自动保存，并在下次测试时生效。")
+        summary.setWordWrap(True)
+
+        layout.addWidget(summary)
+        layout.addWidget(self._create_cycle_plan_settings_group())
+        layout.addWidget(self._create_verification_settings_group())
+        layout.addWidget(self._create_relay_settings_group())
+        return group
+
+    def _create_cycle_plan_settings_group(self) -> QGroupBox:
+        group = QGroupBox("循环计划")
+        layout = QGridLayout(group)
+        layout.setContentsMargins(12, 10, 12, 12)
+        layout.setHorizontalSpacing(12)
+        layout.setVerticalSpacing(8)
+
+        layout.addWidget(QLabel("测试次数："), 0, 0)
+        layout.addWidget(self.input_test_count, 0, 1)
+        layout.setColumnStretch(2, 1)
+        return group
+
+    def _create_verification_settings_group(self) -> QGroupBox:
+        group = QGroupBox("状态判定")
+        layout = QGridLayout(group)
+        layout.setContentsMargins(12, 10, 12, 12)
+        layout.setHorizontalSpacing(12)
+        layout.setVerticalSpacing(8)
+
+        layout.addWidget(QLabel("状态判定超时："), 0, 0)
+        layout.addWidget(self.input_state_timeout, 0, 1)
+        layout.addWidget(QLabel("采样间隔："), 0, 2)
+        layout.addWidget(self.input_sample_interval, 0, 3)
+        layout.addWidget(QLabel("连续通过次数："), 1, 0)
+        layout.addWidget(self.input_consecutive_pass, 1, 1)
+        layout.addWidget(QLabel("运行判定电压阈值："), 1, 2)
+        layout.addWidget(self.input_voltage_threshold, 1, 3)
+        layout.setColumnStretch(4, 1)
+        return group
+
+    def _create_relay_settings_group(self) -> QGroupBox:
+        group = QGroupBox("继电器执行")
+        layout = QGridLayout(group)
+        layout.setContentsMargins(12, 10, 12, 12)
+        layout.setHorizontalSpacing(12)
+        layout.setVerticalSpacing(8)
+
+        layout.addWidget(QLabel("上下电间隔："), 0, 0)
+        layout.addWidget(self.input_interval, 0, 1)
+        layout.addWidget(QLabel("继电器控制端口："), 0, 2)
+        layout.addWidget(self.input_relay_channel, 0, 3)
+        layout.setColumnStretch(4, 1)
         return group
 
     def _load_settings_into_ui(self) -> None:

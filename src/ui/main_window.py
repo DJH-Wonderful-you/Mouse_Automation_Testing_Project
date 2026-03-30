@@ -21,6 +21,7 @@ from src.ui.styles import app_stylesheet
 from src.ui.tabs.help_tab import HelpTab
 from src.ui.tabs.placeholders import PlaceholderTab
 from src.ui.tabs.power_cycle_tab import PowerCycleTab
+from src.ui.tabs.settings_tab import SettingsTab
 
 
 class MainWindow(QMainWindow):
@@ -58,9 +59,10 @@ class MainWindow(QMainWindow):
                 "休眠唤醒测试",
                 PlaceholderTab(
                     "休眠唤醒测试",
-                    "用于验证设备休眠与唤醒流程，重点关注唤醒后响应和连接恢复时延。",
+                    "用于验证设备休眠与唤醒流程，重点关注唤醒后的响应和连接恢复时延。",
                 ),
             ),
+            ("设置", SettingsTab(self._power_cycle_tab)),
             ("帮助", HelpTab()),
         ]
 
@@ -195,4 +197,3 @@ class MainWindow(QMainWindow):
     def closeEvent(self, event: QCloseEvent) -> None:  # noqa: N802
         self._power_cycle_tab.shutdown()
         super().closeEvent(event)
-
