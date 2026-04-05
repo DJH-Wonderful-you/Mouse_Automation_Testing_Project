@@ -6,11 +6,17 @@ from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QGroupBox, QLabel, QScrollArea, QVBoxLayout, QWidget
 
 if TYPE_CHECKING:
+    from src.ui.tabs.bluetooth_connection_tab import BluetoothConnectionTab
     from src.ui.tabs.power_cycle_tab import PowerCycleTab
 
 
 class SettingsTab(QWidget):
-    def __init__(self, power_cycle_tab: PowerCycleTab, parent: QWidget | None = None) -> None:
+    def __init__(
+        self,
+        power_cycle_tab: PowerCycleTab,
+        bluetooth_connection_tab: BluetoothConnectionTab,
+        parent: QWidget | None = None,
+    ) -> None:
         super().__init__(parent)
         layout = QVBoxLayout(self)
         layout.setContentsMargins(14, 14, 14, 14)
@@ -27,12 +33,7 @@ class SettingsTab(QWidget):
         content_layout.setContentsMargins(0, 0, 0, 0)
         content_layout.setSpacing(10)
         content_layout.addWidget(power_cycle_tab.create_settings_section())
-        content_layout.addWidget(
-            self._create_placeholder_section(
-                "蓝牙连接测试",
-                "该测试项的独立设置区域预留在此，后续补充连接策略、重试条件和判定规则。",
-            )
-        )
+        content_layout.addWidget(bluetooth_connection_tab.create_settings_section())
         content_layout.addWidget(
             self._create_placeholder_section(
                 "蓝牙开关测试",

@@ -4,11 +4,12 @@ from typing import Any
 
 from PySide6.QtCore import QSettings
 
-from src.core.types import AppSettings
+from src.core.types import AppSettings, BluetoothConnectSettings
 
 _ORG_NAME = "RJHZ"
 _APP_NAME = "MouseAutomationTool"
-_GROUP_NAME = "power_cycle"
+_GROUP_POWER_CYCLE = "power_cycle"
+_GROUP_BLUETOOTH_CONNECT = "bluetooth_connect"
 
 
 class ConfigStore:
@@ -16,8 +17,14 @@ class ConfigStore:
         self._settings = settings or QSettings(_ORG_NAME, _APP_NAME)
 
     def load(self) -> AppSettings:
+        return self.load_power_cycle()
+
+    def save(self, config: AppSettings) -> None:
+        self.save_power_cycle(config)
+
+    def load_power_cycle(self) -> AppSettings:
         defaults = AppSettings()
-        self._settings.beginGroup(_GROUP_NAME)
+        self._settings.beginGroup(_GROUP_POWER_CYCLE)
         try:
             legacy_sim = self._read_bool("simulation_mode", defaults.simulation_mode)
             return AppSettings(
@@ -55,8 +62,8 @@ class ConfigStore:
         finally:
             self._settings.endGroup()
 
-    def save(self, config: AppSettings) -> None:
-        self._settings.beginGroup(_GROUP_NAME)
+    def save_power_cycle(self, config: AppSettings) -> None:
+        self._settings.beginGroup(_GROUP_POWER_CYCLE)
         try:
             self._settings.setValue("test_count", config.test_count)
             self._settings.setValue("voltage_threshold_v", config.voltage_threshold_v)
@@ -85,6 +92,56 @@ class ConfigStore:
             self._settings.setValue(
                 "consecutive_pass_needed", config.consecutive_pass_needed
             )
+            self._settings.sync()
+        finally:
+            self._settings.endGroup()
+
+    def load_bluetooth_connect(self) -> BluetoothConnectSettings:
+        defaults = BluetoothConnectSettings()
+        self._settings.beginGroup(_GROUP_BLUETOOTH_CONNECT)
+        try:
+            return BluetoothConnectSettings(
+                test_count=self._read_int("test_count", defaults.test_count),
+                relay_port=self._read_str("relay_port", defaults.relay_port),
+                bt_name_keyword=self._read_str(
+                    "bt_name_keyword", defaults.bt_name_keyword
+                ),
+                bt_mac=self._read_str("bt_mac", defaults.bt_mac),
+                bt_match_mode=self._read_bt_mode(defaults.bt_match_mode),
+                mode_relay_channel=self._read_int(
+                    "mode_relay_channel", defaults.mode_relay_channel
+                ),
+                pairing_relay_channel=self._read_int(
+                    "pairing_relay_channel", defaults.pairing_relay_channel
+                ),
+                pairing_press_ms=self._read_int(
+                    "pairing_press_ms", defaults.pairing_press_ms
+                ),
+                state_timeout_ms=self._read_int(
+                    "state_timeout_ms", defaults.state_timeout_ms
+                ),
+                sample_interval_ms=self._read_int(
+                    "sample_interval_ms", defaults.sample_interval_ms
+                ),
+            )
+        finally:
+            self._settings.endGroup()
+
+    def save_bluetooth_connect(self, config: BluetoothConnectSettings) -> None:
+        self._settings.beginGroup(_GROUP_BLUETOOTH_CONNECT)
+        try:
+            self._settings.setValue("test_count", config.test_count)
+            self._settings.setValue("relay_port", config.relay_port)
+            self._settings.setValue("bt_name_keyword", config.bt_name_keyword)
+            self._settings.setValue("bt_mac", config.bt_mac)
+            self._settings.setValue("bt_match_mode", config.bt_match_mode)
+            self._settings.setValue("mode_relay_channel", config.mode_relay_channel)
+            self._settings.setValue(
+                "pairing_relay_channel", config.pairing_relay_channel
+            )
+            self._settings.setValue("pairing_press_ms", config.pairing_press_ms)
+            self._settings.setValue("state_timeout_ms", config.state_timeout_ms)
+            self._settings.setValue("sample_interval_ms", config.sample_interval_ms)
             self._settings.sync()
         finally:
             self._settings.endGroup()
@@ -142,4 +199,19 @@ def to_settings_snapshot(config: AppSettings) -> dict[str, Any]:
         "state_timeout_ms": config.state_timeout_ms,
         "sample_interval_ms": config.sample_interval_ms,
         "consecutive_pass_needed": config.consecutive_pass_needed,
+    }
+
+
+def to_bluetooth_connect_snapshot(config: BluetoothConnectSettings) -> dict[str, Any]:
+    return {
+        "test_count": config.test_count,
+        "relay_port": config.relay_port,
+        "bt_name_keyword": config.bt_name_keyword,
+        "bt_mac": config.bt_mac,
+        "bt_match_mode": config.bt_match_mode,
+        "mode_relay_channel": config.mode_relay_channel,
+        "pairing_relay_channel": config.pairing_relay_channel,
+        "pairing_press_ms": config.pairing_press_ms,
+        "state_timeout_ms": config.state_timeout_ms,
+        "sample_interval_ms": config.sample_interval_ms,
     }

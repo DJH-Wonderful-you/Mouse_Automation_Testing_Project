@@ -43,6 +43,20 @@ class VerificationPolicy:
 
 
 @dataclass(slots=True)
+class BluetoothConnectSettings:
+    test_count: int = 100
+    relay_port: str = ""
+    bt_name_keyword: str = ""
+    bt_mac: str = ""
+    bt_match_mode: BtMatchMode = "name_or_mac"
+    mode_relay_channel: int = 1
+    pairing_relay_channel: int = 2
+    pairing_press_ms: int = 2000
+    state_timeout_ms: int = 15000
+    sample_interval_ms: int = 500
+
+
+@dataclass(slots=True)
 class CycleResult:
     index: int
     success: bool
@@ -58,3 +72,15 @@ class RunSummary:
     success_count: int
     fail_count: int
     success_rate: float
+
+
+@dataclass(slots=True)
+class BluetoothConnectCycleResult:
+    index: int
+    success: bool
+    reason: str
+    paired_before_cycle: bool = False
+    removed_before_cycle: bool = False
+    paired_after_pairing: bool = False
+    connected_after_pairing: bool = False
+    removed_after_cycle: bool = False

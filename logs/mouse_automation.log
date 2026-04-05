@@ -2328,3 +2328,630 @@
 2026-03-30 22:34:03,366 [INFO] ui.power_cycle - 仿真设置更新：万用表=开, 继电器=关, 蓝牙=开
 2026-03-30 22:34:03,382 [INFO] ui.power_cycle - 串口刷新完成，共发现 2 个端口。
 2026-03-30 22:36:30,112 [INFO] ui.power_cycle - 配置已保存。
+2026-04-05 20:50:39,861 [INFO] ui.power_cycle - 仿真设置更新：万用表=开, 继电器=关, 蓝牙=开
+2026-04-05 20:50:39,877 [INFO] ui.power_cycle - 串口刷新完成，共发现 2 个端口。
+2026-04-05 21:54:40,419 [INFO] ui.power_cycle - 配置已保存。
+2026-04-05 22:09:59,927 [INFO] ui.power_cycle - 仿真设置更新：万用表=开, 继电器=关, 蓝牙=开
+2026-04-05 22:09:59,939 [INFO] ui.power_cycle - 串口刷新完成，共发现 2 个端口。
+2026-04-05 22:09:59,958 [INFO] ui.bluetooth_connection - 串口刷新完成，共发现 2 个端口。
+2026-04-05 22:12:27,152 [INFO] ui.bluetooth_connection - 开始自动识别继电器设备，请稍候...
+2026-04-05 22:12:27,796 [WARNING] relay - 继电器自动连接验证失败(COM5): 继电器状态解析失败，原始数据: <empty>；由于仅剩单一候选串口，将按串口打开成功处理
+2026-04-05 22:12:27,797 [INFO] ui.bluetooth_connection - 候选继电器串口：COM3, COM5, COM4
+2026-04-05 22:12:27,798 [INFO] ui.bluetooth_connection - 已尝试继电器端口：COM5
+2026-04-05 22:12:27,812 [INFO] ui.bluetooth_connection - 自动识别继电器成功: COM5
+2026-04-05 22:12:31,662 [INFO] ui.bluetooth_connection - 已发送手动继电器命令：蓝牙模式通道=1，状态=打开
+2026-04-05 22:12:32,789 [INFO] ui.bluetooth_connection - 已发送手动继电器命令：蓝牙模式通道=1，状态=关闭
+2026-04-05 22:12:34,766 [INFO] ui.bluetooth_connection - 已发送手动继电器命令：蓝牙模式通道=1，状态=关闭
+2026-04-05 22:12:38,108 [INFO] ui.bluetooth_connection - 开始手动触发配对模式：通道2 打开 2.000s。
+2026-04-05 22:12:40,228 [INFO] ui.bluetooth_connection - 手动配对模式触发完成：通道2 已自动关闭，持续 2.000s。
+2026-04-05 22:12:58,589 [INFO] ui.bluetooth_connection - 开始检测已配对蓝牙设备...
+2026-04-05 22:12:58,842 [INFO] ui.bluetooth_connection - 检测到 6 个蓝牙相关设备：
+2026-04-05 22:12:58,843 [INFO] ui.bluetooth_connection -   - 名称=Logi M750 | 状态=已连接 | MAC=D5:E7:15:41:4C:B0 | 类别=Bluetooth | 实例ID=BTHLE\Dev_d5e715414cb0\7&1679758c&0&d5e715414cb0
+2026-04-05 22:12:58,844 [INFO] ui.bluetooth_connection -   - 名称=SUNWINON Mouse MOCO | 状态=已连接 | MAC=D1:02:12:03:7B:B6 | 类别=Bluetooth | 实例ID=BTHLE\Dev_d10212037bb6\7&1679758c&0&d10212037bb6
+2026-04-05 22:12:58,845 [INFO] ui.bluetooth_connection -   - 名称=LOWA Mouse | 状态=已连接 | MAC=F0:61:EE:A2:D5:A0 | 类别=Bluetooth | 实例ID=BTHLE\Dev_f061eea2d5a0\7&1679758c&0&f061eea2d5a0
+2026-04-05 22:12:58,846 [INFO] ui.bluetooth_connection -   - 名称=TONEMAC HS1 | 状态=已连接 | MAC=F4:4E:FE:00:11:4C | 类别=Bluetooth | 实例ID=BTHENUM\Dev_F44EFE00114C\7&3b5ef62b&1&BluetoothDevice_F44EFE00114C
+2026-04-05 22:12:58,847 [INFO] ui.bluetooth_connection -   - 名称=Logi M750 | 状态=已连接 | MAC=D5:E7:15:41:4C:B2 | 类别=Bluetooth | 实例ID=BTHLE\Dev_d5e715414cb2\7&1679758c&0&d5e715414cb2
+2026-04-05 22:12:58,849 [INFO] ui.bluetooth_connection -   - 名称=HUAWEI FreeBuds 5i | 状态=已连接 | MAC=14:51:20:FF:A1:14 | 类别=Bluetooth | 实例ID=BTHENUM\Dev_145120FFA114\7&3b5ef62b&1&BluetoothDevice_145120FFA114
+2026-04-05 22:13:13,643 [INFO] ui.bluetooth_connection - 开始检查蓝牙连接状态（匹配模式: 名称或 MAC | 条件: 名称关键字=Logi M750）...
+2026-04-05 22:13:13,880 [INFO] ui.bluetooth_connection - 匹配到 2 个设备：
+2026-04-05 22:13:13,882 [INFO] ui.bluetooth_connection -   - 名称=Logi M750 | 状态=已连接 | MAC=D5:E7:15:41:4C:B0 | 类别=Bluetooth | 实例ID=BTHLE\Dev_d5e715414cb0\7&1679758c&0&d5e715414cb0 | 连接状态=已连接
+2026-04-05 22:13:13,884 [INFO] ui.bluetooth_connection -   - 名称=Logi M750 | 状态=已连接 | MAC=D5:E7:15:41:4C:B2 | 类别=Bluetooth | 实例ID=BTHLE\Dev_d5e715414cb2\7&1679758c&0&d5e715414cb2 | 连接状态=已连接
+2026-04-05 22:13:13,884 [INFO] ui.bluetooth_connection - 蓝牙检查结果: 已连接
+2026-04-05 22:13:52,708 [INFO] ui.bluetooth_connection - 配置已保存。
+2026-04-05 22:13:52,714 [INFO] ui.bluetooth_connection - 测试线程启动。
+2026-04-05 22:13:52,719 [INFO] ui.bluetooth_connection - 蓝牙连接测试开始，总轮次: 100
+2026-04-05 22:13:52,768 [INFO] ui.bluetooth_connection - [第1轮] 切换鼠标到蓝牙模式: 通道1打开命令已发送。
+2026-04-05 22:13:53,089 [INFO] ui.bluetooth_connection - [第1轮] 检测到 2 个已配对目标设备，先执行删除配对。
+2026-04-05 22:13:53,090 [INFO] ui.bluetooth_connection - [第1轮] 测试前清理：开始删除已配对蓝牙设备。
+2026-04-05 22:13:53,091 [INFO] ui.bluetooth_connection - 尝试删除已配对设备节点: BTHLE\Dev_d5e715414cb0\7&1679758c&0&d5e715414cb0
+2026-04-05 22:13:53,140 [INFO] ui.bluetooth_connection - 尝试删除已配对设备节点: BTHLE\Dev_d5e715414cb2\7&1679758c&0&d5e715414cb2
+2026-04-05 22:14:08,611 [WARNING] ui.bluetooth_connection - [第1轮] 失败 | 原因: 测试前删除配对失败: 删除已配对设备失败: BTHLE\Dev_d5e715414cb0\7&1679758c&0&d5e715414cb0: Microsoft PnP 工具
+
+无法删除设备:  BTHLE\Dev_d5e715414cb0\7&1679758c&0&d5e715414cb0
+拒绝访问。; BTHLE\Dev_d5e715414cb2\7&1679758c&0&d5e715414cb2: Microsoft PnP 工具
+
+无法删除设备:  BTHLE\Dev_d5e715414cb2\7&1679758c&0&d5e715414cb2
+拒绝访问。
+2026-04-05 22:14:08,618 [INFO] ui.bluetooth_connection - [第2轮] 蓝牙模式通道1已处于打开状态。
+2026-04-05 22:14:08,849 [INFO] ui.bluetooth_connection - [第2轮] 检测到 2 个已配对目标设备，先执行删除配对。
+2026-04-05 22:14:08,850 [INFO] ui.bluetooth_connection - [第2轮] 测试前清理：开始删除已配对蓝牙设备。
+2026-04-05 22:14:08,852 [INFO] ui.bluetooth_connection - 尝试删除已配对设备节点: BTHLE\Dev_d5e715414cb0\7&1679758c&0&d5e715414cb0
+2026-04-05 22:14:08,900 [INFO] ui.bluetooth_connection - 尝试删除已配对设备节点: BTHLE\Dev_d5e715414cb2\7&1679758c&0&d5e715414cb2
+2026-04-05 22:14:17,827 [WARNING] ui.bluetooth_connection - 已请求停止测试。
+2026-04-05 22:14:24,011 [WARNING] ui.bluetooth_connection - [第2轮] 失败 | 原因: 测试前删除配对失败: 删除已配对设备失败: BTHLE\Dev_d5e715414cb0\7&1679758c&0&d5e715414cb0: Microsoft PnP 工具
+
+无法删除设备:  BTHLE\Dev_d5e715414cb0\7&1679758c&0&d5e715414cb0
+拒绝访问。; BTHLE\Dev_d5e715414cb2\7&1679758c&0&d5e715414cb2: Microsoft PnP 工具
+
+无法删除设备:  BTHLE\Dev_d5e715414cb2\7&1679758c&0&d5e715414cb2
+拒绝访问。
+2026-04-05 22:14:24,014 [WARNING] ui.bluetooth_connection - 检测到停止请求，测试提前结束。
+2026-04-05 22:14:24,020 [INFO] ui.bluetooth_connection - 蓝牙连接测试结束：成功 0，失败 2，成功率 0.00%
+2026-04-05 22:14:24,022 [INFO] ui.bluetooth_connection - 测试完成。成功 0，失败 2，成功率 0.00%
+2026-04-05 22:15:07,971 [INFO] ui.bluetooth_connection - 开始检测已配对蓝牙设备...
+2026-04-05 22:15:08,309 [INFO] ui.bluetooth_connection - 检测到 5 个蓝牙相关设备：
+2026-04-05 22:15:08,310 [INFO] ui.bluetooth_connection -   - 名称=SUNWINON Mouse MOCO | 状态=已连接 | MAC=D1:02:12:03:7B:B6 | 类别=Bluetooth | 实例ID=BTHLE\Dev_d10212037bb6\7&1679758c&0&d10212037bb6
+2026-04-05 22:15:08,311 [INFO] ui.bluetooth_connection -   - 名称=LOWA Mouse | 状态=已连接 | MAC=F0:61:EE:A2:D5:A0 | 类别=Bluetooth | 实例ID=BTHLE\Dev_f061eea2d5a0\7&1679758c&0&f061eea2d5a0
+2026-04-05 22:15:08,312 [INFO] ui.bluetooth_connection -   - 名称=TONEMAC HS1 | 状态=已连接 | MAC=F4:4E:FE:00:11:4C | 类别=Bluetooth | 实例ID=BTHENUM\Dev_F44EFE00114C\7&3b5ef62b&1&BluetoothDevice_F44EFE00114C
+2026-04-05 22:15:08,313 [INFO] ui.bluetooth_connection -   - 名称=Logi M750 | 状态=已连接 | MAC=D5:E7:15:41:4C:B2 | 类别=Bluetooth | 实例ID=BTHLE\Dev_d5e715414cb2\7&1679758c&0&d5e715414cb2
+2026-04-05 22:15:08,315 [INFO] ui.bluetooth_connection -   - 名称=HUAWEI FreeBuds 5i | 状态=已连接 | MAC=14:51:20:FF:A1:14 | 类别=Bluetooth | 实例ID=BTHENUM\Dev_145120FFA114\7&3b5ef62b&1&BluetoothDevice_145120FFA114
+2026-04-05 22:15:09,915 [INFO] ui.bluetooth_connection - 开始检查蓝牙连接状态（匹配模式: 名称或 MAC | 条件: 名称关键字=Logi M750）...
+2026-04-05 22:15:10,012 [INFO] ui.bluetooth_connection - 匹配到 2 个设备：
+2026-04-05 22:15:10,013 [INFO] ui.bluetooth_connection -   - 名称=Logi M750 | 状态=已连接 | MAC=D5:E7:15:41:4C:B0 | 类别=Bluetooth | 实例ID=BTHLE\Dev_d5e715414cb0\7&1679758c&0&d5e715414cb0 | 连接状态=已连接
+2026-04-05 22:15:10,016 [INFO] ui.bluetooth_connection -   - 名称=Logi M750 | 状态=已连接 | MAC=D5:E7:15:41:4C:B2 | 类别=Bluetooth | 实例ID=BTHLE\Dev_d5e715414cb2\7&1679758c&0&d5e715414cb2 | 连接状态=已连接
+2026-04-05 22:15:10,017 [INFO] ui.bluetooth_connection - 蓝牙检查结果: 已连接
+2026-04-05 22:15:13,475 [INFO] ui.bluetooth_connection - 开始检查蓝牙连接状态（匹配模式: 名称或 MAC | 条件: 名称关键字=Logi M750）...
+2026-04-05 22:15:13,567 [INFO] ui.bluetooth_connection - 匹配到 2 个设备：
+2026-04-05 22:15:13,568 [INFO] ui.bluetooth_connection -   - 名称=Logi M750 | 状态=已连接 | MAC=D5:E7:15:41:4C:B0 | 类别=Bluetooth | 实例ID=BTHLE\Dev_d5e715414cb0\7&1679758c&0&d5e715414cb0 | 连接状态=已连接
+2026-04-05 22:15:13,569 [INFO] ui.bluetooth_connection -   - 名称=Logi M750 | 状态=已连接 | MAC=D5:E7:15:41:4C:B2 | 类别=Bluetooth | 实例ID=BTHLE\Dev_d5e715414cb2\7&1679758c&0&d5e715414cb2 | 连接状态=已连接
+2026-04-05 22:15:13,570 [INFO] ui.bluetooth_connection - 蓝牙检查结果: 已连接
+2026-04-05 22:15:32,882 [INFO] ui.bluetooth_connection - 开始检查蓝牙连接状态（匹配模式: 名称或 MAC | 条件: 名称关键字=Logi M750）...
+2026-04-05 22:15:33,012 [INFO] ui.bluetooth_connection - 匹配到 2 个设备：
+2026-04-05 22:15:33,015 [INFO] ui.bluetooth_connection -   - 名称=Logi M750 | 状态=已连接 | MAC=D5:E7:15:41:4C:B0 | 类别=Bluetooth | 实例ID=BTHLE\Dev_d5e715414cb0\7&1679758c&0&d5e715414cb0 | 连接状态=已连接
+2026-04-05 22:15:33,017 [INFO] ui.bluetooth_connection -   - 名称=Logi M750 | 状态=已连接 | MAC=D5:E7:15:41:4C:B2 | 类别=Bluetooth | 实例ID=BTHLE\Dev_d5e715414cb2\7&1679758c&0&d5e715414cb2 | 连接状态=已连接
+2026-04-05 22:15:33,017 [INFO] ui.bluetooth_connection - 蓝牙检查结果: 已连接
+2026-04-05 22:15:40,794 [INFO] ui.bluetooth_connection - 开始删除已配对蓝牙设备...
+2026-04-05 22:15:41,023 [INFO] bluetooth.pairing - 尝试删除已配对设备节点: BTHLE\Dev_d5e715414cb2\7&1679758c&0&d5e715414cb2
+2026-04-05 22:15:56,735 [ERROR] ui.bluetooth_connection - 删除已配对设备失败: BTHLE\Dev_d5e715414cb2\7&1679758c&0&d5e715414cb2: Microsoft PnP 工具
+
+无法删除设备:  BTHLE\Dev_d5e715414cb2\7&1679758c&0&d5e715414cb2
+拒绝访问。
+2026-04-05 22:16:17,082 [INFO] ui.power_cycle - 配置已保存。
+2026-04-05 22:16:17,085 [INFO] ui.bluetooth_connection - 配置已保存。
+2026-04-05 22:16:21,600 [INFO] ui.power_cycle - 仿真设置更新：万用表=开, 继电器=关, 蓝牙=开
+2026-04-05 22:16:21,615 [INFO] ui.power_cycle - 串口刷新完成，共发现 3 个端口。
+2026-04-05 22:16:21,634 [INFO] ui.bluetooth_connection - 串口刷新完成，共发现 3 个端口。
+2026-04-05 22:16:26,528 [INFO] ui.bluetooth_connection - 继电器连接成功: COM5
+2026-04-05 22:16:31,090 [INFO] ui.bluetooth_connection - 开始检测已配对蓝牙设备...
+2026-04-05 22:16:31,388 [INFO] ui.bluetooth_connection - 检测到 5 个蓝牙相关设备：
+2026-04-05 22:16:31,390 [INFO] ui.bluetooth_connection -   - 名称=SUNWINON Mouse MOCO | 状态=已连接 | MAC=D1:02:12:03:7B:B6 | 类别=Bluetooth | 实例ID=BTHLE\Dev_d10212037bb6\7&1679758c&0&d10212037bb6
+2026-04-05 22:16:31,391 [INFO] ui.bluetooth_connection -   - 名称=LOWA Mouse | 状态=已连接 | MAC=F0:61:EE:A2:D5:A0 | 类别=Bluetooth | 实例ID=BTHLE\Dev_f061eea2d5a0\7&1679758c&0&f061eea2d5a0
+2026-04-05 22:16:31,392 [INFO] ui.bluetooth_connection -   - 名称=TONEMAC HS1 | 状态=已连接 | MAC=F4:4E:FE:00:11:4C | 类别=Bluetooth | 实例ID=BTHENUM\Dev_F44EFE00114C\7&3b5ef62b&1&BluetoothDevice_F44EFE00114C
+2026-04-05 22:16:31,394 [INFO] ui.bluetooth_connection -   - 名称=Logi M750 | 状态=已连接 | MAC=D5:E7:15:41:4C:B2 | 类别=Bluetooth | 实例ID=BTHLE\Dev_d5e715414cb2\7&1679758c&0&d5e715414cb2
+2026-04-05 22:16:31,395 [INFO] ui.bluetooth_connection -   - 名称=HUAWEI FreeBuds 5i | 状态=已连接 | MAC=14:51:20:FF:A1:14 | 类别=Bluetooth | 实例ID=BTHENUM\Dev_145120FFA114\7&3b5ef62b&1&BluetoothDevice_145120FFA114
+2026-04-05 22:16:32,498 [INFO] ui.bluetooth_connection - 开始检查蓝牙连接状态（匹配模式: 名称或 MAC | 条件: 名称关键字=Logi M750）...
+2026-04-05 22:16:32,710 [INFO] ui.bluetooth_connection - 匹配到 1 个设备：
+2026-04-05 22:16:32,711 [INFO] ui.bluetooth_connection -   - 名称=Logi M750 | 状态=已连接 | MAC=D5:E7:15:41:4C:B2 | 类别=Bluetooth | 实例ID=BTHLE\Dev_d5e715414cb2\7&1679758c&0&d5e715414cb2 | 连接状态=已连接
+2026-04-05 22:16:32,713 [INFO] ui.bluetooth_connection - 蓝牙检查结果: 已连接
+2026-04-05 22:16:37,086 [INFO] ui.bluetooth_connection - 配置已保存。
+2026-04-05 22:16:37,093 [INFO] ui.bluetooth_connection - 测试线程启动。
+2026-04-05 22:16:37,102 [INFO] ui.bluetooth_connection - 蓝牙连接测试开始，总轮次: 100
+2026-04-05 22:16:37,663 [WARNING] ui.bluetooth_connection - [第1轮] 读取蓝牙模式通道1状态失败，将直接下发打开命令: 继电器状态解析失败，原始数据: <empty>
+2026-04-05 22:16:37,713 [INFO] ui.bluetooth_connection - [第1轮] 切换鼠标到蓝牙模式: 通道1打开命令已发送。
+2026-04-05 22:16:38,010 [INFO] ui.bluetooth_connection - [第1轮] 检测到 1 个已配对目标设备，先执行删除配对。
+2026-04-05 22:16:38,012 [INFO] ui.bluetooth_connection - [第1轮] 测试前清理：开始删除已配对蓝牙设备。
+2026-04-05 22:16:38,013 [INFO] ui.bluetooth_connection - 尝试删除已配对设备节点: BTHLE\Dev_d5e715414cb2\7&1679758c&0&d5e715414cb2
+2026-04-05 22:16:53,699 [WARNING] ui.bluetooth_connection - [第1轮] 失败 | 原因: 测试前删除配对失败: 删除已配对设备失败: BTHLE\Dev_d5e715414cb2\7&1679758c&0&d5e715414cb2: Microsoft PnP 工具
+
+无法删除设备:  BTHLE\Dev_d5e715414cb2\7&1679758c&0&d5e715414cb2
+拒绝访问。
+2026-04-05 22:16:53,750 [INFO] ui.bluetooth_connection - [第2轮] 切换鼠标到蓝牙模式: 通道1打开命令已发送。
+2026-04-05 22:16:54,039 [INFO] ui.bluetooth_connection - [第2轮] 检测到 1 个已配对目标设备，先执行删除配对。
+2026-04-05 22:16:54,043 [INFO] ui.bluetooth_connection - [第2轮] 测试前清理：开始删除已配对蓝牙设备。
+2026-04-05 22:16:54,043 [INFO] ui.bluetooth_connection - 尝试删除已配对设备节点: BTHLE\Dev_d5e715414cb2\7&1679758c&0&d5e715414cb2
+2026-04-05 22:16:55,594 [WARNING] ui.bluetooth_connection - 已请求停止测试。
+2026-04-05 22:17:09,706 [WARNING] ui.bluetooth_connection - [第2轮] 失败 | 原因: 测试前删除配对失败: 删除已配对设备失败: BTHLE\Dev_d5e715414cb2\7&1679758c&0&d5e715414cb2: Microsoft PnP 工具
+
+无法删除设备:  BTHLE\Dev_d5e715414cb2\7&1679758c&0&d5e715414cb2
+拒绝访问。
+2026-04-05 22:17:09,713 [WARNING] ui.bluetooth_connection - 检测到停止请求，测试提前结束。
+2026-04-05 22:17:09,714 [INFO] ui.bluetooth_connection - 蓝牙连接测试结束：成功 0，失败 2，成功率 0.00%
+2026-04-05 22:17:09,715 [INFO] ui.bluetooth_connection - 测试完成。成功 0，失败 2，成功率 0.00%
+2026-04-05 22:34:50,634 [INFO] ui.power_cycle - 配置已保存。
+2026-04-05 22:34:50,636 [INFO] ui.bluetooth_connection - 配置已保存。
+2026-04-05 22:34:52,554 [INFO] ui.power_cycle - 仿真设置更新：万用表=开, 继电器=关, 蓝牙=开
+2026-04-05 22:34:52,571 [INFO] ui.power_cycle - 串口刷新完成，共发现 3 个端口。
+2026-04-05 22:34:52,594 [INFO] ui.bluetooth_connection - 串口刷新完成，共发现 3 个端口。
+2026-04-05 22:34:58,825 [INFO] ui.bluetooth_connection - 开始自动识别继电器设备，请稍候...
+2026-04-05 22:34:59,466 [WARNING] relay - 继电器自动连接验证失败(COM5): 继电器状态解析失败，原始数据: <empty>；由于仅剩单一候选串口，将按串口打开成功处理
+2026-04-05 22:34:59,467 [INFO] ui.bluetooth_connection - 候选继电器串口：COM3, COM5, COM4
+2026-04-05 22:34:59,468 [INFO] ui.bluetooth_connection - 已尝试继电器端口：COM5
+2026-04-05 22:34:59,469 [INFO] ui.bluetooth_connection - 自动识别继电器成功: COM5
+2026-04-05 22:35:01,834 [INFO] ui.bluetooth_connection - 开始检查蓝牙连接状态（匹配模式: 名称或 MAC | 条件: 名称关键字=Logi M750）...
+2026-04-05 22:35:02,060 [INFO] ui.bluetooth_connection - 匹配到 1 个设备：
+2026-04-05 22:35:02,061 [INFO] ui.bluetooth_connection -   - 名称=Logi M750 | 状态=已连接 | MAC=D5:E7:15:41:4C:B2 | 类别=Bluetooth | 实例ID=BTHLE\Dev_d5e715414cb2\7&1679758c&0&d5e715414cb2 | 连接状态=已连接
+2026-04-05 22:35:02,062 [INFO] ui.bluetooth_connection - 蓝牙检查结果: 已连接
+2026-04-05 22:35:06,034 [INFO] ui.bluetooth_connection - 配置已保存。
+2026-04-05 22:35:06,039 [INFO] ui.bluetooth_connection - 测试线程启动。
+2026-04-05 22:35:06,045 [INFO] ui.bluetooth_connection - 蓝牙连接测试开始，总轮次: 100
+2026-04-05 22:35:06,611 [WARNING] ui.bluetooth_connection - [第1轮] 读取蓝牙模式通道1状态失败，将直接下发打开命令: 继电器状态解析失败，原始数据: <empty>
+2026-04-05 22:35:06,663 [INFO] ui.bluetooth_connection - [第1轮] 切换鼠标到蓝牙模式: 通道1打开命令已发送。
+2026-04-05 22:35:06,976 [INFO] ui.bluetooth_connection - [第1轮] 检测到 1 个已配对目标设备，先执行删除配对。
+2026-04-05 22:35:06,978 [INFO] ui.bluetooth_connection - [第1轮] 测试前清理：开始删除已配对蓝牙设备。
+2026-04-05 22:35:06,979 [INFO] ui.bluetooth_connection - 开始调用系统蓝牙设置页执行删除配对。
+2026-04-05 22:35:09,930 [INFO] ui.bluetooth_connection - 尝试删除已配对设备节点: BTHLE\Dev_d5e715414cb2\7&1679758c&0&d5e715414cb2
+2026-04-05 22:35:25,172 [WARNING] ui.bluetooth_connection - [第1轮] 失败 | 原因: 测试前删除配对失败: 删除已配对设备失败: 设置页删除配对失败: 无法将 [ref] 应用于不存在的变量。; BTHLE\Dev_d5e715414cb2\7&1679758c&0&d5e715414cb2: Microsoft PnP 工具
+
+无法删除设备:  BTHLE\Dev_d5e715414cb2\7&1679758c&0&d5e715414cb2
+拒绝访问。（当前路径通常需要管理员权限）
+2026-04-05 22:35:25,224 [INFO] ui.bluetooth_connection - [第2轮] 切换鼠标到蓝牙模式: 通道1打开命令已发送。
+2026-04-05 22:35:25,538 [INFO] ui.bluetooth_connection - [第2轮] 检测到 1 个已配对目标设备，先执行删除配对。
+2026-04-05 22:35:25,542 [INFO] ui.bluetooth_connection - [第2轮] 测试前清理：开始删除已配对蓝牙设备。
+2026-04-05 22:35:25,544 [INFO] ui.bluetooth_connection - 开始调用系统蓝牙设置页执行删除配对。
+2026-04-05 22:35:26,645 [INFO] ui.bluetooth_connection - 尝试删除已配对设备节点: BTHLE\Dev_d5e715414cb2\7&1679758c&0&d5e715414cb2
+2026-04-05 22:35:41,942 [WARNING] ui.bluetooth_connection - [第2轮] 失败 | 原因: 测试前删除配对失败: 删除已配对设备失败: 设置页删除配对失败: 无法将 [ref] 应用于不存在的变量。; BTHLE\Dev_d5e715414cb2\7&1679758c&0&d5e715414cb2: Microsoft PnP 工具
+
+无法删除设备:  BTHLE\Dev_d5e715414cb2\7&1679758c&0&d5e715414cb2
+拒绝访问。（当前路径通常需要管理员权限）
+2026-04-05 22:35:41,995 [INFO] ui.bluetooth_connection - [第3轮] 切换鼠标到蓝牙模式: 通道1打开命令已发送。
+2026-04-05 22:35:42,317 [INFO] ui.bluetooth_connection - [第3轮] 检测到 1 个已配对目标设备，先执行删除配对。
+2026-04-05 22:35:42,319 [INFO] ui.bluetooth_connection - [第3轮] 测试前清理：开始删除已配对蓝牙设备。
+2026-04-05 22:35:42,320 [INFO] ui.bluetooth_connection - 开始调用系统蓝牙设置页执行删除配对。
+2026-04-05 22:35:43,400 [INFO] ui.bluetooth_connection - 尝试删除已配对设备节点: BTHLE\Dev_d5e715414cb2\7&1679758c&0&d5e715414cb2
+2026-04-05 22:35:58,699 [WARNING] ui.bluetooth_connection - [第3轮] 失败 | 原因: 测试前删除配对失败: 删除已配对设备失败: 设置页删除配对失败: 无法将 [ref] 应用于不存在的变量。; BTHLE\Dev_d5e715414cb2\7&1679758c&0&d5e715414cb2: Microsoft PnP 工具
+
+无法删除设备:  BTHLE\Dev_d5e715414cb2\7&1679758c&0&d5e715414cb2
+拒绝访问。（当前路径通常需要管理员权限）
+2026-04-05 22:35:58,753 [INFO] ui.bluetooth_connection - [第4轮] 切换鼠标到蓝牙模式: 通道1打开命令已发送。
+2026-04-05 22:35:59,109 [INFO] ui.bluetooth_connection - [第4轮] 检测到 1 个已配对目标设备，先执行删除配对。
+2026-04-05 22:35:59,111 [INFO] ui.bluetooth_connection - [第4轮] 测试前清理：开始删除已配对蓝牙设备。
+2026-04-05 22:35:59,115 [INFO] ui.bluetooth_connection - 开始调用系统蓝牙设置页执行删除配对。
+2026-04-05 22:36:00,182 [INFO] ui.bluetooth_connection - 尝试删除已配对设备节点: BTHLE\Dev_d5e715414cb2\7&1679758c&0&d5e715414cb2
+2026-04-05 22:36:03,634 [WARNING] ui.bluetooth_connection - 已请求停止测试。
+2026-04-05 22:36:15,307 [WARNING] ui.bluetooth_connection - [第4轮] 失败 | 原因: 测试前删除配对失败: 删除已配对设备失败: 设置页删除配对失败: 无法将 [ref] 应用于不存在的变量。; BTHLE\Dev_d5e715414cb2\7&1679758c&0&d5e715414cb2: Microsoft PnP 工具
+
+无法删除设备:  BTHLE\Dev_d5e715414cb2\7&1679758c&0&d5e715414cb2
+拒绝访问。（当前路径通常需要管理员权限）
+2026-04-05 22:36:15,311 [WARNING] ui.bluetooth_connection - 检测到停止请求，测试提前结束。
+2026-04-05 22:36:15,311 [INFO] ui.bluetooth_connection - 蓝牙连接测试结束：成功 0，失败 4，成功率 0.00%
+2026-04-05 22:36:15,314 [INFO] ui.bluetooth_connection - 测试完成。成功 0，失败 4，成功率 0.00%
+2026-04-05 22:37:44,475 [INFO] ui.power_cycle - 配置已保存。
+2026-04-05 22:37:44,478 [INFO] ui.bluetooth_connection - 配置已保存。
+2026-04-05 22:39:43,646 [INFO] ui.power_cycle - 仿真设置更新：万用表=开, 继电器=关, 蓝牙=开
+2026-04-05 22:39:43,664 [INFO] ui.power_cycle - 串口刷新完成，共发现 3 个端口。
+2026-04-05 22:39:43,688 [INFO] ui.bluetooth_connection - 串口刷新完成，共发现 3 个端口。
+2026-04-05 22:39:49,513 [INFO] ui.bluetooth_connection - 开始自动识别继电器设备，请稍候...
+2026-04-05 22:39:50,146 [WARNING] relay - 继电器自动连接验证失败(COM5): 继电器状态解析失败，原始数据: <empty>；由于仅剩单一候选串口，将按串口打开成功处理
+2026-04-05 22:39:50,148 [INFO] ui.bluetooth_connection - 候选继电器串口：COM3, COM5, COM4
+2026-04-05 22:39:50,148 [INFO] ui.bluetooth_connection - 已尝试继电器端口：COM5
+2026-04-05 22:39:50,149 [INFO] ui.bluetooth_connection - 自动识别继电器成功: COM5
+2026-04-05 22:39:51,116 [INFO] ui.bluetooth_connection - 开始检查蓝牙连接状态（匹配模式: 名称或 MAC | 条件: 名称关键字=Logi M750）...
+2026-04-05 22:39:51,468 [INFO] ui.bluetooth_connection - 匹配到 1 个设备：
+2026-04-05 22:39:51,470 [INFO] ui.bluetooth_connection -   - 名称=Logi M750 | 状态=已连接 | MAC=D5:E7:15:41:4C:B2 | 类别=Bluetooth | 实例ID=BTHLE\Dev_d5e715414cb2\7&1679758c&0&d5e715414cb2 | 连接状态=已连接
+2026-04-05 22:39:51,472 [INFO] ui.bluetooth_connection - 蓝牙检查结果: 已连接
+2026-04-05 22:39:54,394 [INFO] ui.bluetooth_connection - 配置已保存。
+2026-04-05 22:39:54,399 [INFO] ui.bluetooth_connection - 测试线程启动。
+2026-04-05 22:39:54,405 [INFO] ui.bluetooth_connection - 蓝牙连接测试开始，总轮次: 100
+2026-04-05 22:39:54,960 [WARNING] ui.bluetooth_connection - [第1轮] 读取蓝牙模式通道1状态失败，将直接下发打开命令: 继电器状态解析失败，原始数据: <empty>
+2026-04-05 22:39:55,011 [INFO] ui.bluetooth_connection - [第1轮] 切换鼠标到蓝牙模式: 通道1打开命令已发送。
+2026-04-05 22:39:55,317 [INFO] ui.bluetooth_connection - [第1轮] 检测到 1 个已配对目标设备，先执行删除配对。
+2026-04-05 22:39:55,318 [INFO] ui.bluetooth_connection - [第1轮] 测试前清理：开始删除已配对蓝牙设备。
+2026-04-05 22:39:55,320 [INFO] ui.bluetooth_connection - 开始调用系统蓝牙设置页执行删除配对。
+2026-04-05 22:39:58,932 [INFO] ui.bluetooth_connection - 尝试删除已配对设备节点: BTHLE\Dev_d5e715414cb2\7&1679758c&0&d5e715414cb2
+2026-04-05 22:40:14,006 [WARNING] ui.bluetooth_connection - [第1轮] 失败 | 原因: 测试前删除配对失败: 删除已配对设备失败: 设置页删除配对失败: 找不到类型 [System.Windows.Automation.LegacyIAccessiblePattern]。; BTHLE\Dev_d5e715414cb2\7&1679758c&0&d5e715414cb2: Microsoft PnP 工具
+
+无法删除设备:  BTHLE\Dev_d5e715414cb2\7&1679758c&0&d5e715414cb2
+拒绝访问。（当前路径通常需要管理员权限）
+2026-04-05 22:40:14,058 [INFO] ui.bluetooth_connection - [第2轮] 切换鼠标到蓝牙模式: 通道1打开命令已发送。
+2026-04-05 22:40:14,383 [INFO] ui.bluetooth_connection - [第2轮] 检测到 1 个已配对目标设备，先执行删除配对。
+2026-04-05 22:40:14,385 [INFO] ui.bluetooth_connection - [第2轮] 测试前清理：开始删除已配对蓝牙设备。
+2026-04-05 22:40:14,387 [INFO] ui.bluetooth_connection - 开始调用系统蓝牙设置页执行删除配对。
+2026-04-05 22:40:15,453 [INFO] ui.bluetooth_connection - 尝试删除已配对设备节点: BTHLE\Dev_d5e715414cb2\7&1679758c&0&d5e715414cb2
+2026-04-05 22:40:17,892 [WARNING] ui.bluetooth_connection - 已请求停止测试。
+2026-04-05 22:40:31,006 [WARNING] ui.bluetooth_connection - [第2轮] 失败 | 原因: 测试前删除配对失败: 删除已配对设备失败: 设置页删除配对失败: 找不到类型 [System.Windows.Automation.LegacyIAccessiblePattern]。; BTHLE\Dev_d5e715414cb2\7&1679758c&0&d5e715414cb2: Microsoft PnP 工具
+
+无法删除设备:  BTHLE\Dev_d5e715414cb2\7&1679758c&0&d5e715414cb2
+拒绝访问。（当前路径通常需要管理员权限）
+2026-04-05 22:40:31,011 [WARNING] ui.bluetooth_connection - 检测到停止请求，测试提前结束。
+2026-04-05 22:40:31,013 [INFO] ui.bluetooth_connection - 蓝牙连接测试结束：成功 0，失败 2，成功率 0.00%
+2026-04-05 22:40:31,016 [INFO] ui.bluetooth_connection - 测试完成。成功 0，失败 2，成功率 0.00%
+2026-04-05 22:42:42,810 [INFO] ui.power_cycle - 配置已保存。
+2026-04-05 22:42:42,812 [INFO] ui.bluetooth_connection - 配置已保存。
+2026-04-05 22:44:44,589 [INFO] ui.power_cycle - 仿真设置更新：万用表=开, 继电器=关, 蓝牙=开
+2026-04-05 22:44:44,604 [INFO] ui.power_cycle - 串口刷新完成，共发现 3 个端口。
+2026-04-05 22:44:44,626 [INFO] ui.bluetooth_connection - 串口刷新完成，共发现 3 个端口。
+2026-04-05 22:44:55,769 [INFO] ui.bluetooth_connection - 开始自动识别继电器设备，请稍候...
+2026-04-05 22:44:56,398 [WARNING] relay - 继电器自动连接验证失败(COM5): 继电器状态解析失败，原始数据: <empty>；由于仅剩单一候选串口，将按串口打开成功处理
+2026-04-05 22:44:56,398 [INFO] ui.bluetooth_connection - 候选继电器串口：COM3, COM5, COM4
+2026-04-05 22:44:56,400 [INFO] ui.bluetooth_connection - 已尝试继电器端口：COM5
+2026-04-05 22:44:56,401 [INFO] ui.bluetooth_connection - 自动识别继电器成功: COM5
+2026-04-05 22:44:58,941 [INFO] ui.bluetooth_connection - 配置已保存。
+2026-04-05 22:44:58,950 [INFO] ui.bluetooth_connection - 测试线程启动。
+2026-04-05 22:44:58,957 [INFO] ui.bluetooth_connection - 蓝牙连接测试开始，总轮次: 100
+2026-04-05 22:44:59,510 [WARNING] ui.bluetooth_connection - [第1轮] 读取蓝牙模式通道1状态失败，将直接下发打开命令: 继电器状态解析失败，原始数据: <empty>
+2026-04-05 22:44:59,561 [INFO] ui.bluetooth_connection - [第1轮] 切换鼠标到蓝牙模式: 通道1打开命令已发送。
+2026-04-05 22:44:59,872 [INFO] ui.bluetooth_connection - [第1轮] 检测到 1 个已配对目标设备，先执行删除配对。
+2026-04-05 22:44:59,874 [INFO] ui.bluetooth_connection - [第1轮] 测试前清理：开始删除已配对蓝牙设备。
+2026-04-05 22:44:59,874 [INFO] ui.bluetooth_connection - 开始调用系统蓝牙设置页执行删除配对。
+2026-04-05 22:45:05,024 [INFO] ui.bluetooth_connection - 尝试删除已配对设备节点: BTHLE\Dev_d5e715414cb2\7&1679758c&0&d5e715414cb2
+2026-04-05 22:45:06,071 [INFO] ui.bluetooth_connection - 目标设备已从已配对列表中移除。
+2026-04-05 22:45:06,074 [INFO] ui.bluetooth_connection - [第1轮] 触发配对模式：打开配对通道2，持续 2.000s。
+2026-04-05 22:45:06,121 [INFO] ui.bluetooth_connection - [第1轮] 打开配对按键通道: 通道2打开命令已发送。
+2026-04-05 22:45:08,166 [INFO] ui.bluetooth_connection - [第1轮] 关闭配对按键通道: 通道2关闭命令已发送。
+2026-04-05 22:45:08,362 [INFO] ui.bluetooth_connection - 开始调用系统蓝牙设置页执行配对。
+2026-04-05 22:45:19,640 [WARNING] ui.bluetooth_connection - [第1轮] 失败 | 原因: 自动配对失败: 未找到“添加设备”弹窗。
+2026-04-05 22:45:19,696 [INFO] ui.bluetooth_connection - [第2轮] 切换鼠标到蓝牙模式: 通道1打开命令已发送。
+2026-04-05 22:45:19,997 [INFO] ui.bluetooth_connection - [第2轮] 触发配对模式：打开配对通道2，持续 2.000s。
+2026-04-05 22:45:20,049 [INFO] ui.bluetooth_connection - [第2轮] 打开配对按键通道: 通道2打开命令已发送。
+2026-04-05 22:45:22,099 [INFO] ui.bluetooth_connection - [第2轮] 关闭配对按键通道: 通道2关闭命令已发送。
+2026-04-05 22:45:22,301 [INFO] ui.bluetooth_connection - 开始调用系统蓝牙设置页执行配对。
+2026-04-05 22:45:33,601 [WARNING] ui.bluetooth_connection - [第2轮] 失败 | 原因: 自动配对失败: 未找到“添加设备”弹窗。
+2026-04-05 22:45:33,661 [INFO] ui.bluetooth_connection - [第3轮] 切换鼠标到蓝牙模式: 通道1打开命令已发送。
+2026-04-05 22:45:33,959 [INFO] ui.bluetooth_connection - [第3轮] 触发配对模式：打开配对通道2，持续 2.000s。
+2026-04-05 22:45:34,011 [INFO] ui.bluetooth_connection - [第3轮] 打开配对按键通道: 通道2打开命令已发送。
+2026-04-05 22:45:36,062 [INFO] ui.bluetooth_connection - [第3轮] 关闭配对按键通道: 通道2关闭命令已发送。
+2026-04-05 22:45:36,259 [INFO] ui.bluetooth_connection - 开始调用系统蓝牙设置页执行配对。
+2026-04-05 22:45:47,618 [WARNING] ui.bluetooth_connection - [第3轮] 失败 | 原因: 自动配对失败: 未找到“添加设备”弹窗。
+2026-04-05 22:45:47,669 [INFO] ui.bluetooth_connection - [第4轮] 切换鼠标到蓝牙模式: 通道1打开命令已发送。
+2026-04-05 22:45:47,967 [INFO] ui.bluetooth_connection - [第4轮] 触发配对模式：打开配对通道2，持续 2.000s。
+2026-04-05 22:45:48,022 [INFO] ui.bluetooth_connection - [第4轮] 打开配对按键通道: 通道2打开命令已发送。
+2026-04-05 22:45:48,195 [WARNING] ui.bluetooth_connection - 已请求停止测试。
+2026-04-05 22:45:48,221 [WARNING] ui.bluetooth_connection - 收到停止请求，退出测试循环。
+2026-04-05 22:45:48,223 [INFO] ui.bluetooth_connection - 蓝牙连接测试结束：成功 0，失败 3，成功率 0.00%
+2026-04-05 22:45:48,224 [INFO] ui.bluetooth_connection - 测试完成。成功 0，失败 3，成功率 0.00%
+2026-04-05 22:56:15,083 [INFO] ui.power_cycle - 配置已保存。
+2026-04-05 22:56:15,085 [INFO] ui.bluetooth_connection - 配置已保存。
+2026-04-05 22:56:16,992 [INFO] ui.power_cycle - 仿真设置更新：万用表=开, 继电器=关, 蓝牙=开
+2026-04-05 22:56:17,008 [INFO] ui.power_cycle - 串口刷新完成，共发现 3 个端口。
+2026-04-05 22:56:17,032 [INFO] ui.bluetooth_connection - 串口刷新完成，共发现 3 个端口。
+2026-04-05 22:56:22,178 [INFO] ui.power_cycle - 开始自动连接设备，请稍候...
+2026-04-05 22:56:22,187 [INFO] ui.power_cycle - 万用表使用仿真设备。
+2026-04-05 22:56:22,194 [INFO] ui.power_cycle - 检测到串口：COM3 - 蓝牙链接上的标准串行 (COM3), COM5 - USB 串行设备 (COM5), COM4 - 蓝牙链接上的标准串行 (COM4)
+2026-04-05 22:56:22,195 [INFO] ui.power_cycle - 已跳过蓝牙虚拟串口，仅尝试：COM5
+2026-04-05 22:56:22,197 [INFO] ui.power_cycle - 继电器仅有一个候选串口，若状态查询不支持，将按串口打开成功处理。
+2026-04-05 22:56:22,198 [INFO] ui.power_cycle - 正在识别继电器端口: COM5
+2026-04-05 22:56:22,806 [WARNING] relay - 继电器自动连接验证失败(COM5): 继电器状态解析失败，原始数据: <empty>；由于仅剩单一候选串口，将按串口打开成功处理
+2026-04-05 22:56:22,806 [INFO] ui.power_cycle - 继电器识别成功: COM5
+2026-04-05 22:56:22,806 [INFO] ui.power_cycle - 万用表已切换为仿真设备。
+2026-04-05 22:56:22,809 [INFO] ui.power_cycle - 开始自动识别真实串口设备，候选端口：COM3, COM5, COM4
+2026-04-05 22:56:22,810 [INFO] ui.power_cycle - 已尝试继电器端口：COM5
+2026-04-05 22:56:22,812 [INFO] ui.power_cycle - 自动识别继电器成功: COM5
+2026-04-05 22:56:28,731 [INFO] ui.power_cycle - 继电器已断开。
+2026-04-05 22:56:31,321 [INFO] ui.bluetooth_connection - 开始自动识别继电器设备，请稍候...
+2026-04-05 22:56:31,956 [WARNING] relay - 继电器自动连接验证失败(COM5): 继电器状态解析失败，原始数据: <empty>；由于仅剩单一候选串口，将按串口打开成功处理
+2026-04-05 22:56:31,957 [INFO] ui.bluetooth_connection - 候选继电器串口：COM3, COM5, COM4
+2026-04-05 22:56:31,958 [INFO] ui.bluetooth_connection - 已尝试继电器端口：COM5
+2026-04-05 22:56:31,959 [INFO] ui.bluetooth_connection - 自动识别继电器成功: COM5
+2026-04-05 22:56:33,298 [INFO] ui.bluetooth_connection - 配置已保存。
+2026-04-05 22:56:33,305 [INFO] ui.bluetooth_connection - 测试线程启动。
+2026-04-05 22:56:33,315 [INFO] ui.bluetooth_connection - 蓝牙连接测试开始，总轮次: 100
+2026-04-05 22:56:33,872 [WARNING] ui.bluetooth_connection - [第1轮] 读取蓝牙模式通道1状态失败，将直接下发打开命令: 继电器状态解析失败，原始数据: <empty>
+2026-04-05 22:56:33,924 [INFO] ui.bluetooth_connection - [第1轮] 切换鼠标到蓝牙模式: 通道1打开命令已发送。
+2026-04-05 22:56:34,233 [INFO] ui.bluetooth_connection - [第1轮] 触发配对模式：打开配对通道2，持续 2.000s。
+2026-04-05 22:56:34,285 [INFO] ui.bluetooth_connection - [第1轮] 打开配对按键通道: 通道2打开命令已发送。
+2026-04-05 22:56:36,346 [INFO] ui.bluetooth_connection - [第1轮] 关闭配对按键通道: 通道2关闭命令已发送。
+2026-04-05 22:56:36,548 [INFO] ui.bluetooth_connection - 开始调用系统蓝牙设置页执行配对。
+2026-04-05 22:56:37,025 [WARNING] bluetooth - 命令执行失败（返回码=1）powershell: 所在位置 行:197 字符: 6
++     }
++      ~
+Try 语句缺少自己的 Catch 或 Finally 块。
+所在位置 行:226 字符: 1
++ } catch {
++ ~
+表达式或语句中包含意外的标记“}”。
+    + CategoryInfo          : ParserError: (:) [], ParentContainsErrorRecordException
+    + FullyQualifiedErrorId : MissingCatchOrFinally
+2026-04-05 22:56:37,026 [WARNING] ui.bluetooth_connection - [第1轮] 失败 | 原因: 自动配对失败: 蓝牙配对界面自动化未返回结果。
+2026-04-05 22:56:37,079 [INFO] ui.bluetooth_connection - [第2轮] 切换鼠标到蓝牙模式: 通道1打开命令已发送。
+2026-04-05 22:56:37,381 [INFO] ui.bluetooth_connection - [第2轮] 触发配对模式：打开配对通道2，持续 2.000s。
+2026-04-05 22:56:37,433 [INFO] ui.bluetooth_connection - [第2轮] 打开配对按键通道: 通道2打开命令已发送。
+2026-04-05 22:56:39,477 [INFO] ui.bluetooth_connection - [第2轮] 关闭配对按键通道: 通道2关闭命令已发送。
+2026-04-05 22:56:39,675 [INFO] ui.bluetooth_connection - 开始调用系统蓝牙设置页执行配对。
+2026-04-05 22:56:40,176 [WARNING] bluetooth - 命令执行失败（返回码=1）powershell: 所在位置 行:197 字符: 6
++     }
++      ~
+Try 语句缺少自己的 Catch 或 Finally 块。
+所在位置 行:226 字符: 1
++ } catch {
++ ~
+表达式或语句中包含意外的标记“}”。
+    + CategoryInfo          : ParserError: (:) [], ParentContainsErrorRecordException
+    + FullyQualifiedErrorId : MissingCatchOrFinally
+2026-04-05 22:56:40,179 [WARNING] ui.bluetooth_connection - [第2轮] 失败 | 原因: 自动配对失败: 蓝牙配对界面自动化未返回结果。
+2026-04-05 22:56:40,231 [INFO] ui.bluetooth_connection - [第3轮] 切换鼠标到蓝牙模式: 通道1打开命令已发送。
+2026-04-05 22:56:40,521 [INFO] ui.bluetooth_connection - [第3轮] 触发配对模式：打开配对通道2，持续 2.000s。
+2026-04-05 22:56:40,573 [INFO] ui.bluetooth_connection - [第3轮] 打开配对按键通道: 通道2打开命令已发送。
+2026-04-05 22:56:42,617 [INFO] ui.bluetooth_connection - [第3轮] 关闭配对按键通道: 通道2关闭命令已发送。
+2026-04-05 22:56:42,825 [INFO] ui.bluetooth_connection - 开始调用系统蓝牙设置页执行配对。
+2026-04-05 22:56:43,313 [WARNING] bluetooth - 命令执行失败（返回码=1）powershell: 所在位置 行:197 字符: 6
++     }
++      ~
+Try 语句缺少自己的 Catch 或 Finally 块。
+所在位置 行:226 字符: 1
++ } catch {
++ ~
+表达式或语句中包含意外的标记“}”。
+    + CategoryInfo          : ParserError: (:) [], ParentContainsErrorRecordException
+    + FullyQualifiedErrorId : MissingCatchOrFinally
+2026-04-05 22:56:43,314 [WARNING] ui.bluetooth_connection - [第3轮] 失败 | 原因: 自动配对失败: 蓝牙配对界面自动化未返回结果。
+2026-04-05 22:56:43,367 [INFO] ui.bluetooth_connection - [第4轮] 切换鼠标到蓝牙模式: 通道1打开命令已发送。
+2026-04-05 22:56:43,682 [INFO] ui.bluetooth_connection - [第4轮] 触发配对模式：打开配对通道2，持续 2.000s。
+2026-04-05 22:56:43,731 [INFO] ui.bluetooth_connection - [第4轮] 打开配对按键通道: 通道2打开命令已发送。
+2026-04-05 22:56:45,776 [INFO] ui.bluetooth_connection - [第4轮] 关闭配对按键通道: 通道2关闭命令已发送。
+2026-04-05 22:56:45,974 [INFO] ui.bluetooth_connection - 开始调用系统蓝牙设置页执行配对。
+2026-04-05 22:56:46,484 [WARNING] bluetooth - 命令执行失败（返回码=1）powershell: 所在位置 行:197 字符: 6
++     }
++      ~
+Try 语句缺少自己的 Catch 或 Finally 块。
+所在位置 行:226 字符: 1
++ } catch {
++ ~
+表达式或语句中包含意外的标记“}”。
+    + CategoryInfo          : ParserError: (:) [], ParentContainsErrorRecordException
+    + FullyQualifiedErrorId : MissingCatchOrFinally
+2026-04-05 22:56:46,486 [WARNING] ui.bluetooth_connection - [第4轮] 失败 | 原因: 自动配对失败: 蓝牙配对界面自动化未返回结果。
+2026-04-05 22:56:46,537 [INFO] ui.bluetooth_connection - [第5轮] 切换鼠标到蓝牙模式: 通道1打开命令已发送。
+2026-04-05 22:56:46,855 [INFO] ui.bluetooth_connection - [第5轮] 触发配对模式：打开配对通道2，持续 2.000s。
+2026-04-05 22:56:46,905 [INFO] ui.bluetooth_connection - [第5轮] 打开配对按键通道: 通道2打开命令已发送。
+2026-04-05 22:56:48,947 [INFO] ui.bluetooth_connection - [第5轮] 关闭配对按键通道: 通道2关闭命令已发送。
+2026-04-05 22:56:49,143 [INFO] ui.bluetooth_connection - 开始调用系统蓝牙设置页执行配对。
+2026-04-05 22:56:49,651 [WARNING] bluetooth - 命令执行失败（返回码=1）powershell: 所在位置 行:197 字符: 6
++     }
++      ~
+Try 语句缺少自己的 Catch 或 Finally 块。
+所在位置 行:226 字符: 1
++ } catch {
++ ~
+表达式或语句中包含意外的标记“}”。
+    + CategoryInfo          : ParserError: (:) [], ParentContainsErrorRecordException
+    + FullyQualifiedErrorId : MissingCatchOrFinally
+2026-04-05 22:56:49,653 [WARNING] ui.bluetooth_connection - [第5轮] 失败 | 原因: 自动配对失败: 蓝牙配对界面自动化未返回结果。
+2026-04-05 22:56:49,703 [INFO] ui.bluetooth_connection - [第6轮] 切换鼠标到蓝牙模式: 通道1打开命令已发送。
+2026-04-05 22:56:49,990 [INFO] ui.bluetooth_connection - [第6轮] 触发配对模式：打开配对通道2，持续 2.000s。
+2026-04-05 22:56:50,041 [INFO] ui.bluetooth_connection - [第6轮] 打开配对按键通道: 通道2打开命令已发送。
+2026-04-05 22:56:52,087 [INFO] ui.bluetooth_connection - [第6轮] 关闭配对按键通道: 通道2关闭命令已发送。
+2026-04-05 22:56:52,295 [INFO] ui.bluetooth_connection - 开始调用系统蓝牙设置页执行配对。
+2026-04-05 22:56:52,785 [WARNING] bluetooth - 命令执行失败（返回码=1）powershell: 所在位置 行:197 字符: 6
++     }
++      ~
+Try 语句缺少自己的 Catch 或 Finally 块。
+所在位置 行:226 字符: 1
++ } catch {
++ ~
+表达式或语句中包含意外的标记“}”。
+    + CategoryInfo          : ParserError: (:) [], ParentContainsErrorRecordException
+    + FullyQualifiedErrorId : MissingCatchOrFinally
+2026-04-05 22:56:52,787 [WARNING] ui.bluetooth_connection - [第6轮] 失败 | 原因: 自动配对失败: 蓝牙配对界面自动化未返回结果。
+2026-04-05 22:56:52,836 [INFO] ui.bluetooth_connection - [第7轮] 切换鼠标到蓝牙模式: 通道1打开命令已发送。
+2026-04-05 22:56:53,152 [INFO] ui.bluetooth_connection - [第7轮] 触发配对模式：打开配对通道2，持续 2.000s。
+2026-04-05 22:56:53,201 [INFO] ui.bluetooth_connection - [第7轮] 打开配对按键通道: 通道2打开命令已发送。
+2026-04-05 22:56:55,248 [INFO] ui.bluetooth_connection - [第7轮] 关闭配对按键通道: 通道2关闭命令已发送。
+2026-04-05 22:56:55,425 [WARNING] ui.bluetooth_connection - 已请求停止测试。
+2026-04-05 22:56:55,443 [INFO] ui.bluetooth_connection - 开始调用系统蓝牙设置页执行配对。
+2026-04-05 22:56:56,035 [WARNING] bluetooth - 命令执行失败（返回码=1）powershell: 所在位置 行:197 字符: 6
++     }
++      ~
+Try 语句缺少自己的 Catch 或 Finally 块。
+所在位置 行:226 字符: 1
++ } catch {
++ ~
+表达式或语句中包含意外的标记“}”。
+    + CategoryInfo          : ParserError: (:) [], ParentContainsErrorRecordException
+    + FullyQualifiedErrorId : MissingCatchOrFinally
+2026-04-05 22:56:56,037 [WARNING] ui.bluetooth_connection - [第7轮] 失败 | 原因: 自动配对失败: 蓝牙配对界面自动化未返回结果。
+2026-04-05 22:56:56,043 [WARNING] ui.bluetooth_connection - 检测到停止请求，测试提前结束。
+2026-04-05 22:56:56,046 [INFO] ui.bluetooth_connection - 蓝牙连接测试结束：成功 0，失败 7，成功率 0.00%
+2026-04-05 22:56:56,048 [INFO] ui.bluetooth_connection - 测试完成。成功 0，失败 7，成功率 0.00%
+2026-04-05 22:57:06,560 [INFO] ui.bluetooth_connection - 配置已保存。
+2026-04-05 22:57:06,569 [INFO] ui.bluetooth_connection - 测试线程启动。
+2026-04-05 22:57:06,574 [INFO] ui.bluetooth_connection - 蓝牙连接测试开始，总轮次: 100
+2026-04-05 22:57:06,575 [INFO] ui.bluetooth_connection - [第1轮] 蓝牙模式通道1已处于打开状态。
+2026-04-05 22:57:06,809 [INFO] ui.bluetooth_connection - [第1轮] 检测到 1 个已配对目标设备，先执行删除配对。
+2026-04-05 22:57:06,810 [INFO] ui.bluetooth_connection - [第1轮] 测试前清理：开始删除已配对蓝牙设备。
+2026-04-05 22:57:06,811 [INFO] ui.bluetooth_connection - 开始调用系统蓝牙设置页执行删除配对。
+2026-04-05 22:57:17,165 [INFO] ui.bluetooth_connection - 尝试删除已配对设备节点: BTHLE\Dev_d5e715414cb3\7&1679758c&0&d5e715414cb3
+2026-04-05 22:57:25,393 [WARNING] ui.bluetooth_connection - 已请求停止测试。
+2026-04-05 22:57:32,513 [WARNING] ui.bluetooth_connection - [第1轮] 失败 | 原因: 测试前删除配对失败: 删除已配对设备失败: 设置页删除配对失败: 已定位到目标设备，但未找到“删除设备”按钮。; BTHLE\Dev_d5e715414cb3\7&1679758c&0&d5e715414cb3: Microsoft PnP 工具
+
+无法删除设备:  BTHLE\Dev_d5e715414cb3\7&1679758c&0&d5e715414cb3
+拒绝访问。（当前路径通常需要管理员权限）
+2026-04-05 22:57:32,515 [WARNING] ui.bluetooth_connection - 检测到停止请求，测试提前结束。
+2026-04-05 22:57:32,522 [INFO] ui.bluetooth_connection - 蓝牙连接测试结束：成功 0，失败 1，成功率 0.00%
+2026-04-05 22:57:32,524 [INFO] ui.bluetooth_connection - 测试完成。成功 0，失败 1，成功率 0.00%
+2026-04-05 22:57:39,947 [INFO] ui.bluetooth_connection - 配置已保存。
+2026-04-05 22:57:39,953 [INFO] ui.bluetooth_connection - 测试线程启动。
+2026-04-05 22:57:39,961 [INFO] ui.bluetooth_connection - 蓝牙连接测试开始，总轮次: 100
+2026-04-05 22:57:39,962 [INFO] ui.bluetooth_connection - [第1轮] 蓝牙模式通道1已处于打开状态。
+2026-04-05 22:57:40,194 [INFO] ui.bluetooth_connection - [第1轮] 检测到 1 个已配对目标设备，先执行删除配对。
+2026-04-05 22:57:40,196 [INFO] ui.bluetooth_connection - [第1轮] 测试前清理：开始删除已配对蓝牙设备。
+2026-04-05 22:57:40,198 [INFO] ui.bluetooth_connection - 开始调用系统蓝牙设置页执行删除配对。
+2026-04-05 22:57:46,468 [INFO] ui.bluetooth_connection - 尝试删除已配对设备节点: BTHLE\Dev_d5e715414cb3\7&1679758c&0&d5e715414cb3
+2026-04-05 22:57:47,551 [INFO] ui.bluetooth_connection - 目标设备已从已配对列表中移除。
+2026-04-05 22:57:47,553 [INFO] ui.bluetooth_connection - [第1轮] 触发配对模式：打开配对通道2，持续 2.000s。
+2026-04-05 22:57:47,601 [INFO] ui.bluetooth_connection - [第1轮] 打开配对按键通道: 通道2打开命令已发送。
+2026-04-05 22:57:49,648 [INFO] ui.bluetooth_connection - [第1轮] 关闭配对按键通道: 通道2关闭命令已发送。
+2026-04-05 22:57:49,858 [INFO] ui.bluetooth_connection - 开始调用系统蓝牙设置页执行配对。
+2026-04-05 22:57:50,446 [WARNING] bluetooth - 命令执行失败（返回码=1）powershell: 所在位置 行:197 字符: 6
++     }
++      ~
+Try 语句缺少自己的 Catch 或 Finally 块。
+所在位置 行:226 字符: 1
++ } catch {
++ ~
+表达式或语句中包含意外的标记“}”。
+    + CategoryInfo          : ParserError: (:) [], ParentContainsErrorRecordException
+    + FullyQualifiedErrorId : MissingCatchOrFinally
+2026-04-05 22:57:50,450 [WARNING] ui.bluetooth_connection - [第1轮] 失败 | 原因: 自动配对失败: 蓝牙配对界面自动化未返回结果。
+2026-04-05 22:57:50,461 [INFO] ui.bluetooth_connection - [第2轮] 蓝牙模式通道1已处于打开状态。
+2026-04-05 22:57:50,682 [INFO] ui.bluetooth_connection - [第2轮] 触发配对模式：打开配对通道2，持续 2.000s。
+2026-04-05 22:57:50,735 [INFO] ui.bluetooth_connection - [第2轮] 打开配对按键通道: 通道2打开命令已发送。
+2026-04-05 22:57:52,773 [INFO] ui.bluetooth_connection - [第2轮] 关闭配对按键通道: 通道2关闭命令已发送。
+2026-04-05 22:57:52,981 [INFO] ui.bluetooth_connection - 开始调用系统蓝牙设置页执行配对。
+2026-04-05 22:57:53,487 [WARNING] bluetooth - 命令执行失败（返回码=1）powershell: 所在位置 行:197 字符: 6
++     }
++      ~
+Try 语句缺少自己的 Catch 或 Finally 块。
+所在位置 行:226 字符: 1
++ } catch {
++ ~
+表达式或语句中包含意外的标记“}”。
+    + CategoryInfo          : ParserError: (:) [], ParentContainsErrorRecordException
+    + FullyQualifiedErrorId : MissingCatchOrFinally
+2026-04-05 22:57:53,490 [WARNING] ui.bluetooth_connection - [第2轮] 失败 | 原因: 自动配对失败: 蓝牙配对界面自动化未返回结果。
+2026-04-05 22:57:53,500 [INFO] ui.bluetooth_connection - [第3轮] 蓝牙模式通道1已处于打开状态。
+2026-04-05 22:57:53,705 [INFO] ui.bluetooth_connection - [第3轮] 触发配对模式：打开配对通道2，持续 2.000s。
+2026-04-05 22:57:53,757 [INFO] ui.bluetooth_connection - [第3轮] 打开配对按键通道: 通道2打开命令已发送。
+2026-04-05 22:57:55,817 [INFO] ui.bluetooth_connection - [第3轮] 关闭配对按键通道: 通道2关闭命令已发送。
+2026-04-05 22:57:56,020 [INFO] ui.bluetooth_connection - 开始调用系统蓝牙设置页执行配对。
+2026-04-05 22:57:56,521 [WARNING] bluetooth - 命令执行失败（返回码=1）powershell: 所在位置 行:197 字符: 6
++     }
++      ~
+Try 语句缺少自己的 Catch 或 Finally 块。
+所在位置 行:226 字符: 1
++ } catch {
++ ~
+表达式或语句中包含意外的标记“}”。
+    + CategoryInfo          : ParserError: (:) [], ParentContainsErrorRecordException
+    + FullyQualifiedErrorId : MissingCatchOrFinally
+2026-04-05 22:57:56,523 [WARNING] ui.bluetooth_connection - [第3轮] 失败 | 原因: 自动配对失败: 蓝牙配对界面自动化未返回结果。
+2026-04-05 22:57:56,535 [INFO] ui.bluetooth_connection - [第4轮] 蓝牙模式通道1已处于打开状态。
+2026-04-05 22:57:56,744 [INFO] ui.bluetooth_connection - [第4轮] 触发配对模式：打开配对通道2，持续 2.000s。
+2026-04-05 22:57:56,796 [INFO] ui.bluetooth_connection - [第4轮] 打开配对按键通道: 通道2打开命令已发送。
+2026-04-05 22:57:58,098 [WARNING] ui.bluetooth_connection - 已请求停止测试。
+2026-04-05 22:57:58,106 [WARNING] ui.bluetooth_connection - 收到停止请求，退出测试循环。
+2026-04-05 22:57:58,107 [INFO] ui.bluetooth_connection - 蓝牙连接测试结束：成功 0，失败 3，成功率 0.00%
+2026-04-05 22:57:58,109 [INFO] ui.bluetooth_connection - 测试完成。成功 0，失败 3，成功率 0.00%
+2026-04-05 22:58:24,787 [INFO] ui.bluetooth_connection - 配置已保存。
+2026-04-05 22:58:24,795 [INFO] ui.bluetooth_connection - 测试线程启动。
+2026-04-05 22:58:24,804 [INFO] ui.bluetooth_connection - 蓝牙连接测试开始，总轮次: 100
+2026-04-05 22:58:24,805 [INFO] ui.bluetooth_connection - [第1轮] 蓝牙模式通道1已处于打开状态。
+2026-04-05 22:58:25,028 [INFO] ui.bluetooth_connection - [第1轮] 触发配对模式：打开配对通道2，持续 2.000s。
+2026-04-05 22:58:25,079 [INFO] ui.bluetooth_connection - [第1轮] 打开配对按键通道: 通道2打开命令已发送。
+2026-04-05 22:58:27,142 [INFO] ui.bluetooth_connection - [第1轮] 关闭配对按键通道: 通道2关闭命令已发送。
+2026-04-05 22:58:27,336 [INFO] ui.bluetooth_connection - 开始调用系统蓝牙设置页执行配对。
+2026-04-05 22:58:27,817 [WARNING] bluetooth - 命令执行失败（返回码=1）powershell: 所在位置 行:197 字符: 6
++     }
++      ~
+Try 语句缺少自己的 Catch 或 Finally 块。
+所在位置 行:226 字符: 1
++ } catch {
++ ~
+表达式或语句中包含意外的标记“}”。
+    + CategoryInfo          : ParserError: (:) [], ParentContainsErrorRecordException
+    + FullyQualifiedErrorId : MissingCatchOrFinally
+2026-04-05 22:58:27,819 [WARNING] ui.bluetooth_connection - [第1轮] 失败 | 原因: 自动配对失败: 蓝牙配对界面自动化未返回结果。
+2026-04-05 22:58:27,824 [INFO] ui.bluetooth_connection - [第2轮] 蓝牙模式通道1已处于打开状态。
+2026-04-05 22:58:28,012 [INFO] ui.bluetooth_connection - [第2轮] 触发配对模式：打开配对通道2，持续 2.000s。
+2026-04-05 22:58:28,066 [INFO] ui.bluetooth_connection - [第2轮] 打开配对按键通道: 通道2打开命令已发送。
+2026-04-05 22:58:30,125 [INFO] ui.bluetooth_connection - [第2轮] 关闭配对按键通道: 通道2关闭命令已发送。
+2026-04-05 22:58:30,319 [INFO] ui.bluetooth_connection - 开始调用系统蓝牙设置页执行配对。
+2026-04-05 22:58:30,827 [WARNING] bluetooth - 命令执行失败（返回码=1）powershell: 所在位置 行:197 字符: 6
++     }
++      ~
+Try 语句缺少自己的 Catch 或 Finally 块。
+所在位置 行:226 字符: 1
++ } catch {
++ ~
+表达式或语句中包含意外的标记“}”。
+    + CategoryInfo          : ParserError: (:) [], ParentContainsErrorRecordException
+    + FullyQualifiedErrorId : MissingCatchOrFinally
+2026-04-05 22:58:30,830 [WARNING] ui.bluetooth_connection - [第2轮] 失败 | 原因: 自动配对失败: 蓝牙配对界面自动化未返回结果。
+2026-04-05 22:58:30,837 [INFO] ui.bluetooth_connection - [第3轮] 蓝牙模式通道1已处于打开状态。
+2026-04-05 22:58:31,024 [INFO] ui.bluetooth_connection - [第3轮] 触发配对模式：打开配对通道2，持续 2.000s。
+2026-04-05 22:58:31,074 [INFO] ui.bluetooth_connection - [第3轮] 打开配对按键通道: 通道2打开命令已发送。
+2026-04-05 22:58:32,353 [WARNING] ui.bluetooth_connection - 已请求停止测试。
+2026-04-05 22:58:32,384 [WARNING] ui.bluetooth_connection - 收到停止请求，退出测试循环。
+2026-04-05 22:58:32,385 [INFO] ui.bluetooth_connection - 蓝牙连接测试结束：成功 0，失败 2，成功率 0.00%
+2026-04-05 22:58:32,388 [INFO] ui.bluetooth_connection - 测试完成。成功 0，失败 2，成功率 0.00%
+2026-04-05 23:19:06,346 [INFO] ui.power_cycle - 配置已保存。
+2026-04-05 23:19:06,349 [INFO] ui.bluetooth_connection - 配置已保存。
+2026-04-05 23:19:08,543 [INFO] ui.power_cycle - 仿真设置更新：万用表=开, 继电器=关, 蓝牙=开
+2026-04-05 23:19:08,557 [INFO] ui.power_cycle - 串口刷新完成，共发现 3 个端口。
+2026-04-05 23:19:08,577 [INFO] ui.bluetooth_connection - 串口刷新完成，共发现 3 个端口。
+2026-04-05 23:21:33,999 [INFO] ui.bluetooth_connection - 开始自动识别继电器设备，请稍候...
+2026-04-05 23:21:34,631 [WARNING] relay - 继电器自动连接验证失败(COM5): 继电器状态解析失败，原始数据: <empty>；由于仅剩单一候选串口，将按串口打开成功处理
+2026-04-05 23:21:34,631 [INFO] ui.bluetooth_connection - 候选继电器串口：COM3, COM5, COM4
+2026-04-05 23:21:34,631 [INFO] ui.bluetooth_connection - 已尝试继电器端口：COM5
+2026-04-05 23:21:34,631 [INFO] ui.bluetooth_connection - 自动识别继电器成功: COM5
+2026-04-05 23:21:37,498 [INFO] ui.bluetooth_connection - 配置已保存。
+2026-04-05 23:21:37,506 [INFO] ui.bluetooth_connection - 测试线程启动。
+2026-04-05 23:21:37,512 [INFO] ui.bluetooth_connection - 蓝牙连接测试开始，总轮次: 100
+2026-04-05 23:21:38,069 [WARNING] ui.bluetooth_connection - [第1轮] 读取蓝牙模式通道1状态失败，将直接下发打开命令: 继电器状态解析失败，原始数据: <empty>
+2026-04-05 23:21:38,122 [INFO] ui.bluetooth_connection - [第1轮] 切换鼠标到蓝牙模式: 通道1打开命令已发送。
+2026-04-05 23:21:38,476 [INFO] ui.bluetooth_connection - [第1轮] 触发配对模式：打开配对通道2，持续 2.000s。
+2026-04-05 23:21:38,527 [INFO] ui.bluetooth_connection - [第1轮] 打开配对按键通道: 通道2打开命令已发送。
+2026-04-05 23:21:40,573 [INFO] ui.bluetooth_connection - [第1轮] 关闭配对按键通道: 通道2关闭命令已发送。
+2026-04-05 23:21:40,769 [INFO] ui.bluetooth_connection - 开始调用系统蓝牙设置页执行配对。
+2026-04-05 23:22:05,868 [WARNING] ui.bluetooth_connection - [第1轮] 失败 | 原因: 自动配对失败: 使用“2”个参数调用“FindAll”时发生异常:“无法识别的错误。”
+2026-04-05 23:22:05,917 [INFO] ui.bluetooth_connection - [第2轮] 切换鼠标到蓝牙模式: 通道1打开命令已发送。
+2026-04-05 23:22:06,255 [INFO] ui.bluetooth_connection - [第2轮] 检测到 1 个已配对目标设备，先执行删除配对。
+2026-04-05 23:22:06,257 [INFO] ui.bluetooth_connection - [第2轮] 测试前清理：开始删除已配对蓝牙设备。
+2026-04-05 23:22:06,259 [INFO] ui.bluetooth_connection - 开始调用系统蓝牙设置页执行删除配对。
+2026-04-05 23:22:16,465 [INFO] ui.bluetooth_connection - 尝试删除已配对设备节点: BTHLE\Dev_d5e715414cb4\7&1679758c&0&d5e715414cb4
+2026-04-05 23:22:22,441 [WARNING] ui.bluetooth_connection - 已请求停止测试。
+2026-04-05 23:22:31,735 [WARNING] ui.bluetooth_connection - [第2轮] 失败 | 原因: 测试前删除配对失败: 删除已配对设备失败: 设置页删除配对失败: 已定位到目标设备，但未找到“删除设备”按钮。; BTHLE\Dev_d5e715414cb4\7&1679758c&0&d5e715414cb4: Microsoft PnP 工具
+
+无法删除设备:  BTHLE\Dev_d5e715414cb4\7&1679758c&0&d5e715414cb4
+拒绝访问。（当前路径通常需要管理员权限）
+2026-04-05 23:22:31,744 [WARNING] ui.bluetooth_connection - 检测到停止请求，测试提前结束。
+2026-04-05 23:22:31,746 [INFO] ui.bluetooth_connection - 蓝牙连接测试结束：成功 0，失败 2，成功率 0.00%
+2026-04-05 23:22:31,747 [INFO] ui.bluetooth_connection - 测试完成。成功 0，失败 2，成功率 0.00%
+2026-04-05 23:22:47,776 [INFO] ui.bluetooth_connection - 配置已保存。
+2026-04-05 23:22:47,789 [INFO] ui.bluetooth_connection - 测试线程启动。
+2026-04-05 23:22:47,796 [INFO] ui.bluetooth_connection - 蓝牙连接测试开始，总轮次: 100
+2026-04-05 23:22:47,798 [INFO] ui.bluetooth_connection - [第1轮] 蓝牙模式通道1已处于打开状态。
+2026-04-05 23:22:48,019 [INFO] ui.bluetooth_connection - [第1轮] 检测到 1 个已配对目标设备，先执行删除配对。
+2026-04-05 23:22:48,020 [INFO] ui.bluetooth_connection - [第1轮] 测试前清理：开始删除已配对蓝牙设备。
+2026-04-05 23:22:48,022 [INFO] ui.bluetooth_connection - 开始调用系统蓝牙设置页执行删除配对。
+2026-04-05 23:22:53,151 [INFO] ui.bluetooth_connection - 尝试删除已配对设备节点: BTHLE\Dev_d5e715414cb4\7&1679758c&0&d5e715414cb4
+2026-04-05 23:22:54,218 [INFO] ui.bluetooth_connection - 目标设备已从已配对列表中移除。
+2026-04-05 23:22:54,218 [INFO] ui.bluetooth_connection - [第1轮] 触发配对模式：打开配对通道2，持续 2.000s。
+2026-04-05 23:22:54,269 [INFO] ui.bluetooth_connection - [第1轮] 打开配对按键通道: 通道2打开命令已发送。
+2026-04-05 23:22:56,319 [INFO] ui.bluetooth_connection - [第1轮] 关闭配对按键通道: 通道2关闭命令已发送。
+2026-04-05 23:22:56,527 [INFO] ui.bluetooth_connection - 开始调用系统蓝牙设置页执行配对。
+2026-04-05 23:23:18,784 [INFO] ui.bluetooth_connection - 蓝牙配对并连接成功。
+2026-04-05 23:23:18,786 [INFO] ui.bluetooth_connection - [第1轮] 本轮收尾清理：开始删除已配对蓝牙设备。
+2026-04-05 23:23:18,787 [INFO] ui.bluetooth_connection - 开始调用系统蓝牙设置页执行删除配对。
+2026-04-05 23:23:21,512 [INFO] ui.bluetooth_connection - 尝试删除已配对设备节点: BTHLE\Dev_d5e715414cb5\7&1679758c&0&d5e715414cb5
+2026-04-05 23:23:21,865 [INFO] ui.bluetooth_connection - 目标设备已从已配对列表中移除。
+2026-04-05 23:23:21,870 [INFO] ui.bluetooth_connection - [第1轮] 通过 | 配对连接与删除配对均通过
+2026-04-05 23:23:21,878 [INFO] ui.bluetooth_connection - [第2轮] 蓝牙模式通道1已处于打开状态。
+2026-04-05 23:23:22,157 [INFO] ui.bluetooth_connection - [第2轮] 触发配对模式：打开配对通道2，持续 2.000s。
+2026-04-05 23:23:22,212 [INFO] ui.bluetooth_connection - [第2轮] 打开配对按键通道: 通道2打开命令已发送。
+2026-04-05 23:23:24,262 [INFO] ui.bluetooth_connection - [第2轮] 关闭配对按键通道: 通道2关闭命令已发送。
+2026-04-05 23:23:24,457 [INFO] ui.bluetooth_connection - 开始调用系统蓝牙设置页执行配对。
+2026-04-05 23:23:45,579 [INFO] ui.bluetooth_connection - 蓝牙配对并连接成功。
+2026-04-05 23:23:45,579 [INFO] ui.bluetooth_connection - [第2轮] 本轮收尾清理：开始删除已配对蓝牙设备。
+2026-04-05 23:23:45,579 [INFO] ui.bluetooth_connection - 开始调用系统蓝牙设置页执行删除配对。
+2026-04-05 23:23:48,319 [INFO] ui.bluetooth_connection - 尝试删除已配对设备节点: BTHLE\Dev_d5e715414cb6\7&1679758c&0&d5e715414cb6
+2026-04-05 23:23:48,669 [INFO] ui.bluetooth_connection - 目标设备已从已配对列表中移除。
+2026-04-05 23:23:48,669 [INFO] ui.bluetooth_connection - [第2轮] 通过 | 配对连接与删除配对均通过
+2026-04-05 23:23:48,680 [INFO] ui.bluetooth_connection - [第3轮] 蓝牙模式通道1已处于打开状态。
+2026-04-05 23:23:48,683 [INFO] ui.bluetooth_connection - [第3轮] 触发配对模式：打开配对通道2，持续 2.000s。
+2026-04-05 23:23:48,719 [INFO] ui.bluetooth_connection - [第3轮] 打开配对按键通道: 通道2打开命令已发送。
+2026-04-05 23:23:50,756 [INFO] ui.bluetooth_connection - [第3轮] 关闭配对按键通道: 通道2关闭命令已发送。
+2026-04-05 23:23:50,963 [INFO] ui.bluetooth_connection - 开始调用系统蓝牙设置页执行配对。
+2026-04-05 23:24:11,968 [INFO] ui.bluetooth_connection - 蓝牙配对并连接成功。
+2026-04-05 23:24:11,968 [INFO] ui.bluetooth_connection - [第3轮] 本轮收尾清理：开始删除已配对蓝牙设备。
+2026-04-05 23:24:11,968 [INFO] ui.bluetooth_connection - 开始调用系统蓝牙设置页执行删除配对。
+2026-04-05 23:24:14,663 [INFO] ui.bluetooth_connection - 尝试删除已配对设备节点: BTHLE\Dev_d5e715414cb7\7&1679758c&0&d5e715414cb7
+2026-04-05 23:24:15,758 [INFO] ui.bluetooth_connection - 目标设备已从已配对列表中移除。
+2026-04-05 23:24:15,767 [INFO] ui.bluetooth_connection - [第3轮] 通过 | 配对连接与删除配对均通过
+2026-04-05 23:24:15,777 [INFO] ui.bluetooth_connection - [第4轮] 蓝牙模式通道1已处于打开状态。
+2026-04-05 23:24:15,780 [INFO] ui.bluetooth_connection - [第4轮] 触发配对模式：打开配对通道2，持续 2.000s。
+2026-04-05 23:24:15,811 [INFO] ui.bluetooth_connection - [第4轮] 打开配对按键通道: 通道2打开命令已发送。
+2026-04-05 23:24:17,863 [INFO] ui.bluetooth_connection - [第4轮] 关闭配对按键通道: 通道2关闭命令已发送。
+2026-04-05 23:24:18,064 [INFO] ui.bluetooth_connection - 开始调用系统蓝牙设置页执行配对。
+2026-04-05 23:24:39,455 [INFO] ui.bluetooth_connection - 蓝牙配对并连接成功。
+2026-04-05 23:24:39,457 [INFO] ui.bluetooth_connection - [第4轮] 本轮收尾清理：开始删除已配对蓝牙设备。
+2026-04-05 23:24:39,459 [INFO] ui.bluetooth_connection - 开始调用系统蓝牙设置页执行删除配对。
+2026-04-05 23:24:42,172 [INFO] ui.bluetooth_connection - 尝试删除已配对设备节点: BTHLE\Dev_d5e715414cb8\7&1679758c&0&d5e715414cb8
+2026-04-05 23:24:42,525 [INFO] ui.bluetooth_connection - 目标设备已从已配对列表中移除。
+2026-04-05 23:24:42,527 [INFO] ui.bluetooth_connection - [第4轮] 通过 | 配对连接与删除配对均通过
+2026-04-05 23:24:42,536 [INFO] ui.bluetooth_connection - [第5轮] 蓝牙模式通道1已处于打开状态。
+2026-04-05 23:24:42,538 [INFO] ui.bluetooth_connection - [第5轮] 触发配对模式：打开配对通道2，持续 2.000s。
+2026-04-05 23:24:42,585 [INFO] ui.bluetooth_connection - [第5轮] 打开配对按键通道: 通道2打开命令已发送。
+2026-04-05 23:24:44,553 [WARNING] ui.bluetooth_connection - 已请求停止测试。
+2026-04-05 23:24:44,559 [WARNING] ui.bluetooth_connection - 收到停止请求，退出测试循环。
+2026-04-05 23:24:44,561 [INFO] ui.bluetooth_connection - 蓝牙连接测试结束：成功 4，失败 0，成功率 100.00%
+2026-04-05 23:24:44,563 [INFO] ui.bluetooth_connection - 测试完成。成功 4，失败 0，成功率 100.00%

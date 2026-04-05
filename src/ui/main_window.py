@@ -18,6 +18,7 @@ from PySide6.QtWidgets import (
 
 from src.core.config_store import ConfigStore
 from src.ui.styles import app_stylesheet
+from src.ui.tabs.bluetooth_connection_tab import BluetoothConnectionTab
 from src.ui.tabs.help_tab import HelpTab
 from src.ui.tabs.placeholders import PlaceholderTab
 from src.ui.tabs.power_cycle_tab import PowerCycleTab
@@ -30,6 +31,10 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("鼠标自动化测试工具")
         self._config_store = ConfigStore()
         self._power_cycle_tab = PowerCycleTab(config_store=self._config_store, parent=self)
+        self._bluetooth_connection_tab = BluetoothConnectionTab(
+            config_store=self._config_store,
+            parent=self,
+        )
         self._stack = QStackedWidget()
         self._nav_group = QButtonGroup(self)
         self._nav_group.setExclusive(True)
@@ -41,13 +46,7 @@ class MainWindow(QMainWindow):
     def _init_ui(self) -> None:
         pages: list[tuple[str, QWidget]] = [
             ("上下电测试", self._power_cycle_tab),
-            (
-                "蓝牙连接测试",
-                PlaceholderTab(
-                    "蓝牙连接测试",
-                    "用于验证蓝牙配对设备的自动连接、断连重试与状态识别能力。",
-                ),
-            ),
+            ("蓝牙连接测试", self._bluetooth_connection_tab),
             (
                 "蓝牙开关测试",
                 PlaceholderTab(
@@ -62,7 +61,13 @@ class MainWindow(QMainWindow):
                     "用于验证设备休眠与唤醒流程，重点关注唤醒后的响应和连接恢复时延。",
                 ),
             ),
-            ("设置", SettingsTab(self._power_cycle_tab)),
+            (
+                "设置",
+                SettingsTab(
+                    self._power_cycle_tab,
+                    self._bluetooth_connection_tab,
+                ),
+            ),
             ("帮助", HelpTab()),
         ]
 
@@ -196,4 +201,5 @@ class MainWindow(QMainWindow):
 
     def closeEvent(self, event: QCloseEvent) -> None:  # noqa: N802
         self._power_cycle_tab.shutdown()
+        self._bluetooth_connection_tab.shutdown()
         super().closeEvent(event)
