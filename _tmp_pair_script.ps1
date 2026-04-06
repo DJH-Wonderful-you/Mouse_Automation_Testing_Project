@@ -163,7 +163,7 @@ try {
         exit 0
     }
 
-    $dialog = Wait-Window @('Add a device', '添加设备') 4
+    $dialog = Wait-Window @('Add a device', '添加设备') 1
     if ($null -eq $dialog) {
         $dialog = $settingsWindow
     }

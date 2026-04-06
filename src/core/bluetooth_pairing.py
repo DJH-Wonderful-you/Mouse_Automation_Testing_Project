@@ -539,22 +539,34 @@ function Invoke-Element($item) {
     $pattern = $null
     $invokePattern = [System.Windows.Automation.InvokePattern]::Pattern
     if ($item.TryGetCurrentPattern($invokePattern, [ref]$pattern)) {
-        $pattern.Invoke()
-        return $true
+        try {
+            ([System.Windows.Automation.InvokePattern]$pattern).Invoke()
+            return $true
+        } catch {
+            $pattern = $null
+        }
     }
     $pattern = $null
     $selectionPattern = [System.Windows.Automation.SelectionItemPattern]::Pattern
     if ($item.TryGetCurrentPattern($selectionPattern, [ref]$pattern)) {
-        $pattern.Select()
-        return $true
+        try {
+            ([System.Windows.Automation.SelectionItemPattern]$pattern).Select()
+            return $true
+        } catch {
+            $pattern = $null
+        }
     }
     $legacyPatternType = [type]::GetType('System.Windows.Automation.LegacyIAccessiblePattern, UIAutomationClient')
     if ($null -ne $legacyPatternType) {
         $pattern = $null
         $legacyPattern = $legacyPatternType::Pattern
         if ($item.TryGetCurrentPattern($legacyPattern, [ref]$pattern)) {
-            $pattern.DoDefaultAction()
-            return $true
+            try {
+                $pattern.DoDefaultAction()
+                return $true
+            } catch {
+                $pattern = $null
+            }
         }
     }
     try {
@@ -622,7 +634,7 @@ try {
         exit 0
     }
 
-    $dialog = Wait-Window @('Add a device', '添加设备') 4
+    $dialog = Wait-Window @('Add a device', '添加设备') 1
     if ($null -eq $dialog) {
         $dialog = $settingsWindow
     }
@@ -794,22 +806,34 @@ function Invoke-Element($item) {
     $pattern = $null
     $invokePattern = [System.Windows.Automation.InvokePattern]::Pattern
     if ($item.TryGetCurrentPattern($invokePattern, [ref]$pattern)) {
-        $pattern.Invoke()
-        return $true
+        try {
+            ([System.Windows.Automation.InvokePattern]$pattern).Invoke()
+            return $true
+        } catch {
+            $pattern = $null
+        }
     }
     $pattern = $null
     $selectionPattern = [System.Windows.Automation.SelectionItemPattern]::Pattern
     if ($item.TryGetCurrentPattern($selectionPattern, [ref]$pattern)) {
-        $pattern.Select()
-        return $true
+        try {
+            ([System.Windows.Automation.SelectionItemPattern]$pattern).Select()
+            return $true
+        } catch {
+            $pattern = $null
+        }
     }
     $legacyPatternType = [type]::GetType('System.Windows.Automation.LegacyIAccessiblePattern, UIAutomationClient')
     if ($null -ne $legacyPatternType) {
         $pattern = $null
         $legacyPattern = $legacyPatternType::Pattern
         if ($item.TryGetCurrentPattern($legacyPattern, [ref]$pattern)) {
-            $pattern.DoDefaultAction()
-            return $true
+            try {
+                $pattern.DoDefaultAction()
+                return $true
+            } catch {
+                $pattern = $null
+            }
         }
     }
     try {
@@ -920,6 +944,7 @@ def _log(log_cb: LogCallback, level: str, message: str) -> None:
         return
     log_level = getattr(logging, level.upper(), logging.INFO)
     _LOGGER.log(log_level, message)
+
 
 
 

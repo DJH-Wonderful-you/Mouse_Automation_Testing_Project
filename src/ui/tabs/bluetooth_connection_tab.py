@@ -1,10 +1,9 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import datetime
 from html import escape
 import logging
-import time
 from typing import Callable
 
 from PySide6.QtCore import QObject, QThread, Qt, Signal, Slot
@@ -268,18 +267,7 @@ class BluetoothConnectionTab(QWidget):
         self.label_relay_status = QLabel("未连接")
 
         self.label_mode_channel = QLabel()
-        self.btn_mode_on = QPushButton("打开蓝牙模式通道")
-        self.btn_mode_on.clicked.connect(self._open_mode_channel)
-        self.btn_mode_off = QPushButton("关闭蓝牙模式通道")
-        self.btn_mode_off.clicked.connect(self._close_mode_channel)
-
         self.label_pairing_channel = QLabel()
-        self.btn_pairing_on = QPushButton("打开配对按键通道")
-        self.btn_pairing_on.clicked.connect(self._open_pairing_channel)
-        self.btn_pairing_off = QPushButton("关闭配对按键通道")
-        self.btn_pairing_off.clicked.connect(self._close_pairing_channel)
-        self.btn_pairing_pulse = QPushButton("触发一次配对模式")
-        self.btn_pairing_pulse.clicked.connect(self._trigger_pairing_mode_manually)
 
         row_port = QHBoxLayout()
         row_port.addWidget(QLabel("继电器串口："))
@@ -295,14 +283,9 @@ class BluetoothConnectionTab(QWidget):
 
         row_mode = QHBoxLayout()
         row_mode.addWidget(self.label_mode_channel, 1)
-        row_mode.addWidget(self.btn_mode_on)
-        row_mode.addWidget(self.btn_mode_off)
 
         row_pairing = QHBoxLayout()
         row_pairing.addWidget(self.label_pairing_channel, 1)
-        row_pairing.addWidget(self.btn_pairing_on)
-        row_pairing.addWidget(self.btn_pairing_off)
-        row_pairing.addWidget(self.btn_pairing_pulse)
 
         layout.addLayout(row_port)
         layout.addLayout(row_actions)
@@ -608,65 +591,7 @@ class BluetoothConnectionTab(QWidget):
         else:
             self._append_log("WARNING", "自动识别继电器失败。")
 
-    def _open_mode_channel(self) -> None:
-        self._set_manual_relay_channel(self.input_mode_relay_channel.value(), True, "蓝牙模式")
 
-    def _close_mode_channel(self) -> None:
-        self._set_manual_relay_channel(self.input_mode_relay_channel.value(), False, "蓝牙模式")
-
-    def _open_pairing_channel(self) -> None:
-        self._set_manual_relay_channel(self.input_pairing_relay_channel.value(), True, "配对按键")
-
-    def _close_pairing_channel(self) -> None:
-        self._set_manual_relay_channel(self.input_pairing_relay_channel.value(), False, "配对按键")
-
-    def _set_manual_relay_channel(self, channel: int, on: bool, label: str) -> None:
-        if not self._relay_real.is_connected:
-            QMessageBox.warning(self, "设备未连接", "继电器尚未连接。")
-            return
-        action = "打开" if on else "关闭"
-        try:
-            self._relay_real.set_channel_state(channel, on)
-        except Exception as exc:  # noqa: BLE001
-            self._append_log("ERROR", f"{label}通道{channel}{action}失败: {exc}")
-            return
-        self._append_log("INFO", f"已发送手动继电器命令：{label}通道={channel}，状态={action}")
-
-    def _trigger_pairing_mode_manually(self) -> None:
-        if self._aux_task_running:
-            self._append_log("WARNING", f"{self._aux_task_name}正在执行，请稍候。")
-            return
-        if not self._relay_real.is_connected:
-            QMessageBox.warning(self, "设备未连接", "继电器尚未连接。")
-            return
-
-        channel = self.input_pairing_relay_channel.value()
-        hold_seconds = max(0.1, self.input_pairing_press.value())
-        self._append_log(
-            "INFO",
-            f"开始手动触发配对模式：通道{channel} 打开 {hold_seconds:.3f}s。",
-        )
-
-        def task() -> object:
-            self._relay_real.set_channel_state(channel, True)
-            try:
-                time.sleep(hold_seconds)
-            finally:
-                self._relay_real.set_channel_state(channel, False)
-            return {"channel": channel, "hold_seconds": hold_seconds}
-
-        self._start_aux_task("触发一次配对模式", task, self._on_manual_pairing_pulse_done)
-
-    def _on_manual_pairing_pulse_done(self, payload: object) -> None:
-        if not isinstance(payload, dict):
-            self._append_log("ERROR", "手动配对脉冲结果无效。")
-            return
-        channel = payload.get("channel")
-        hold_seconds = payload.get("hold_seconds")
-        self._append_log(
-            "INFO",
-            f"手动配对模式触发完成：通道{channel} 已自动关闭，持续 {hold_seconds:.3f}s。",
-        )
 
     def _detect_bluetooth_devices(self) -> None:
         self._append_log("INFO", "开始检测已配对蓝牙设备...")
@@ -1016,12 +941,6 @@ class BluetoothConnectionTab(QWidget):
         self.btn_relay_disconnect.setEnabled((not control_busy) and self._relay_real.is_connected)
         self.btn_auto_connect.setEnabled(not control_busy)
 
-        relay_ready = self._relay_real.is_connected and (not control_busy)
-        self.btn_mode_on.setEnabled(relay_ready)
-        self.btn_mode_off.setEnabled(relay_ready)
-        self.btn_pairing_on.setEnabled(relay_ready)
-        self.btn_pairing_off.setEnabled(relay_ready)
-        self.btn_pairing_pulse.setEnabled(relay_ready)
 
         self.btn_start.setEnabled(not control_busy)
         self.btn_stop.setEnabled(busy)
@@ -1056,3 +975,5 @@ class BluetoothConnectionTab(QWidget):
             self._aux_task_thread.quit()
             self._aux_task_thread.wait(1500)
         self._relay_real.disconnect()
+
+
