@@ -1,5 +1,6 @@
 ﻿from __future__ import annotations
 
+import ctypes
 import logging
 import subprocess
 import time
@@ -17,6 +18,7 @@ from src.core.bluetooth_probe import (
 from src.core.types import BtMatchMode
 
 _LOGGER = logging.getLogger("bluetooth.pairing")
+_SW_RESTORE = 9
 
 LogCallback = Callable[[str, str], None] | None
 
@@ -368,25 +370,17 @@ def _pair_via_settings_ui_pywinauto(
     if desktop_factory is None or send_keys is None:
         return _SettingsUiActionResult(ok=False, reason=import_error or "pywinauto 不可用。")
 
-    launch_error = _launch_bluetooth_settings()
-    if launch_error:
-        return _SettingsUiActionResult(ok=False, reason=f"无法打开系统蓝牙设置页: {launch_error[:300]}")
-
     try:
         desktop = desktop_factory(backend="uia")
-        settings_window = _wait_for_window(
-            desktop,
-            ["Bluetooth", "蓝牙", "设置", "Settings"],
-            timeout_sec=12.0,
-        )
+        settings_window = _open_bluetooth_settings_window(desktop)
         if settings_window is None:
             return _SettingsUiActionResult(ok=False, reason="未找到系统蓝牙设置窗口。")
 
         add_button = _wait_for_element(
             [settings_window],
-            ["Add device", "添加设备"],
+            ["Add device", "添加设备", "添加蓝牙或其他设备"],
             ["Button"],
-            contains_match=False,
+            contains_match=True,
             timeout_sec=10.0,
         )
         if add_button is None:
@@ -394,9 +388,15 @@ def _pair_via_settings_ui_pywinauto(
         if not _invoke_element(add_button, send_keys):
             return _SettingsUiActionResult(ok=False, reason="无法触发“添加设备”按钮。")
 
-        dialog = _wait_for_window(desktop, ["Add a device", "添加设备"], timeout_sec=1.0)
+        dialog = _wait_for_window(
+            desktop,
+            ["Add a device", "添加设备"],
+            timeout_sec=3.0,
+            activate=True,
+        )
         if dialog is None:
             dialog = settings_window
+            _activate_window(dialog)
 
         bluetooth_button = _wait_for_element(
             [dialog, desktop],
@@ -443,7 +443,7 @@ def _pair_via_settings_ui_pywinauto(
             for button_names in (
                 ["Pair", "配对"],
                 ["Connect", "连接"],
-                ["Done", "完成"],
+                ["Done", "已完成"],
                 ["Close", "关闭"],
             ):
                 if _click_optional_button(
@@ -457,6 +457,7 @@ def _pair_via_settings_ui_pywinauto(
             if not clicked:
                 time.sleep(0.35)
 
+        _close_pairing_windows(dialog, settings_window, send_keys)
         return _SettingsUiActionResult(ok=True, selected_name=selected_name)
     except Exception as exc:  # noqa: BLE001
         _LOGGER.warning("pywinauto 蓝牙配对执行失败: %s", exc)
@@ -473,17 +474,9 @@ def _remove_via_settings_ui_pywinauto(
     if desktop_factory is None or send_keys is None:
         return _SettingsUiActionResult(ok=False, reason=import_error or "pywinauto 不可用。")
 
-    launch_error = _launch_bluetooth_settings()
-    if launch_error:
-        return _SettingsUiActionResult(ok=False, reason=f"无法打开系统蓝牙设置页: {launch_error[:300]}")
-
     try:
         desktop = desktop_factory(backend="uia")
-        settings_window = _wait_for_window(
-            desktop,
-            ["Bluetooth", "蓝牙", "设置", "Settings"],
-            timeout_sec=12.0,
-        )
+        settings_window = _open_bluetooth_settings_window(desktop)
         if settings_window is None:
             return _SettingsUiActionResult(ok=False, reason="未找到系统蓝牙设置窗口。")
 
@@ -579,14 +572,141 @@ def _compact_mac(mac: str) -> str:
     return normalize_mac(mac).replace(":", "")
 
 
-def _wait_for_window(desktop: object, terms: list[str], *, timeout_sec: float) -> object | None:
+def _open_bluetooth_settings_window(desktop: object) -> object | None:
+    existing = _wait_for_window(
+        desktop,
+        ["Bluetooth", "蓝牙", "设置", "Settings"],
+        timeout_sec=1.0,
+        activate=True,
+    )
+    if existing is not None:
+        return existing
+
+    launch_error = _launch_bluetooth_settings()
+    if launch_error:
+        _LOGGER.warning("无法打开系统蓝牙设置页: %s", launch_error[:300])
+        return None
+
+    return _wait_for_window(
+        desktop,
+        ["Bluetooth", "蓝牙", "设置", "Settings"],
+        timeout_sec=12.0,
+        activate=True,
+    )
+
+
+def _wait_for_window(
+    desktop: object,
+    terms: list[str],
+    *,
+    timeout_sec: float,
+    activate: bool = False,
+) -> object | None:
     deadline = time.monotonic() + max(0.1, timeout_sec)
     while time.monotonic() <= deadline:
         for window in _safe_windows(desktop):
             if _contains_any_term(_safe_element_name(window), terms):
+                if activate:
+                    _activate_window(window)
                 return window
         time.sleep(0.3)
     return None
+
+
+def _activate_window(window: object) -> None:
+    top_level = _safe_top_level_window(window)
+    if top_level is None:
+        return
+
+    _call_window_method(top_level, "restore")
+    hwnd = _safe_window_handle(top_level)
+    if hwnd:
+        try:
+            user32 = getattr(getattr(ctypes, "windll", None), "user32", None)
+            if user32 is not None:
+                user32.ShowWindow(hwnd, _SW_RESTORE)
+                user32.BringWindowToTop(hwnd)
+                user32.SetForegroundWindow(hwnd)
+        except Exception:  # noqa: BLE001
+            pass
+
+    _call_window_method(top_level, "set_focus")
+
+
+def _safe_top_level_window(window: object) -> object | None:
+    top_level_parent = getattr(window, "top_level_parent", None)
+    if callable(top_level_parent):
+        try:
+            top_level = top_level_parent()
+            if top_level is not None:
+                return top_level
+        except Exception:  # noqa: BLE001
+            pass
+    return window
+
+
+def _safe_window_handle(window: object) -> int:
+    for candidate in (
+        getattr(window, "handle", 0),
+        getattr(getattr(window, "element_info", None), "handle", 0),
+    ):
+        try:
+            handle = int(candidate or 0)
+        except (TypeError, ValueError):
+            continue
+        if handle > 0:
+            return handle
+    return 0
+
+
+def _call_window_method(window: object, method_name: str) -> bool:
+    method = getattr(window, method_name, None)
+    if not callable(method):
+        return False
+    try:
+        method()
+    except Exception:  # noqa: BLE001
+        return False
+    return True
+
+
+def _close_pairing_windows(dialog: object, settings_window: object, send_keys: object) -> None:
+    dialog_window = _safe_top_level_window(dialog)
+    settings_top_level = _safe_top_level_window(settings_window)
+
+    if dialog_window is not None and dialog_window is not settings_top_level:
+        _close_window(dialog_window, send_keys)
+        time.sleep(0.2)
+
+    if settings_top_level is not None:
+        _close_window(settings_top_level, send_keys)
+
+
+def _close_window(window: object, send_keys: object) -> bool:
+    top_level = _safe_top_level_window(window)
+    if top_level is None:
+        return False
+
+    _activate_window(top_level)
+    if _call_window_method(top_level, "close"):
+        return True
+
+    close_button = _find_element(
+        top_level,
+        ["Close", "关闭"],
+        ["Button", "TitleBar"],
+        contains_match=True,
+    )
+    if close_button is not None and _invoke_element(close_button, send_keys):
+        return True
+
+    if callable(send_keys):
+        try:
+            send_keys("%{F4}")
+            return True
+        except Exception:  # noqa: BLE001
+            return False
+    return False
 
 
 def _wait_for_element(

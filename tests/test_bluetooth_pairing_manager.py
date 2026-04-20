@@ -6,8 +6,11 @@ from unittest.mock import Mock, patch
 from src.core.bluetooth_pairing import (
     BluetoothActionResult,
     SystemBluetoothManager,
+    _close_pairing_windows,
+    _open_bluetooth_settings_window,
     _pair_via_settings_ui,
     _remove_via_settings_ui,
+    _wait_for_window,
 )
 from src.core.bluetooth_probe import BluetoothDeviceInfo
 
@@ -122,6 +125,66 @@ class TestBluetoothPairingManager(unittest.TestCase):
 
         self.assertFalse(result.ok)
         self.assertEqual("pywinauto failed", result.reason)
+
+    @patch("src.core.bluetooth_pairing._activate_window")
+    def test_wait_for_window_activates_window_when_requested(
+        self,
+        mock_activate_window: Mock,
+    ) -> None:
+        window = Mock()
+        window.element_info = Mock()
+        window.element_info.name = "Bluetooth Settings"
+        desktop = Mock()
+        desktop.windows.return_value = [window]
+
+        result = _wait_for_window(
+            desktop,
+            ["Bluetooth", "蓝牙"],
+            timeout_sec=0.1,
+            activate=True,
+        )
+
+        self.assertIs(result, window)
+        mock_activate_window.assert_called_once_with(window)
+
+    @patch("src.core.bluetooth_pairing._launch_bluetooth_settings")
+    @patch("src.core.bluetooth_pairing._wait_for_window")
+    def test_open_settings_window_reuses_existing_window(
+        self,
+        mock_wait_for_window: Mock,
+        mock_launch_bluetooth_settings: Mock,
+    ) -> None:
+        existing_window = Mock()
+        mock_wait_for_window.return_value = existing_window
+
+        result = _open_bluetooth_settings_window(Mock())
+
+        self.assertIs(result, existing_window)
+        mock_launch_bluetooth_settings.assert_not_called()
+
+    @patch("src.core.bluetooth_pairing.time.sleep")
+    @patch("src.core.bluetooth_pairing._close_window")
+    @patch("src.core.bluetooth_pairing._safe_top_level_window")
+    def test_close_pairing_windows_closes_dialog_then_settings(
+        self,
+        mock_safe_top_level_window: Mock,
+        mock_close_window: Mock,
+        mock_sleep: Mock,
+    ) -> None:
+        dialog = Mock(name="dialog")
+        settings = Mock(name="settings")
+        mock_safe_top_level_window.side_effect = [dialog, settings]
+
+        _close_pairing_windows(dialog, settings, Mock())
+
+        self.assertEqual(
+            mock_close_window.call_args_list,
+            [
+                unittest.mock.call(dialog, unittest.mock.ANY),
+                unittest.mock.call(settings, unittest.mock.ANY),
+            ],
+        )
+        mock_sleep.assert_called_once_with(0.2)
 
 
 if __name__ == "__main__":

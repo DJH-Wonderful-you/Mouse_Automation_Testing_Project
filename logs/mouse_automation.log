@@ -3410,3 +3410,121 @@ Try 语句缺少自己的 Catch 或 Finally 块。
 2026-04-20 19:35:16,822 [WARNING] ui.bluetooth_connection - 检测到停止请求，测试提前结束。
 2026-04-20 19:35:16,824 [INFO] ui.bluetooth_connection - 蓝牙连接测试结束：成功 1，失败 2，成功率 33.33%
 2026-04-20 19:35:16,825 [INFO] ui.bluetooth_connection - 测试完成。成功 1，失败 2，成功率 33.33%
+2026-04-20 20:30:07,356 [INFO] ui.power_cycle - 仿真设置更新：万用表=开, 继电器=关, 蓝牙=开
+2026-04-20 20:30:07,372 [INFO] ui.power_cycle - 串口刷新完成，共发现 2 个端口。
+2026-04-20 20:30:07,393 [INFO] ui.bluetooth_connection - 串口刷新完成，共发现 2 个端口。
+2026-04-20 20:30:15,422 [INFO] ui.bluetooth_connection - 配置已保存。
+2026-04-20 20:30:15,428 [INFO] ui.bluetooth_connection - 测试线程启动。
+2026-04-20 20:30:15,434 [INFO] ui.bluetooth_connection - 蓝牙连接测试开始，总轮次: 100
+2026-04-20 20:30:15,437 [INFO] ui.bluetooth_connection - [第1轮] 切换鼠标到蓝牙模式: 通道1打开命令已发送。
+2026-04-20 20:30:15,747 [INFO] ui.bluetooth_connection - [第1轮] 触发配对模式：打开配对通道2，持续 2.000s。
+2026-04-20 20:30:15,748 [INFO] ui.bluetooth_connection - [第1轮] 打开配对按键通道: 通道2打开命令已发送。
+2026-04-20 20:30:17,744 [INFO] ui.bluetooth_connection - [第1轮] 关闭配对按键通道: 通道2关闭命令已发送。
+2026-04-20 20:30:17,939 [INFO] ui.bluetooth_connection - 开始调用系统蓝牙设置页执行配对。
+2026-04-20 20:30:35,648 [INFO] ui.bluetooth_connection - 蓝牙配对并连接成功。
+2026-04-20 20:30:35,650 [INFO] ui.bluetooth_connection - [第1轮] 本轮收尾清理：开始删除已配对蓝牙设备。
+2026-04-20 20:30:35,652 [INFO] ui.bluetooth_connection - 开始调用系统蓝牙设置页执行删除配对。
+2026-04-20 20:30:40,177 [WARNING] ui.bluetooth_connection - 已请求停止测试。
+2026-04-20 20:30:44,949 [INFO] ui.power_cycle - 配置已保存。
+2026-04-20 20:30:44,951 [INFO] ui.bluetooth_connection - 配置已保存。
+2026-04-20 20:45:21,236 [INFO] ui.power_cycle - 仿真设置更新：万用表=开, 继电器=关, 蓝牙=开
+2026-04-20 20:45:21,247 [INFO] ui.power_cycle - 串口刷新完成，共发现 2 个端口。
+2026-04-20 20:45:21,262 [INFO] ui.bluetooth_connection - 串口刷新完成，共发现 2 个端口。
+2026-04-20 20:45:28,734 [INFO] ui.bluetooth_connection - 配置已保存。
+2026-04-20 20:45:28,739 [INFO] ui.bluetooth_connection - 测试线程启动。
+2026-04-20 20:45:28,745 [INFO] ui.bluetooth_connection - 蓝牙连接测试开始，总轮次: 100
+2026-04-20 20:45:28,747 [INFO] ui.bluetooth_connection - [第1轮] 切换鼠标到蓝牙模式: 通道1打开命令已发送。
+2026-04-20 20:45:29,053 [INFO] ui.bluetooth_connection - [第1轮] 检测到 1 个已配对目标设备，先执行删除配对。
+2026-04-20 20:45:29,055 [INFO] ui.bluetooth_connection - [第1轮] 测试前清理：开始删除已配对蓝牙设备。
+2026-04-20 20:45:29,056 [INFO] ui.bluetooth_connection - 开始调用系统蓝牙设置页执行删除配对。
+2026-04-20 20:45:34,304 [INFO] ui.bluetooth_connection - 已在系统设置页删除设备: 显示更多设置
+2026-04-20 20:45:35,275 [INFO] ui.bluetooth_connection - 目标设备已从已配对列表中移除。
+2026-04-20 20:45:35,277 [INFO] ui.bluetooth_connection - [第1轮] 触发配对模式：打开配对通道2，持续 2.000s。
+2026-04-20 20:45:35,279 [INFO] ui.bluetooth_connection - [第1轮] 打开配对按键通道: 通道2打开命令已发送。
+2026-04-20 20:45:37,269 [INFO] ui.bluetooth_connection - [第1轮] 关闭配对按键通道: 通道2关闭命令已发送。
+2026-04-20 20:45:37,471 [INFO] ui.bluetooth_connection - 开始调用系统蓝牙设置页执行配对。
+2026-04-20 20:45:52,661 [INFO] ui.bluetooth_connection - 蓝牙配对并连接成功。
+2026-04-20 20:45:52,663 [INFO] ui.bluetooth_connection - [第1轮] 本轮收尾清理：开始删除已配对蓝牙设备。
+2026-04-20 20:45:52,666 [INFO] ui.bluetooth_connection - 开始调用系统蓝牙设置页执行删除配对。
+2026-04-20 20:46:04,184 [INFO] ui.bluetooth_connection - 尝试删除已配对设备节点: BTHLE\Dev_d5e715414cee\7&1679758c&0&d5e715414cee
+2026-04-20 20:46:07,705 [WARNING] ui.bluetooth_connection - 已请求停止测试。
+2026-04-20 20:46:19,894 [WARNING] ui.bluetooth_connection - [第1轮] 失败 | 原因: 配对成功但删除配对失败: 删除已配对设备失败: 设置页删除配对失败: 已定位到目标设备，但未找到“删除设备”按钮。; BTHLE\Dev_d5e715414cee\7&1679758c&0&d5e715414cee: Microsoft PnP 工具
+
+无法删除设备:  BTHLE\Dev_d5e715414cee\7&1679758c&0&d5e715414cee
+拒绝访问。（当前路径通常需要管理员权限）
+2026-04-20 20:46:19,903 [WARNING] ui.bluetooth_connection - 检测到停止请求，测试提前结束。
+2026-04-20 20:46:19,906 [INFO] ui.bluetooth_connection - 蓝牙连接测试结束：成功 0，失败 1，成功率 0.00%
+2026-04-20 20:46:19,907 [INFO] ui.bluetooth_connection - 测试完成。成功 0，失败 1，成功率 0.00%
+2026-04-20 20:48:13,583 [INFO] ui.power_cycle - 配置已保存。
+2026-04-20 20:48:13,586 [INFO] ui.bluetooth_connection - 配置已保存。
+2026-04-20 20:48:20,556 [INFO] ui.power_cycle - 仿真设置更新：万用表=开, 继电器=关, 蓝牙=开
+2026-04-20 20:48:20,568 [INFO] ui.power_cycle - 串口刷新完成，共发现 2 个端口。
+2026-04-20 20:48:20,585 [INFO] ui.bluetooth_connection - 串口刷新完成，共发现 2 个端口。
+2026-04-20 20:48:24,615 [INFO] ui.bluetooth_connection - 配置已保存。
+2026-04-20 20:48:24,620 [INFO] ui.bluetooth_connection - 测试线程启动。
+2026-04-20 20:48:24,630 [INFO] ui.bluetooth_connection - 蓝牙连接测试开始，总轮次: 100
+2026-04-20 20:48:24,632 [INFO] ui.bluetooth_connection - [第1轮] 切换鼠标到蓝牙模式: 通道1打开命令已发送。
+2026-04-20 20:48:24,948 [INFO] ui.bluetooth_connection - [第1轮] 检测到 1 个已配对目标设备，先执行删除配对。
+2026-04-20 20:48:24,949 [INFO] ui.bluetooth_connection - [第1轮] 测试前清理：开始删除已配对蓝牙设备。
+2026-04-20 20:48:24,950 [INFO] ui.bluetooth_connection - 开始调用系统蓝牙设置页执行删除配对。
+2026-04-20 20:48:29,698 [INFO] ui.bluetooth_connection - 已在系统设置页删除设备: 显示更多设置
+2026-04-20 20:48:30,649 [INFO] ui.bluetooth_connection - 目标设备已从已配对列表中移除。
+2026-04-20 20:48:30,651 [INFO] ui.bluetooth_connection - [第1轮] 触发配对模式：打开配对通道2，持续 2.000s。
+2026-04-20 20:48:30,654 [INFO] ui.bluetooth_connection - [第1轮] 打开配对按键通道: 通道2打开命令已发送。
+2026-04-20 20:48:32,643 [INFO] ui.bluetooth_connection - [第1轮] 关闭配对按键通道: 通道2关闭命令已发送。
+2026-04-20 20:48:32,845 [INFO] ui.bluetooth_connection - 开始调用系统蓝牙设置页执行配对。
+2026-04-20 20:48:43,080 [INFO] ui.bluetooth_connection - 蓝牙配对并连接成功。
+2026-04-20 20:48:43,081 [INFO] ui.bluetooth_connection - [第1轮] 本轮收尾清理：开始删除已配对蓝牙设备。
+2026-04-20 20:48:43,082 [INFO] ui.bluetooth_connection - 开始调用系统蓝牙设置页执行删除配对。
+2026-04-20 20:48:53,290 [INFO] ui.bluetooth_connection - 尝试删除已配对设备节点: BTHLE\Dev_d5e715414cef\7&1679758c&0&d5e715414cef
+2026-04-20 20:49:01,666 [WARNING] ui.bluetooth_connection - 已请求停止测试。
+2026-04-20 20:49:02,606 [INFO] ui.power_cycle - 配置已保存。
+2026-04-20 20:49:02,609 [INFO] ui.bluetooth_connection - 配置已保存。
+2026-04-20 21:11:57,179 [INFO] ui.power_cycle - 仿真设置更新：万用表=开, 继电器=关, 蓝牙=开
+2026-04-20 21:11:57,190 [INFO] ui.power_cycle - 串口刷新完成，共发现 2 个端口。
+2026-04-20 21:11:57,207 [INFO] ui.bluetooth_connection - 串口刷新完成，共发现 2 个端口。
+2026-04-20 21:12:00,936 [INFO] ui.bluetooth_connection - 配置已保存。
+2026-04-20 21:12:00,942 [INFO] ui.bluetooth_connection - 测试线程启动。
+2026-04-20 21:12:00,947 [INFO] ui.bluetooth_connection - 蓝牙连接测试开始，总轮次: 100
+2026-04-20 21:12:00,949 [INFO] ui.bluetooth_connection - [第1轮] 切换鼠标到蓝牙模式: 通道1打开命令已发送。
+2026-04-20 21:12:01,270 [INFO] ui.bluetooth_connection - [第1轮] 检测到 1 个已配对目标设备，先执行删除配对。
+2026-04-20 21:12:01,271 [INFO] ui.bluetooth_connection - [第1轮] 测试前清理：开始删除已配对蓝牙设备。
+2026-04-20 21:12:01,272 [INFO] ui.bluetooth_connection - 开始调用系统蓝牙设置页执行删除配对。
+2026-04-20 21:12:06,539 [INFO] ui.bluetooth_connection - 已在系统设置页删除设备: 显示更多设置
+2026-04-20 21:12:07,542 [INFO] ui.bluetooth_connection - 目标设备已从已配对列表中移除。
+2026-04-20 21:12:07,544 [INFO] ui.bluetooth_connection - [第1轮] 触发配对模式：打开配对通道2，持续 2.000s。
+2026-04-20 21:12:07,547 [INFO] ui.bluetooth_connection - [第1轮] 打开配对按键通道: 通道2打开命令已发送。
+2026-04-20 21:12:09,542 [INFO] ui.bluetooth_connection - [第1轮] 关闭配对按键通道: 通道2关闭命令已发送。
+2026-04-20 21:12:09,738 [INFO] ui.bluetooth_connection - 开始调用系统蓝牙设置页执行配对。
+2026-04-20 21:12:20,483 [INFO] ui.bluetooth_connection - 蓝牙配对并连接成功。
+2026-04-20 21:12:20,485 [INFO] ui.bluetooth_connection - [第1轮] 本轮收尾清理：开始删除已配对蓝牙设备。
+2026-04-20 21:12:20,486 [INFO] ui.bluetooth_connection - 开始调用系统蓝牙设置页执行删除配对。
+2026-04-20 21:12:27,689 [INFO] ui.bluetooth_connection - 已在系统设置页删除设备: 显示更多设置
+2026-04-20 21:12:28,715 [INFO] ui.bluetooth_connection - 目标设备已从已配对列表中移除。
+2026-04-20 21:12:28,716 [INFO] ui.bluetooth_connection - [第1轮] 通过 | 配对连接与删除配对均通过
+2026-04-20 21:12:28,721 [INFO] ui.bluetooth_connection - [第2轮] 蓝牙模式通道1已处于打开状态。
+2026-04-20 21:12:28,726 [INFO] ui.bluetooth_connection - [第2轮] 触发配对模式：打开配对通道2，持续 2.000s。
+2026-04-20 21:12:28,727 [INFO] ui.bluetooth_connection - [第2轮] 打开配对按键通道: 通道2打开命令已发送。
+2026-04-20 21:12:30,712 [INFO] ui.bluetooth_connection - [第2轮] 关闭配对按键通道: 通道2关闭命令已发送。
+2026-04-20 21:12:30,918 [INFO] ui.bluetooth_connection - 开始调用系统蓝牙设置页执行配对。
+2026-04-20 21:12:40,803 [INFO] ui.bluetooth_connection - 蓝牙配对并连接成功。
+2026-04-20 21:12:40,804 [INFO] ui.bluetooth_connection - [第2轮] 本轮收尾清理：开始删除已配对蓝牙设备。
+2026-04-20 21:12:40,805 [INFO] ui.bluetooth_connection - 开始调用系统蓝牙设置页执行删除配对。
+2026-04-20 21:12:47,171 [INFO] ui.bluetooth_connection - 已在系统设置页删除设备: 显示更多设置
+2026-04-20 21:12:47,420 [INFO] ui.bluetooth_connection - 目标设备已从已配对列表中移除。
+2026-04-20 21:12:47,422 [INFO] ui.bluetooth_connection - [第2轮] 通过 | 配对连接与删除配对均通过
+2026-04-20 21:12:47,431 [INFO] ui.bluetooth_connection - [第3轮] 蓝牙模式通道1已处于打开状态。
+2026-04-20 21:12:47,434 [INFO] ui.bluetooth_connection - [第3轮] 触发配对模式：打开配对通道2，持续 2.000s。
+2026-04-20 21:12:47,436 [INFO] ui.bluetooth_connection - [第3轮] 打开配对按键通道: 通道2打开命令已发送。
+2026-04-20 21:12:49,418 [INFO] ui.bluetooth_connection - [第3轮] 关闭配对按键通道: 通道2关闭命令已发送。
+2026-04-20 21:12:49,614 [INFO] ui.bluetooth_connection - 开始调用系统蓝牙设置页执行配对。
+2026-04-20 21:13:00,264 [INFO] ui.bluetooth_connection - 蓝牙配对并连接成功。
+2026-04-20 21:13:00,265 [INFO] ui.bluetooth_connection - [第3轮] 本轮收尾清理：开始删除已配对蓝牙设备。
+2026-04-20 21:13:00,268 [INFO] ui.bluetooth_connection - 开始调用系统蓝牙设置页执行删除配对。
+2026-04-20 21:13:01,002 [WARNING] ui.bluetooth_connection - 已请求停止测试。
+2026-04-20 21:13:07,532 [INFO] ui.bluetooth_connection - 已在系统设置页删除设备: 显示更多设置
+2026-04-20 21:13:08,601 [INFO] ui.bluetooth_connection - 目标设备已从已配对列表中移除。
+2026-04-20 21:13:08,606 [INFO] ui.bluetooth_connection - [第3轮] 通过 | 配对连接与删除配对均通过
+2026-04-20 21:13:08,617 [WARNING] ui.bluetooth_connection - 检测到停止请求，测试提前结束。
+2026-04-20 21:13:08,619 [INFO] ui.bluetooth_connection - 蓝牙连接测试结束：成功 3，失败 0，成功率 100.00%
+2026-04-20 21:13:08,624 [INFO] ui.bluetooth_connection - 测试完成。成功 3，失败 0，成功率 100.00%
