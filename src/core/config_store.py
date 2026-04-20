@@ -150,6 +150,25 @@ class ConfigStore:
         finally:
             self._settings.endGroup()
 
+    def load_preferred_relay_port(self) -> str:
+        power_cycle_port = self.load_power_cycle().relay_port.strip()
+        if power_cycle_port:
+            return power_cycle_port
+        return self.load_bluetooth_connect().relay_port.strip()
+
+    def save_preferred_relay_port(self, port: str) -> None:
+        normalized_port = port.strip()
+
+        power_cycle = self.load_power_cycle()
+        if power_cycle.relay_port != normalized_port:
+            power_cycle.relay_port = normalized_port
+            self.save_power_cycle(power_cycle)
+
+        bluetooth_connect = self.load_bluetooth_connect()
+        if bluetooth_connect.relay_port != normalized_port:
+            bluetooth_connect.relay_port = normalized_port
+            self.save_bluetooth_connect(bluetooth_connect)
+
     def _read_int(self, key: str, default: int) -> int:
         value = self._settings.value(key, default)
         try:

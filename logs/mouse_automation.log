@@ -3528,3 +3528,10 @@ Try 语句缺少自己的 Catch 或 Finally 块。
 2026-04-20 21:13:08,617 [WARNING] ui.bluetooth_connection - 检测到停止请求，测试提前结束。
 2026-04-20 21:13:08,619 [INFO] ui.bluetooth_connection - 蓝牙连接测试结束：成功 3，失败 0，成功率 100.00%
 2026-04-20 21:13:08,624 [INFO] ui.bluetooth_connection - 测试完成。成功 3，失败 0，成功率 100.00%
+2026-04-20 21:38:50,334 [INFO] ui.power_cycle - 配置已保存。
+2026-04-20 21:38:50,336 [INFO] ui.bluetooth_connection - 配置已保存。
+2026-04-20 21:38:54,656 [INFO] ui.power_cycle - 仿真设置更新：万用表=开, 继电器=关, 蓝牙=开
+2026-04-20 21:38:54,669 [INFO] ui.power_cycle - 串口刷新完成，共发现 2 个端口。
+2026-04-20 21:38:54,688 [INFO] ui.bluetooth_connection - 串口刷新完成，共发现 2 个端口。
+2026-04-20 21:39:18,302 [INFO] ui.power_cycle - 配置已保存。
+2026-04-20 21:39:18,303 [INFO] ui.bluetooth_connection - 配置已保存。

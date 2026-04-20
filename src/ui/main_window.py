@@ -22,6 +22,7 @@ from src.ui.tabs.bluetooth_connection_tab import BluetoothConnectionTab
 from src.ui.tabs.help_tab import HelpTab
 from src.ui.tabs.placeholders import PlaceholderTab
 from src.ui.tabs.power_cycle_tab import PowerCycleTab
+from src.ui.tabs.relay_control_tab import RelayControlTab
 from src.ui.tabs.settings_tab import SettingsTab
 
 
@@ -32,6 +33,10 @@ class MainWindow(QMainWindow):
         self._config_store = ConfigStore()
         self._power_cycle_tab = PowerCycleTab(config_store=self._config_store, parent=self)
         self._bluetooth_connection_tab = BluetoothConnectionTab(
+            config_store=self._config_store,
+            parent=self,
+        )
+        self._relay_control_tab = RelayControlTab(
             config_store=self._config_store,
             parent=self,
         )
@@ -68,6 +73,7 @@ class MainWindow(QMainWindow):
                     self._bluetooth_connection_tab,
                 ),
             ),
+            ("继电器控制", self._relay_control_tab),
             ("帮助", HelpTab()),
         ]
 
@@ -202,4 +208,5 @@ class MainWindow(QMainWindow):
     def closeEvent(self, event: QCloseEvent) -> None:  # noqa: N802
         self._power_cycle_tab.shutdown()
         self._bluetooth_connection_tab.shutdown()
+        self._relay_control_tab.shutdown()
         super().closeEvent(event)
