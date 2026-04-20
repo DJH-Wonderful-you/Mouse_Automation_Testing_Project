@@ -6,7 +6,6 @@ from unittest.mock import Mock, patch
 from src.core.bluetooth_pairing import (
     BluetoothActionResult,
     SystemBluetoothManager,
-    _build_settings_pair_script,
     _pair_via_settings_ui,
     _remove_via_settings_ui,
 )
@@ -99,73 +98,30 @@ class TestBluetoothPairingManager(unittest.TestCase):
         self.assertIn("管理员权限", result.reason)
         self.assertIn("设置页删除配对失败", result.reason)
 
-    @patch("src.core.bluetooth_pairing._pair_via_settings_ui_powershell")
     @patch("src.core.bluetooth_pairing._pair_via_settings_ui_pywinauto")
-    def test_pair_ui_falls_back_to_powershell_when_pywinauto_fails(
+    def test_pair_ui_returns_pywinauto_error_when_pywinauto_fails(
         self,
         mock_pair_via_settings_ui_pywinauto: Mock,
-        mock_pair_via_settings_ui_powershell: Mock,
     ) -> None:
         mock_pair_via_settings_ui_pywinauto.return_value = Mock(ok=False, reason="pywinauto failed")
-        mock_pair_via_settings_ui_powershell.return_value = Mock(
-            ok=True,
-            reason="fallback ok",
-            selected_name="LOWA Mouse",
-        )
-
-        result = _pair_via_settings_ui("LOWA Mouse", "D5:E7:15:41:4C:B3", timeout_sec=10.0)
-
-        self.assertTrue(result.ok)
-        self.assertIn("LOWA Mouse", result.reason)
-        mock_pair_via_settings_ui_pywinauto.assert_called_once()
-        mock_pair_via_settings_ui_powershell.assert_called_once()
-
-    @patch("src.core.bluetooth_pairing._pair_via_settings_ui_powershell")
-    @patch("src.core.bluetooth_pairing._pair_via_settings_ui_pywinauto")
-    def test_pair_ui_reports_both_failures_when_all_paths_fail(
-        self,
-        mock_pair_via_settings_ui_pywinauto: Mock,
-        mock_pair_via_settings_ui_powershell: Mock,
-    ) -> None:
-        mock_pair_via_settings_ui_pywinauto.return_value = Mock(ok=False, reason="pywinauto failed")
-        mock_pair_via_settings_ui_powershell.return_value = Mock(
-            ok=False,
-            reason="CreateProcess failed",
-            selected_name="",
-        )
 
         result = _pair_via_settings_ui("LOWA Mouse", "D5:E7:15:41:4C:B3", timeout_sec=10.0)
 
         self.assertFalse(result.ok)
-        self.assertIn("pywinauto failed", result.reason)
-        self.assertIn("CreateProcess failed", result.reason)
+        self.assertEqual("pywinauto failed", result.reason)
+        mock_pair_via_settings_ui_pywinauto.assert_called_once()
 
-    @patch("src.core.bluetooth_pairing._remove_via_settings_ui_powershell")
     @patch("src.core.bluetooth_pairing._remove_via_settings_ui_pywinauto")
-    def test_remove_ui_falls_back_to_powershell_when_pywinauto_fails(
+    def test_remove_ui_returns_pywinauto_error_when_pywinauto_fails(
         self,
         mock_remove_via_settings_ui_pywinauto: Mock,
-        mock_remove_via_settings_ui_powershell: Mock,
     ) -> None:
         mock_remove_via_settings_ui_pywinauto.return_value = Mock(ok=False, reason="pywinauto failed")
-        mock_remove_via_settings_ui_powershell.return_value = Mock(
-            ok=True,
-            reason="fallback ok",
-            selected_name="LOWA Mouse",
-        )
 
         result = _remove_via_settings_ui("LOWA Mouse", "D5:E7:15:41:4C:B3", timeout_sec=10.0)
 
-        self.assertTrue(result.ok)
-        self.assertIn("LOWA Mouse", result.reason)
-        mock_remove_via_settings_ui_powershell.assert_called_once()
-
-    def test_pair_script_keeps_expected_localized_keywords(self) -> None:
-        script = _build_settings_pair_script("LOWA Mouse", "D5:E7:15:41:4C:B3", 10.0)
-
-        self.assertIn("\u6dfb\u52a0\u8bbe\u5907", script)
-        self.assertIn("\u84dd\u7259", script)
-        self.assertNotIn("????", script)
+        self.assertFalse(result.ok)
+        self.assertEqual("pywinauto failed", result.reason)
 
 
 if __name__ == "__main__":

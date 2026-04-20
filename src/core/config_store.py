@@ -103,6 +103,9 @@ class ConfigStore:
             return BluetoothConnectSettings(
                 test_count=self._read_int("test_count", defaults.test_count),
                 relay_port=self._read_str("relay_port", defaults.relay_port),
+                simulation_relay=self._read_bool(
+                    "simulation_relay", defaults.simulation_relay
+                ),
                 bt_name_keyword=self._read_str(
                     "bt_name_keyword", defaults.bt_name_keyword
                 ),
@@ -132,6 +135,7 @@ class ConfigStore:
         try:
             self._settings.setValue("test_count", config.test_count)
             self._settings.setValue("relay_port", config.relay_port)
+            self._settings.setValue("simulation_relay", config.simulation_relay)
             self._settings.setValue("bt_name_keyword", config.bt_name_keyword)
             self._settings.setValue("bt_mac", config.bt_mac)
             self._settings.setValue("bt_match_mode", config.bt_match_mode)
@@ -206,6 +210,7 @@ def to_bluetooth_connect_snapshot(config: BluetoothConnectSettings) -> dict[str,
     return {
         "test_count": config.test_count,
         "relay_port": config.relay_port,
+        "simulation_relay": config.simulation_relay,
         "bt_name_keyword": config.bt_name_keyword,
         "bt_mac": config.bt_mac,
         "bt_match_mode": config.bt_match_mode,

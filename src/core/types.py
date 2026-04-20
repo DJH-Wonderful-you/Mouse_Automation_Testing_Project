@@ -46,6 +46,7 @@ class VerificationPolicy:
 class BluetoothConnectSettings:
     test_count: int = 100
     relay_port: str = ""
+    simulation_relay: bool = False
     bt_name_keyword: str = ""
     bt_mac: str = ""
     bt_match_mode: BtMatchMode = "name_or_mac"

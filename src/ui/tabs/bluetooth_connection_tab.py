@@ -8,6 +8,7 @@ from typing import Callable
 
 from PySide6.QtCore import QObject, QThread, Qt, Signal, Slot
 from PySide6.QtWidgets import (
+    QCheckBox,
     QComboBox,
     QDoubleSpinBox,
     QFormLayout,
@@ -33,6 +34,7 @@ from src.core.bluetooth_probe import BluetoothDeviceInfo, BluetoothProbe, normal
 from src.core.config_store import ConfigStore
 from src.core.relay_lcus88 import LCUSRelay
 from src.core.serial_utils import list_serial_ports
+from src.core.simulators import SimulatedRelay
 from src.core.test_engine import TestEngineWorker
 from src.core.types import BluetoothConnectCycleResult, BluetoothConnectSettings
 
@@ -104,6 +106,7 @@ class BluetoothConnectionTab(QWidget):
         super().__init__(parent)
         self._config_store = config_store
         self._relay_real = LCUSRelay()
+        self._sim_relay = SimulatedRelay()
         self._bt_probe_real = BluetoothProbe()
         self._bt_manager = SystemBluetoothManager()
 
@@ -218,6 +221,9 @@ class BluetoothConnectionTab(QWidget):
         self.input_pairing_press.setSuffix(" s")
         self.input_pairing_press.setValue(2.0)
 
+        self.check_sim_relay = QCheckBox("继电器仿真")
+        self.check_sim_relay.toggled.connect(self._on_simulation_options_changed)
+
         self.btn_auto_connect = QPushButton("自动连接设备")
         self.btn_auto_connect.clicked.connect(self._auto_connect_relay)
 
@@ -230,12 +236,18 @@ class BluetoothConnectionTab(QWidget):
         self.btn_stop.setEnabled(False)
         self.btn_stop.clicked.connect(self._stop_test)
 
+        sim_row = QHBoxLayout()
+        sim_row.addWidget(QLabel("仿真开关："))
+        sim_row.addWidget(self.check_sim_relay)
+        sim_row.addStretch(1)
+
         button_row = QHBoxLayout()
         button_row.addWidget(self.btn_auto_connect)
         button_row.addWidget(self.btn_start)
         button_row.addWidget(self.btn_stop)
         button_row.addStretch(1)
 
+        layout.addLayout(sim_row)
         layout.addLayout(button_row)
         return group
 
@@ -439,12 +451,16 @@ class BluetoothConnectionTab(QWidget):
         self.input_mode_relay_channel.setValue(cfg.mode_relay_channel)
         self.input_pairing_relay_channel.setValue(cfg.pairing_relay_channel)
         self._preferred_relay_port = cfg.relay_port
+        old = self.check_sim_relay.blockSignals(True)
+        self.check_sim_relay.setChecked(cfg.simulation_relay)
+        self.check_sim_relay.blockSignals(old)
         self.input_bt_name.setText(cfg.bt_name_keyword)
         self.input_bt_mac.setText(cfg.bt_mac)
 
         mode_index = self.combo_bt_mode.findData(cfg.bt_match_mode)
         if mode_index >= 0:
             self.combo_bt_mode.setCurrentIndex(mode_index)
+        self._on_simulation_options_changed()
 
     def _bind_auto_save_signals(self) -> None:
         self.input_test_count.valueChanged.connect(self._on_settings_changed_auto_save)
@@ -453,6 +469,7 @@ class BluetoothConnectionTab(QWidget):
         self.input_pairing_press.valueChanged.connect(self._on_settings_changed_auto_save)
         self.input_mode_relay_channel.valueChanged.connect(self._on_settings_changed_auto_save)
         self.input_pairing_relay_channel.valueChanged.connect(self._on_settings_changed_auto_save)
+        self.check_sim_relay.toggled.connect(self._on_settings_changed_auto_save)
         self.combo_relay_port.currentIndexChanged.connect(self._on_settings_changed_auto_save)
         self.combo_bt_mode.currentIndexChanged.connect(self._on_settings_changed_auto_save)
         self.input_bt_name.textChanged.connect(self._on_settings_changed_auto_save)
@@ -479,6 +496,7 @@ class BluetoothConnectionTab(QWidget):
         return BluetoothConnectSettings(
             test_count=self.input_test_count.value(),
             relay_port=self.combo_relay_port.currentData() or "",
+            simulation_relay=self.check_sim_relay.isChecked(),
             bt_name_keyword=self.input_bt_name.text().strip(),
             bt_mac=normalized_mac,
             bt_match_mode=bt_match_mode,  # type: ignore[arg-type]
@@ -513,6 +531,12 @@ class BluetoothConnectionTab(QWidget):
         self._append_log("INFO", f"串口刷新完成，共发现 {len(ports)} 个端口。")
 
     def _connect_relay(self) -> None:
+        if self.check_sim_relay.isChecked():
+            self._sim_relay.connect()
+            self.label_relay_status.setText("仿真设备已就绪")
+            self._append_log("INFO", "继电器仿真模式已开启，无需连接真实串口。")
+            self._update_device_control_state()
+            return
         port = self.combo_relay_port.currentData() or ""
         if not port:
             QMessageBox.warning(self, "提示", "请先选择继电器串口。")
@@ -526,6 +550,12 @@ class BluetoothConnectionTab(QWidget):
         self._update_device_control_state()
 
     def _disconnect_relay(self) -> None:
+        if self.check_sim_relay.isChecked():
+            self._sim_relay.disconnect()
+            self.label_relay_status.setText("仿真模式")
+            self._append_log("INFO", "继电器仿真设备已断开。")
+            self._update_device_control_state()
+            return
         self._relay_real.disconnect()
         self.label_relay_status.setText("未连接")
         self._append_log("INFO", "继电器已断开。")
@@ -534,6 +564,13 @@ class BluetoothConnectionTab(QWidget):
     def _auto_connect_relay(self) -> None:
         if self._aux_task_running:
             self._append_log("WARNING", f"{self._aux_task_name}正在执行，请稍候。")
+            return
+
+        if self.check_sim_relay.isChecked():
+            self._sim_relay.connect()
+            self.label_relay_status.setText("仿真设备已就绪")
+            self._append_log("INFO", "自动连接完成：继电器使用仿真设备。")
+            self._update_device_control_state()
             return
 
         self._append_log("INFO", "开始自动识别继电器设备，请稍候...")
@@ -777,7 +814,7 @@ class BluetoothConnectionTab(QWidget):
             QMessageBox.warning(self, "参数错误", str(exc))
             return
 
-        if not self._relay_real.is_connected:
+        if not cfg.simulation_relay and not self._relay_real.is_connected:
             QMessageBox.warning(self, "设备未连接", "继电器未连接，请先连接后再开始测试。")
             return
 
@@ -789,8 +826,9 @@ class BluetoothConnectionTab(QWidget):
         self._fail_count = 0
         self._update_stats(done=0, total=cfg.test_count)
 
+        relay = self._build_active_relay(cfg)
         runner = BluetoothConnectRunner(
-            relay=self._relay_real,
+            relay=relay,
             bluetooth=self._bt_manager,
             settings=cfg,
             log_cb=lambda level, message: self._emit_worker_signal(
@@ -823,6 +861,14 @@ class BluetoothConnectionTab(QWidget):
         self._update_running_state()
         self._append_log("INFO", "测试线程启动。")
         thread.start()
+
+    def _build_active_relay(
+        self, cfg: BluetoothConnectSettings
+    ) -> LCUSRelay | SimulatedRelay:
+        if cfg.simulation_relay:
+            self._sim_relay.connect()
+            return self._sim_relay
+        return self._relay_real
 
     def _stop_test(self) -> None:
         if self._worker:
@@ -931,15 +977,39 @@ class BluetoothConnectionTab(QWidget):
             f"配对按键通道：当前使用通道 {self.input_pairing_relay_channel.value()}（按设置时长脉冲触发）"
         )
 
+    def _on_simulation_options_changed(self, *_: object) -> None:
+        relay_sim = self.check_sim_relay.isChecked()
+        if relay_sim:
+            self.label_relay_status.setText("仿真模式")
+        else:
+            relay_text = (
+                f"已连接({self.combo_relay_port.currentData()})"
+                if self._relay_real.is_connected
+                else "未连接"
+            )
+            self.label_relay_status.setText(relay_text)
+        if not self._suspend_auto_save:
+            self._append_log(
+                "INFO",
+                "仿真设置更新：继电器=%s" % ("开" if relay_sim else "关"),
+            )
+        self._update_device_control_state()
+
     def _update_device_control_state(self) -> None:
         busy = self._running
         control_busy = self._running or self._aux_task_running
+        relay_real_mode = not self.check_sim_relay.isChecked()
 
-        self.combo_relay_port.setEnabled(not control_busy)
-        self.btn_refresh_ports.setEnabled(not control_busy)
-        self.btn_relay_connect.setEnabled((not control_busy) and (not self._relay_real.is_connected))
-        self.btn_relay_disconnect.setEnabled((not control_busy) and self._relay_real.is_connected)
+        self.combo_relay_port.setEnabled((not control_busy) and relay_real_mode)
+        self.btn_refresh_ports.setEnabled((not control_busy) and relay_real_mode)
+        self.btn_relay_connect.setEnabled(
+            (not control_busy) and relay_real_mode and (not self._relay_real.is_connected)
+        )
+        self.btn_relay_disconnect.setEnabled(
+            (not control_busy) and relay_real_mode and self._relay_real.is_connected
+        )
         self.btn_auto_connect.setEnabled(not control_busy)
+        self.check_sim_relay.setEnabled(not control_busy)
 
 
         self.btn_start.setEnabled(not control_busy)
@@ -975,5 +1045,6 @@ class BluetoothConnectionTab(QWidget):
             self._aux_task_thread.quit()
             self._aux_task_thread.wait(1500)
         self._relay_real.disconnect()
+        self._sim_relay.disconnect()
 
 
