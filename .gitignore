@@ -105,6 +105,7 @@ ehthumbs.db
 Thumbs.db
 
 # Logs
+logs/
 *.log
 
 # Temporary files
