@@ -19,6 +19,7 @@ from PySide6.QtWidgets import (
 from src.core.config_store import ConfigStore
 from src.ui.styles import app_stylesheet
 from src.ui.tabs.bluetooth_connection_tab import BluetoothConnectionTab
+from src.ui.tabs.bluetooth_switch_tab import BluetoothSwitchTestTab
 from src.ui.tabs.help_tab import HelpTab
 from src.ui.tabs.placeholders import PlaceholderTab
 from src.ui.tabs.power_cycle_tab import PowerCycleTab
@@ -33,6 +34,10 @@ class MainWindow(QMainWindow):
         self._config_store = ConfigStore()
         self._power_cycle_tab = PowerCycleTab(config_store=self._config_store, parent=self)
         self._bluetooth_connection_tab = BluetoothConnectionTab(
+            config_store=self._config_store,
+            parent=self,
+        )
+        self._bluetooth_switch_tab = BluetoothSwitchTestTab(
             config_store=self._config_store,
             parent=self,
         )
@@ -52,13 +57,7 @@ class MainWindow(QMainWindow):
         pages: list[tuple[str, QWidget]] = [
             ("上下电测试", self._power_cycle_tab),
             ("蓝牙连接测试", self._bluetooth_connection_tab),
-            (
-                "蓝牙开关测试",
-                PlaceholderTab(
-                    "蓝牙开关测试",
-                    "用于验证蓝牙模块开关动作是否稳定，以及开关后连接状态恢复是否正常。",
-                ),
-            ),
+            ("蓝牙开关测试", self._bluetooth_switch_tab),
             (
                 "休眠唤醒测试",
                 PlaceholderTab(
@@ -71,6 +70,7 @@ class MainWindow(QMainWindow):
                 SettingsTab(
                     self._power_cycle_tab,
                     self._bluetooth_connection_tab,
+                    self._bluetooth_switch_tab,
                 ),
             ),
             ("继电器控制", self._relay_control_tab),
@@ -208,5 +208,6 @@ class MainWindow(QMainWindow):
     def closeEvent(self, event: QCloseEvent) -> None:  # noqa: N802
         self._power_cycle_tab.shutdown()
         self._bluetooth_connection_tab.shutdown()
+        self._bluetooth_switch_tab.shutdown()
         self._relay_control_tab.shutdown()
         super().closeEvent(event)

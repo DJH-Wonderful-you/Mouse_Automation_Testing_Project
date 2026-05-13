@@ -7,6 +7,7 @@ from PySide6.QtWidgets import QGroupBox, QLabel, QScrollArea, QVBoxLayout, QWidg
 
 if TYPE_CHECKING:
     from src.ui.tabs.bluetooth_connection_tab import BluetoothConnectionTab
+    from src.ui.tabs.bluetooth_switch_tab import BluetoothSwitchTestTab
     from src.ui.tabs.power_cycle_tab import PowerCycleTab
 
 
@@ -15,6 +16,7 @@ class SettingsTab(QWidget):
         self,
         power_cycle_tab: PowerCycleTab,
         bluetooth_connection_tab: BluetoothConnectionTab,
+        bluetooth_switch_tab: BluetoothSwitchTestTab,
         parent: QWidget | None = None,
     ) -> None:
         super().__init__(parent)
@@ -34,12 +36,7 @@ class SettingsTab(QWidget):
         content_layout.setSpacing(10)
         content_layout.addWidget(power_cycle_tab.create_settings_section())
         content_layout.addWidget(bluetooth_connection_tab.create_settings_section())
-        content_layout.addWidget(
-            self._create_placeholder_section(
-                "蓝牙开关测试",
-                "该测试项的独立设置区域预留在此，后续补充开关节奏、恢复等待和结果判定参数。",
-            )
-        )
+        content_layout.addWidget(bluetooth_switch_tab.create_settings_section())
         content_layout.addWidget(
             self._create_placeholder_section(
                 "休眠唤醒测试",

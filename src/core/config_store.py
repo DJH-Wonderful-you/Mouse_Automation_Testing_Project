@@ -4,12 +4,13 @@ from typing import Any
 
 from PySide6.QtCore import QSettings
 
-from src.core.types import AppSettings, BluetoothConnectSettings
+from src.core.types import AppSettings, BluetoothConnectSettings, BluetoothSwitchSettings
 
 _ORG_NAME = "RJHZ"
 _APP_NAME = "MouseAutomationTool"
 _GROUP_POWER_CYCLE = "power_cycle"
 _GROUP_BLUETOOTH_CONNECT = "bluetooth_connect"
+_GROUP_BLUETOOTH_SWITCH = "bluetooth_switch"
 
 
 class ConfigStore:
@@ -150,6 +151,56 @@ class ConfigStore:
         finally:
             self._settings.endGroup()
 
+    def load_bluetooth_switch(self) -> BluetoothSwitchSettings:
+        defaults = BluetoothSwitchSettings()
+        self._settings.beginGroup(_GROUP_BLUETOOTH_SWITCH)
+        try:
+            return BluetoothSwitchSettings(
+                test_count=self._read_int("test_count", defaults.test_count),
+                relay_port=self._read_str("relay_port", defaults.relay_port),
+                bt_name_keyword=self._read_str(
+                    "bt_name_keyword", defaults.bt_name_keyword
+                ),
+                bt_mac=self._read_str("bt_mac", defaults.bt_mac),
+                bt_match_mode=self._read_bt_mode(defaults.bt_match_mode),
+                mode_relay_channel=self._read_int(
+                    "mode_relay_channel", defaults.mode_relay_channel
+                ),
+                pairing_relay_channel=self._read_int(
+                    "pairing_relay_channel", defaults.pairing_relay_channel
+                ),
+                pairing_press_ms=self._read_int(
+                    "pairing_press_ms", defaults.pairing_press_ms
+                ),
+                state_timeout_ms=self._read_int(
+                    "state_timeout_ms", defaults.state_timeout_ms
+                ),
+                sample_interval_ms=self._read_int(
+                    "sample_interval_ms", defaults.sample_interval_ms
+                ),
+            )
+        finally:
+            self._settings.endGroup()
+
+    def save_bluetooth_switch(self, config: BluetoothSwitchSettings) -> None:
+        self._settings.beginGroup(_GROUP_BLUETOOTH_SWITCH)
+        try:
+            self._settings.setValue("test_count", config.test_count)
+            self._settings.setValue("relay_port", config.relay_port)
+            self._settings.setValue("bt_name_keyword", config.bt_name_keyword)
+            self._settings.setValue("bt_mac", config.bt_mac)
+            self._settings.setValue("bt_match_mode", config.bt_match_mode)
+            self._settings.setValue("mode_relay_channel", config.mode_relay_channel)
+            self._settings.setValue(
+                "pairing_relay_channel", config.pairing_relay_channel
+            )
+            self._settings.setValue("pairing_press_ms", config.pairing_press_ms)
+            self._settings.setValue("state_timeout_ms", config.state_timeout_ms)
+            self._settings.setValue("sample_interval_ms", config.sample_interval_ms)
+            self._settings.sync()
+        finally:
+            self._settings.endGroup()
+
     def load_preferred_relay_port(self) -> str:
         power_cycle_port = self.load_power_cycle().relay_port.strip()
         if power_cycle_port:
@@ -230,6 +281,20 @@ def to_bluetooth_connect_snapshot(config: BluetoothConnectSettings) -> dict[str,
         "test_count": config.test_count,
         "relay_port": config.relay_port,
         "simulation_relay": config.simulation_relay,
+        "bt_name_keyword": config.bt_name_keyword,
+        "bt_mac": config.bt_mac,
+        "bt_match_mode": config.bt_match_mode,
+        "mode_relay_channel": config.mode_relay_channel,
+        "pairing_relay_channel": config.pairing_relay_channel,
+        "pairing_press_ms": config.pairing_press_ms,
+        "state_timeout_ms": config.state_timeout_ms,
+        "sample_interval_ms": config.sample_interval_ms,
+    }
+
+def to_bluetooth_switch_snapshot(config: BluetoothSwitchSettings) -> dict[str, Any]:
+    return {
+        "test_count": config.test_count,
+        "relay_port": config.relay_port,
         "bt_name_keyword": config.bt_name_keyword,
         "bt_mac": config.bt_mac,
         "bt_match_mode": config.bt_match_mode,

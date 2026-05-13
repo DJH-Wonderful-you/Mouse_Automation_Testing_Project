@@ -6,7 +6,7 @@ import time
 from typing import Callable, Protocol
 
 from src.core.bluetooth_pairing import BluetoothActionResult, BluetoothManager
-from src.core.types import BluetoothConnectCycleResult, BluetoothConnectSettings, RunSummary
+from src.core.types import BluetoothConnectCycleResult, BluetoothConnectSettings, BluetoothSwitchSettings, RunSummary
 
 _LOGGER = logging.getLogger("bluetooth.connect_engine")
 
@@ -30,7 +30,7 @@ class BluetoothConnectRunner:
         self,
         relay: RelayController,
         bluetooth: BluetoothManager,
-        settings: BluetoothConnectSettings,
+        settings: BluetoothConnectSettings | BluetoothSwitchSettings,
         log_cb: Callable[[str, str], None] | None = None,
         progress_cb: Callable[[int, int], None] | None = None,
         cycle_cb: Callable[[BluetoothConnectCycleResult], None] | None = None,

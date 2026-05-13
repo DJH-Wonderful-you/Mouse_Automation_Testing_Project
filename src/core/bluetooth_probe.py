@@ -881,7 +881,7 @@ def _run_powershell(script: str, timeout_sec: int = 15) -> str:
         + script
     )
     completed = _run_process(
-        ["powershell", "-NoProfile", "-Command", payload],
+        ["powershell", "-NoProfile", "-WindowStyle", "Hidden", "-Command", payload],
         timeout_sec=timeout_sec,
     )
     if completed is None:

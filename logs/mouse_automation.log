@@ -3535,3 +3535,166 @@ Try 语句缺少自己的 Catch 或 Finally 块。
 2026-04-20 21:38:54,688 [INFO] ui.bluetooth_connection - 串口刷新完成，共发现 2 个端口。
 2026-04-20 21:39:18,302 [INFO] ui.power_cycle - 配置已保存。
 2026-04-20 21:39:18,303 [INFO] ui.bluetooth_connection - 配置已保存。
+2026-05-12 21:55:07,056 [INFO] ui.power_cycle - 仿真设置更新：万用表=开, 继电器=关, 蓝牙=开
+2026-05-12 21:55:07,074 [INFO] ui.power_cycle - 串口刷新完成，共发现 2 个端口。
+2026-05-12 21:55:07,096 [INFO] ui.bluetooth_connection - 串口刷新完成，共发现 2 个端口。
+2026-05-13 12:34:33,073 [INFO] ui.power_cycle - 配置已保存。
+2026-05-13 12:34:33,082 [INFO] ui.bluetooth_connection - 配置已保存。
+2026-05-13 12:34:35,352 [INFO] ui.power_cycle - 仿真设置更新：万用表=开, 继电器=关, 蓝牙=开
+2026-05-13 12:34:35,367 [INFO] ui.power_cycle - 串口刷新完成，共发现 2 个端口。
+2026-05-13 12:34:35,388 [INFO] ui.bluetooth_connection - 串口刷新完成，共发现 2 个端口。
+2026-05-13 12:35:16,337 [INFO] ui.power_cycle - 配置已保存。
+2026-05-13 12:35:16,338 [INFO] ui.bluetooth_connection - 配置已保存。
+2026-05-13 12:35:29,374 [INFO] ui.power_cycle - 仿真设置更新：万用表=开, 继电器=关, 蓝牙=开
+2026-05-13 12:35:29,383 [INFO] ui.power_cycle - 串口刷新完成，共发现 2 个端口。
+2026-05-13 12:35:29,398 [INFO] ui.bluetooth_connection - 串口刷新完成，共发现 2 个端口。
+2026-05-13 12:35:42,422 [INFO] ui.power_cycle - 配置已保存。
+2026-05-13 12:35:42,424 [INFO] ui.bluetooth_connection - 配置已保存。
+2026-05-13 20:07:12,926 [INFO] ui.power_cycle - 仿真设置更新：万用表=开, 继电器=关, 蓝牙=开
+2026-05-13 20:07:12,949 [INFO] ui.power_cycle - 串口刷新完成，共发现 2 个端口。
+2026-05-13 20:07:12,977 [INFO] ui.bluetooth_connection - 串口刷新完成，共发现 2 个端口。
+2026-05-13 20:07:13,008 [INFO] ui.bluetooth_switch_test - 串口刷新完成，共发现 2 个端口。
+2026-05-13 20:07:55,863 [INFO] ui.bluetooth_switch_test - 开始检测已配对蓝牙设备...
+2026-05-13 20:07:56,349 [INFO] ui.bluetooth_switch_test - 检测到 4 个蓝牙相关设备：
+2026-05-13 20:07:56,350 [INFO] ui.bluetooth_switch_test -   - 名称=SUNWINON Mouse MOCO | 状态=已连接 | MAC=D1:02:12:03:7B:B6 | 类别=Bluetooth | 实例ID=BTHLE\Dev_d10212037bb6\7&1679758c&0&d10212037bb6
+2026-05-13 20:07:56,351 [INFO] ui.bluetooth_switch_test -   - 名称=LOWA Mouse | 状态=已连接 | MAC=F0:61:EE:A2:D5:A0 | 类别=Bluetooth | 实例ID=BTHLE\Dev_f061eea2d5a0\7&1679758c&0&f061eea2d5a0
+2026-05-13 20:07:56,352 [INFO] ui.bluetooth_switch_test -   - 名称=TONEMAC HS1 | 状态=已连接 | MAC=F4:4E:FE:00:11:4C | 类别=Bluetooth | 实例ID=BTHENUM\Dev_F44EFE00114C\7&3b5ef62b&1&BluetoothDevice_F44EFE00114C
+2026-05-13 20:07:56,353 [INFO] ui.bluetooth_switch_test -   - 名称=HUAWEI FreeBuds 5i | 状态=已连接 | MAC=14:51:20:FF:A1:14 | 类别=Bluetooth | 实例ID=BTHENUM\Dev_145120FFA114\7&3b5ef62b&1&BluetoothDevice_145120FFA114
+2026-05-13 20:08:24,039 [INFO] ui.bluetooth_switch_test - 开始检测已配对蓝牙设备...
+2026-05-13 20:08:24,269 [INFO] ui.bluetooth_switch_test - 检测到 5 个蓝牙相关设备：
+2026-05-13 20:08:24,270 [INFO] ui.bluetooth_switch_test -   - 名称=SUNWINON Mouse MOCO | 状态=已连接 | MAC=D1:02:12:03:7B:B6 | 类别=Bluetooth | 实例ID=BTHLE\Dev_d10212037bb6\7&1679758c&0&d10212037bb6
+2026-05-13 20:08:24,272 [INFO] ui.bluetooth_switch_test -   - 名称=LOWA Mouse | 状态=已连接 | MAC=F0:61:EE:A2:D5:A0 | 类别=Bluetooth | 实例ID=BTHLE\Dev_f061eea2d5a0\7&1679758c&0&f061eea2d5a0
+2026-05-13 20:08:24,274 [INFO] ui.bluetooth_switch_test -   - 名称=Logi M750 | 状态=已连接 | MAC=D5:E7:15:41:4C:F3 | 类别=Bluetooth | 实例ID=BTHLE\Dev_d5e715414cf3\7&1679758c&0&d5e715414cf3
+2026-05-13 20:08:24,276 [INFO] ui.bluetooth_switch_test -   - 名称=TONEMAC HS1 | 状态=已连接 | MAC=F4:4E:FE:00:11:4C | 类别=Bluetooth | 实例ID=BTHENUM\Dev_F44EFE00114C\7&3b5ef62b&1&BluetoothDevice_F44EFE00114C
+2026-05-13 20:08:24,277 [INFO] ui.bluetooth_switch_test -   - 名称=HUAWEI FreeBuds 5i | 状态=已连接 | MAC=14:51:20:FF:A1:14 | 类别=Bluetooth | 实例ID=BTHENUM\Dev_145120FFA114\7&3b5ef62b&1&BluetoothDevice_145120FFA114
+2026-05-13 20:08:46,511 [INFO] ui.bluetooth_switch_test - UI切换测试按钮被点击
+2026-05-13 20:08:46,512 [INFO] ui.bluetooth_switch_test - 获取循环次数: 100
+2026-05-13 20:08:46,513 [INFO] ui.bluetooth_switch_test - UI切换测试开始，总轮次: 100
+2026-05-13 20:08:46,514 [INFO] ui.bluetooth_switch_test - 创建并启动测试线程
+2026-05-13 20:08:46,516 [INFO] ui.bluetooth_switch_test - 开始执行UI切换测试方法
+2026-05-13 20:08:46,517 [INFO] ui.bluetooth_switch_test - 测试线程启动完成
+2026-05-13 20:08:46,517 [INFO] ui.bluetooth_switch_test - 检测Windows版本
+2026-05-13 20:08:46,542 [INFO] ui.bluetooth_switch_test - 检测到系统: Windows 11
+2026-05-13 20:08:46,545 [INFO] ui.bluetooth_switch_test - Windows 11 系统 - TAB键次数: 3
+2026-05-13 20:08:46,547 [INFO] ui.bluetooth_switch_test - 初始化：打开并关闭蓝牙设置窗口...
+2026-05-13 20:08:50,454 [INFO] ui.bluetooth_switch_test - 初始化完成
+2026-05-13 20:08:52,455 [INFO] ui.bluetooth_switch_test - 检查初始蓝牙连接状态...
+2026-05-13 20:08:52,661 [INFO] ui.bluetooth_switch_test - 初始连接状态: 已连接
+2026-05-13 20:08:52,663 [INFO] ui.bluetooth_switch_test - 匹配到 1 个设备：
+2026-05-13 20:08:52,664 [INFO] ui.bluetooth_switch_test -   - 实例ID=BTHLE\Dev_d5e715414cf3\7&1679758c&0&d5e715414cf3 | 连接状态=已连接
+2026-05-13 20:08:52,664 [INFO] ui.bluetooth_switch_test - ===== 第 1 次循环 =====
+2026-05-13 20:08:52,665 [INFO] ui.bluetooth_switch_test - 打开蓝牙设置...
+2026-05-13 20:08:55,057 [INFO] ui.bluetooth_switch_test -   第 1 次 TAB 已按下
+2026-05-13 20:08:56,061 [INFO] ui.bluetooth_switch_test -   第 2 次 TAB 已按下
+2026-05-13 20:08:57,065 [INFO] ui.bluetooth_switch_test -   第 3 次 TAB 已按下
+2026-05-13 20:08:59,068 [INFO] ui.bluetooth_switch_test -   空格键已按下
+2026-05-13 20:09:01,071 [INFO] ui.bluetooth_switch_test -   检查蓝牙连接状态...
+2026-05-13 20:09:01,114 [INFO] ui.bluetooth_switch_test -   匹配到 1 个设备：
+2026-05-13 20:09:01,116 [INFO] ui.bluetooth_switch_test -   - 实例ID=BTHLE\Dev_d5e715414cf3\7&1679758c&0&d5e715414cf3 | 连接状态=已连接
+2026-05-13 20:09:01,117 [INFO] ui.bluetooth_switch_test -   蓝牙检查结果: 已连接
+2026-05-13 20:09:01,119 [WARNING] ui.bluetooth_switch_test -   测试结果: 失败（状态未发生变化）
+2026-05-13 20:09:02,124 [INFO] ui.bluetooth_switch_test -   已关闭窗口
+2026-05-13 20:09:02,126 [INFO] ui.bluetooth_switch_test - 第 1 次循环完成
+2026-05-13 20:09:07,128 [INFO] ui.bluetooth_switch_test - ===== 第 2 次循环 =====
+2026-05-13 20:09:07,129 [INFO] ui.bluetooth_switch_test - 打开蓝牙设置...
+2026-05-13 20:09:09,505 [INFO] ui.bluetooth_switch_test -   第 1 次 TAB 已按下
+2026-05-13 20:09:10,511 [INFO] ui.bluetooth_switch_test -   第 2 次 TAB 已按下
+2026-05-13 20:09:11,519 [INFO] ui.bluetooth_switch_test -   第 3 次 TAB 已按下
+2026-05-13 20:09:13,525 [INFO] ui.bluetooth_switch_test -   空格键已按下
+2026-05-13 20:09:15,527 [INFO] ui.bluetooth_switch_test -   检查蓝牙连接状态...
+2026-05-13 20:09:15,570 [INFO] ui.bluetooth_switch_test -   匹配到 1 个设备：
+2026-05-13 20:09:15,572 [INFO] ui.bluetooth_switch_test -   - 实例ID=BTHLE\Dev_d5e715414cf3\7&1679758c&0&d5e715414cf3 | 连接状态=已连接
+2026-05-13 20:09:15,573 [INFO] ui.bluetooth_switch_test -   蓝牙检查结果: 已连接
+2026-05-13 20:09:15,573 [WARNING] ui.bluetooth_switch_test -   测试结果: 失败（状态未发生变化）
+2026-05-13 20:09:16,585 [INFO] ui.bluetooth_switch_test -   已关闭窗口
+2026-05-13 20:09:16,587 [INFO] ui.bluetooth_switch_test - 第 2 次循环完成
+2026-05-13 20:09:21,589 [INFO] ui.bluetooth_switch_test - ===== 第 3 次循环 =====
+2026-05-13 20:09:21,590 [INFO] ui.bluetooth_switch_test - 打开蓝牙设置...
+2026-05-13 20:09:23,968 [INFO] ui.bluetooth_switch_test -   第 1 次 TAB 已按下
+2026-05-13 20:09:24,973 [INFO] ui.bluetooth_switch_test -   第 2 次 TAB 已按下
+2026-05-13 20:09:25,979 [INFO] ui.bluetooth_switch_test -   第 3 次 TAB 已按下
+2026-05-13 20:09:27,982 [INFO] ui.bluetooth_switch_test -   空格键已按下
+2026-05-13 20:09:29,988 [INFO] ui.bluetooth_switch_test -   检查蓝牙连接状态...
+2026-05-13 20:09:30,031 [INFO] ui.bluetooth_switch_test -   匹配到 1 个设备：
+2026-05-13 20:09:30,032 [INFO] ui.bluetooth_switch_test -   - 实例ID=BTHLE\Dev_d5e715414cf3\7&1679758c&0&d5e715414cf3 | 连接状态=已连接
+2026-05-13 20:09:30,033 [INFO] ui.bluetooth_switch_test -   蓝牙检查结果: 已连接
+2026-05-13 20:09:30,034 [WARNING] ui.bluetooth_switch_test -   测试结果: 失败（状态未发生变化）
+2026-05-13 20:09:31,040 [INFO] ui.bluetooth_switch_test -   已关闭窗口
+2026-05-13 20:09:31,041 [INFO] ui.bluetooth_switch_test - 第 3 次循环完成
+2026-05-13 20:09:32,222 [WARNING] ui.bluetooth_switch_test - 已请求停止UI切换测试。
+2026-05-13 20:09:36,043 [INFO] ui.bluetooth_switch_test - UI切换测试已停止
+2026-05-13 20:09:36,057 [INFO] ui.bluetooth_switch_test - ✅ 所有循环已完成！
+2026-05-13 20:09:36,058 [INFO] ui.bluetooth_switch_test - 测试统计：成功 0，失败 3，成功率 0.00%
+2026-05-13 20:09:36,060 [INFO] ui.bluetooth_switch_test - UI切换测试方法执行完成
+2026-05-13 20:12:09,842 [INFO] ui.bluetooth_switch_test - 配置已保存。
+2026-05-13 20:12:09,851 [INFO] ui.bluetooth_switch_test - 测试线程启动。
+2026-05-13 20:12:09,857 [INFO] ui.bluetooth_switch_test - 蓝牙开关测试开始，总轮次: 100
+2026-05-13 20:12:09,858 [INFO] ui.bluetooth_switch_test - 正在检测可操作的蓝牙枚举器设备...
+2026-05-13 20:12:16,794 [ERROR] ui.bluetooth_switch_test - 未找到蓝牙枚举器设备
+2026-05-13 20:12:16,795 [ERROR] ui.bluetooth_switch_test - 初始化蓝牙设备失败，测试无法开始
+2026-05-13 20:12:16,796 [INFO] ui.bluetooth_switch_test - 测试完成。成功 0，失败 0，成功率 0.00%
+2026-05-13 20:12:18,569 [INFO] ui.bluetooth_switch_test - 配置已保存。
+2026-05-13 20:12:18,573 [INFO] ui.bluetooth_switch_test - 测试线程启动。
+2026-05-13 20:12:18,578 [INFO] ui.bluetooth_switch_test - 蓝牙开关测试开始，总轮次: 100
+2026-05-13 20:12:18,579 [INFO] ui.bluetooth_switch_test - 正在检测可操作的蓝牙枚举器设备...
+2026-05-13 20:12:33,849 [INFO] ui.bluetooth_switch_test - 已找到 1 个可操作的蓝牙枚举器
+2026-05-13 20:12:33,851 [INFO] ui.bluetooth_switch_test -   - Microsoft 蓝牙 LE 枚举器 | BTH\MS_BTHLE\6&13BD8B44&0&3
+2026-05-13 20:12:33,852 [INFO] ui.bluetooth_switch_test - [第1轮] 开始蓝牙开关测试
+2026-05-13 20:12:34,060 [INFO] ui.bluetooth_switch_test - [第1轮] 初始连接状态: 已连接
+2026-05-13 20:12:34,061 [INFO] ui.bluetooth_switch_test - [第1轮] 匹配到 1 个设备：
+2026-05-13 20:12:34,063 [INFO] ui.bluetooth_switch_test - [第1轮]   - 实例ID=BTHLE\Dev_d5e715414cf3\7&1679758c&0&d5e715414cf3 | 连接状态=已连接
+2026-05-13 20:12:34,064 [INFO] ui.bluetooth_switch_test - [第1轮] 开始禁用蓝牙设备...
+2026-05-13 20:12:34,108 [INFO] ui.bluetooth_switch_test - [第1轮] 等待 15.00 秒让蓝牙设备完全禁用...
+2026-05-13 20:12:49,295 [INFO] ui.bluetooth_switch_test - [第1轮] 禁用后连接状态: 已连接
+2026-05-13 20:12:49,296 [INFO] ui.bluetooth_switch_test - [第1轮] 禁用后匹配到 1 个设备：
+2026-05-13 20:12:49,297 [INFO] ui.bluetooth_switch_test - [第1轮]   - 实例ID=BTHLE\Dev_d5e715414cf3\7&1679758c&0&d5e715414cf3 | 连接状态=已连接
+2026-05-13 20:12:49,299 [WARNING] ui.bluetooth_switch_test - [第1轮] 禁用后设备仍连接，可能异常
+2026-05-13 20:12:49,299 [INFO] ui.bluetooth_switch_test - [第1轮] 开始启用蓝牙设备...
+2026-05-13 20:12:55,399 [INFO] ui.bluetooth_switch_test - [第1轮] 等待 15.00 秒让蓝牙设备完全启用...
+2026-05-13 20:13:10,584 [INFO] ui.bluetooth_switch_test - [第1轮] 启用后连接状态: 已连接
+2026-05-13 20:13:10,585 [INFO] ui.bluetooth_switch_test - [第1轮] 启用后匹配到 1 个设备：
+2026-05-13 20:13:10,587 [INFO] ui.bluetooth_switch_test - [第1轮]   - 实例ID=BTHLE\Dev_d5e715414cf3\7&1679758c&0&d5e715414cf3 | 连接状态=已连接
+2026-05-13 20:13:10,587 [INFO] ui.bluetooth_switch_test - [第1轮] 通过 | 蓝牙开关测试通过
+2026-05-13 20:13:10,587 [INFO] ui.bluetooth_switch_test - [第2轮] 开始蓝牙开关测试
+2026-05-13 20:13:10,771 [INFO] ui.bluetooth_switch_test - [第2轮] 初始连接状态: 已连接
+2026-05-13 20:13:10,772 [INFO] ui.bluetooth_switch_test - [第2轮] 匹配到 1 个设备：
+2026-05-13 20:13:10,773 [INFO] ui.bluetooth_switch_test - [第2轮]   - 实例ID=BTHLE\Dev_d5e715414cf3\7&1679758c&0&d5e715414cf3 | 连接状态=已连接
+2026-05-13 20:13:10,773 [INFO] ui.bluetooth_switch_test - [第2轮] 开始禁用蓝牙设备...
+2026-05-13 20:13:10,815 [INFO] ui.bluetooth_switch_test - [第2轮] 等待 15.00 秒让蓝牙设备完全禁用...
+2026-05-13 20:13:25,997 [INFO] ui.bluetooth_switch_test - [第2轮] 禁用后连接状态: 已连接
+2026-05-13 20:13:25,998 [INFO] ui.bluetooth_switch_test - [第2轮] 禁用后匹配到 1 个设备：
+2026-05-13 20:13:25,999 [INFO] ui.bluetooth_switch_test - [第2轮]   - 实例ID=BTHLE\Dev_d5e715414cf3\7&1679758c&0&d5e715414cf3 | 连接状态=已连接
+2026-05-13 20:13:26,000 [WARNING] ui.bluetooth_switch_test - [第2轮] 禁用后设备仍连接，可能异常
+2026-05-13 20:13:26,002 [INFO] ui.bluetooth_switch_test - [第2轮] 开始启用蓝牙设备...
+2026-05-13 20:13:29,348 [INFO] ui.bluetooth_switch_test - [第2轮] 等待 15.00 秒让蓝牙设备完全启用...
+2026-05-13 20:13:44,530 [INFO] ui.bluetooth_switch_test - [第2轮] 启用后连接状态: 已连接
+2026-05-13 20:13:44,531 [INFO] ui.bluetooth_switch_test - [第2轮] 启用后匹配到 1 个设备：
+2026-05-13 20:13:44,533 [INFO] ui.bluetooth_switch_test - [第2轮]   - 实例ID=BTHLE\Dev_d5e715414cf3\7&1679758c&0&d5e715414cf3 | 连接状态=已连接
+2026-05-13 20:13:44,534 [INFO] ui.bluetooth_switch_test - [第2轮] 通过 | 蓝牙开关测试通过
+2026-05-13 20:13:44,541 [INFO] ui.bluetooth_switch_test - [第3轮] 开始蓝牙开关测试
+2026-05-13 20:13:44,722 [INFO] ui.bluetooth_switch_test - [第3轮] 初始连接状态: 已连接
+2026-05-13 20:13:44,722 [INFO] ui.bluetooth_switch_test - [第3轮] 匹配到 1 个设备：
+2026-05-13 20:13:44,722 [INFO] ui.bluetooth_switch_test - [第3轮]   - 实例ID=BTHLE\Dev_d5e715414cf3\7&1679758c&0&d5e715414cf3 | 连接状态=已连接
+2026-05-13 20:13:44,722 [INFO] ui.bluetooth_switch_test - [第3轮] 开始禁用蓝牙设备...
+2026-05-13 20:13:44,775 [INFO] ui.bluetooth_switch_test - [第3轮] 等待 15.00 秒让蓝牙设备完全禁用...
+2026-05-13 20:13:59,958 [INFO] ui.bluetooth_switch_test - [第3轮] 禁用后连接状态: 已连接
+2026-05-13 20:13:59,960 [INFO] ui.bluetooth_switch_test - [第3轮] 禁用后匹配到 1 个设备：
+2026-05-13 20:13:59,960 [INFO] ui.bluetooth_switch_test - [第3轮]   - 实例ID=BTHLE\Dev_d5e715414cf3\7&1679758c&0&d5e715414cf3 | 连接状态=已连接
+2026-05-13 20:13:59,960 [WARNING] ui.bluetooth_switch_test - [第3轮] 禁用后设备仍连接，可能异常
+2026-05-13 20:13:59,960 [INFO] ui.bluetooth_switch_test - [第3轮] 开始启用蓝牙设备...
+2026-05-13 20:14:04,014 [INFO] ui.bluetooth_switch_test - [第3轮] 等待 15.00 秒让蓝牙设备完全启用...
+2026-05-13 20:14:11,070 [WARNING] ui.bluetooth_switch_test - 已请求停止测试。
+2026-05-13 20:14:19,198 [INFO] ui.bluetooth_switch_test - [第3轮] 启用后连接状态: 已连接
+2026-05-13 20:14:19,199 [INFO] ui.bluetooth_switch_test - [第3轮] 启用后匹配到 1 个设备：
+2026-05-13 20:14:19,200 [INFO] ui.bluetooth_switch_test - [第3轮]   - 实例ID=BTHLE\Dev_d5e715414cf3\7&1679758c&0&d5e715414cf3 | 连接状态=已连接
+2026-05-13 20:14:19,201 [INFO] ui.bluetooth_switch_test - [第3轮] 通过 | 蓝牙开关测试通过
+2026-05-13 20:14:19,206 [WARNING] ui.bluetooth_switch_test - 检测到停止请求，测试提前结束。
+2026-05-13 20:14:19,208 [INFO] ui.bluetooth_switch_test - 蓝牙开关测试结束：成功 3，失败 0，成功率 100.00%
+2026-05-13 20:14:19,209 [INFO] ui.bluetooth_switch_test - 测试完成。成功 3，失败 0，成功率 100.00%
+2026-05-13 20:16:06,146 [INFO] ui.power_cycle - 配置已保存。
+2026-05-13 20:16:06,150 [INFO] ui.bluetooth_connection - 配置已保存。
+2026-05-13 20:16:06,152 [INFO] ui.bluetooth_switch_test - 配置已保存。
+2026-05-13 20:30:06,288 [INFO] ui.power_cycle - 仿真设置更新：万用表=开, 继电器=关, 蓝牙=开
+2026-05-13 20:30:06,298 [INFO] ui.power_cycle - 串口刷新完成，共发现 2 个端口。
+2026-05-13 20:30:06,314 [INFO] ui.bluetooth_connection - 串口刷新完成，共发现 2 个端口。
+2026-05-13 20:30:06,331 [INFO] ui.bluetooth_switch_test - 串口刷新完成，共发现 2 个端口。
