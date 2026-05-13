@@ -1,9 +1,19 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Literal
 
 BtMatchMode = Literal["name_or_mac", "name_and_mac"]
+TestItemId = Literal["power_cycle", "bluetooth_connect", "bluetooth_switch", "sleep_wake"]
+SuiteMode = Literal["sequential_items", "round_robin"]
+BluetoothSwitchMethod = Literal["adapter", "ui"]
+
+TEST_ITEM_ORDER: tuple[TestItemId, ...] = (
+    "power_cycle",
+    "bluetooth_connect",
+    "bluetooth_switch",
+    "sleep_wake",
+)
 
 
 @dataclass(slots=True)
@@ -69,6 +79,33 @@ class BluetoothSwitchSettings:
     pairing_press_ms: int = 2000
     state_timeout_ms: int = 15000
     sample_interval_ms: int = 500
+
+
+@dataclass(slots=True)
+class BluetoothTargetSettings:
+    bt_name_keyword: str = ""
+    bt_mac: str = ""
+    bt_match_mode: BtMatchMode = "name_or_mac"
+
+
+@dataclass(slots=True)
+class DeviceSettings:
+    multimeter_port: str = ""
+    relay_port: str = ""
+    simulation_multimeter: bool = False
+    simulation_relay: bool = False
+    simulation_bluetooth: bool = False
+    bluetooth_target: BluetoothTargetSettings = field(
+        default_factory=BluetoothTargetSettings
+    )
+
+
+@dataclass(slots=True)
+class TestPlanSettings:
+    enabled_items: tuple[TestItemId, ...] = ("power_cycle",)
+    mode: SuiteMode = "sequential_items"
+    round_count: int = 10
+    bluetooth_switch_method: BluetoothSwitchMethod = "adapter"
 
 
 @dataclass(slots=True)

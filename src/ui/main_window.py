@@ -17,13 +17,11 @@ from PySide6.QtWidgets import (
 )
 
 from src.core.config_store import ConfigStore
+from src.core.device_context import DeviceContext
 from src.ui.styles import app_stylesheet
-from src.ui.tabs.bluetooth_connection_tab import BluetoothConnectionTab
-from src.ui.tabs.bluetooth_switch_tab import BluetoothSwitchTestTab
+from src.ui.tabs.device_management_tab import DeviceManagementTab
 from src.ui.tabs.help_tab import HelpTab
-from src.ui.tabs.placeholders import PlaceholderTab
-from src.ui.tabs.power_cycle_tab import PowerCycleTab
-from src.ui.tabs.relay_control_tab import RelayControlTab
+from src.ui.tabs.main_interface_tab import MainInterfaceTab
 from src.ui.tabs.settings_tab import SettingsTab
 
 
@@ -32,89 +30,70 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.setWindowTitle("鼠标自动化测试工具")
         self._config_store = ConfigStore()
-        self._power_cycle_tab = PowerCycleTab(config_store=self._config_store, parent=self)
-        self._bluetooth_connection_tab = BluetoothConnectionTab(
-            config_store=self._config_store,
-            parent=self,
-        )
-        self._bluetooth_switch_tab = BluetoothSwitchTestTab(
-            config_store=self._config_store,
-            parent=self,
-        )
-        self._relay_control_tab = RelayControlTab(
-            config_store=self._config_store,
-            parent=self,
-        )
+        self._device_context = DeviceContext()
         self._stack = QStackedWidget()
         self._nav_group = QButtonGroup(self)
         self._nav_group.setExclusive(True)
         self._nav_buttons: list[QPushButton] = []
         self._did_post_show_adjust = False
+
+        self._main_tab = MainInterfaceTab(
+            config_store=self._config_store,
+            device_context=self._device_context,
+            parent=self,
+        )
+        self._device_tab = DeviceManagementTab(
+            config_store=self._config_store,
+            device_context=self._device_context,
+            parent=self,
+        )
+        self._settings_tab = SettingsTab(config_store=self._config_store, parent=self)
+        self._help_tab = HelpTab()
+
         self._init_ui()
         self._apply_responsive_window_size(default_width=1280, default_height=800)
 
     def _init_ui(self) -> None:
         pages: list[tuple[str, QWidget]] = [
-            ("上下电测试", self._power_cycle_tab),
-            ("蓝牙连接测试", self._bluetooth_connection_tab),
-            ("蓝牙开关测试", self._bluetooth_switch_tab),
-            (
-                "休眠唤醒测试",
-                PlaceholderTab(
-                    "休眠唤醒测试",
-                    "用于验证设备休眠与唤醒流程，重点关注唤醒后的响应和连接恢复时延。",
-                ),
-            ),
-            (
-                "设置",
-                SettingsTab(
-                    self._power_cycle_tab,
-                    self._bluetooth_connection_tab,
-                    self._bluetooth_switch_tab,
-                ),
-            ),
-            ("继电器控制", self._relay_control_tab),
-            ("帮助", HelpTab()),
+            ("主界面", self._main_tab),
+            ("设备管理", self._device_tab),
+            ("设置", self._settings_tab),
+            ("帮助", self._help_tab),
         ]
 
         root = QWidget()
         root.setObjectName("MainRoot")
-        root_layout = QHBoxLayout(root)
+        root_layout = QVBoxLayout(root)
         root_layout.setContentsMargins(8, 8, 8, 8)
         root_layout.setSpacing(10)
 
-        sidebar = self._build_sidebar([title for title, _ in pages])
-        content = self._build_content_panel([page for _, page in pages])
-        root_layout.addWidget(sidebar)
-        root_layout.addWidget(content, 1)
+        root_layout.addWidget(self._build_top_nav([title for title, _ in pages]))
+        root_layout.addWidget(self._build_content_panel([page for _, page in pages]), 1)
 
         self.setCentralWidget(root)
         self.setStyleSheet(app_stylesheet())
         self._set_active_page(0)
 
-    def _build_sidebar(self, titles: list[str]) -> QWidget:
+    def _build_top_nav(self, titles: list[str]) -> QWidget:
         panel = QWidget()
-        panel.setObjectName("SidebarPanel")
-        panel.setFixedWidth(212)
-
-        layout = QVBoxLayout(panel)
-        layout.setContentsMargins(12, 14, 12, 14)
-        layout.setSpacing(12)
+        panel.setObjectName("TopNavPanel")
+        layout = QHBoxLayout(panel)
+        layout.setContentsMargins(14, 10, 14, 10)
+        layout.setSpacing(10)
 
         title = QLabel("鼠标自动化测试工具")
-        title.setObjectName("SidebarTitle")
-        title.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        title.setWordWrap(True)
+        title.setObjectName("TopNavTitle")
+        title.setAlignment(Qt.AlignmentFlag.AlignVCenter)
         layout.addWidget(title)
 
         divider = QWidget()
-        divider.setObjectName("SidebarDivider")
-        divider.setFixedHeight(1)
+        divider.setObjectName("TopNavDivider")
+        divider.setFixedWidth(1)
         layout.addWidget(divider)
 
         for index, text in enumerate(titles):
             button = QPushButton(text)
-            button.setObjectName("SidebarNavButton")
+            button.setObjectName("TopNavButton")
             button.setCheckable(True)
             button.setCursor(Qt.CursorShape.PointingHandCursor)
             button.clicked.connect(partial(self._set_active_page, index))
@@ -131,7 +110,6 @@ class MainWindow(QMainWindow):
         layout = QVBoxLayout(panel)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
-
         for page in pages:
             self._stack.addWidget(page)
         layout.addWidget(self._stack)
@@ -206,8 +184,6 @@ class MainWindow(QMainWindow):
         self.move(max(available.x(), left), max(available.y(), top))
 
     def closeEvent(self, event: QCloseEvent) -> None:  # noqa: N802
-        self._power_cycle_tab.shutdown()
-        self._bluetooth_connection_tab.shutdown()
-        self._bluetooth_switch_tab.shutdown()
-        self._relay_control_tab.shutdown()
+        self._main_tab.shutdown()
+        self._device_context.shutdown()
         super().closeEvent(event)

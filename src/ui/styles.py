@@ -23,6 +23,43 @@ QWidget#SidebarPanel {
     border: 1px solid #c9dcef;
     border-radius: 14px;
 }
+QWidget#TopNavPanel {
+    background: rgba(242, 248, 255, 0.96);
+    border: 1px solid #c9dcef;
+    border-radius: 10px;
+}
+QWidget#TopNavDivider {
+    background: #c2d8ef;
+    min-height: 28px;
+}
+QLabel#TopNavTitle {
+    color: #1e5483;
+    font-size: 18px;
+    font-weight: 700;
+}
+QPushButton#TopNavButton {
+    min-width: 86px;
+    min-height: 32px;
+    border-radius: 8px;
+    border: 1px solid #b8d3ee;
+    background: #f2f8ff;
+    color: #1f4f78;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 5px 12px;
+}
+QPushButton#TopNavButton:hover {
+    background: #e4f0ff;
+    border-color: #7eaedf;
+}
+QPushButton#TopNavButton:checked {
+    background: #1d7cd7;
+    border: 1px solid #1f7ccf;
+    color: white;
+}
+QPushButton#TopNavButton:pressed {
+    background: #1b6fbe;
+}
 QWidget#SidebarDivider {
     background: #c2d8ef;
 }
@@ -304,6 +341,24 @@ QTextEdit {
     border: 1px solid #c8ddef;
     border-radius: 8px;
     selection-background-color: #9cc6ef;
+}
+QTableWidget {
+    background: #f8fbff;
+    alternate-background-color: #eef6ff;
+    color: #153b60;
+    border: 1px solid #c8ddef;
+    border-radius: 8px;
+    gridline-color: #d6e5f3;
+    selection-background-color: #d9ebff;
+}
+QHeaderView::section {
+    background: #e7f2ff;
+    color: #1d4d77;
+    border: none;
+    border-right: 1px solid #c8ddef;
+    border-bottom: 1px solid #c8ddef;
+    padding: 6px 8px;
+    font-weight: 600;
 }
 QSplitter::handle {
     background: #d4e3f2;
