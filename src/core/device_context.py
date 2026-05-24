@@ -18,7 +18,10 @@ class DeviceContext:
     def __init__(self) -> None:
         self._relay_real = LCUSRelay()
         self._multimeter_real = Victor86EMultimeter()
-        self._bluetooth_probe_real = BluetoothProbe()
+        self._bluetooth_probe_real = BluetoothProbe(
+            inventory_cache_ttl_sec=0.0,
+            target_cache_ttl_sec=0.0,
+        )
         self._bluetooth_manager_real = SystemBluetoothManager(self._bluetooth_probe_real)
 
         self._relay_sim = SimulatedRelay()
