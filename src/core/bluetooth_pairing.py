@@ -442,7 +442,7 @@ def _pair_via_settings_ui_pywinauto(
             clicked = False
             for button_names in (
                 ["Pair", "配对"],
-                ["Connect", "连接"],
+                # ["Connect", "连接"],
                 ["Done", "已完成"],
                 ["Close", "关闭"],
             ):
