@@ -40,6 +40,7 @@ from PySide6.QtWidgets import (
 )
 
 from src.core.bluetooth_switch_engine import BluetoothSwitchRunner
+from src.core.bluetooth_ui_switch_runner import BluetoothUiSwitchRunner
 from src.core.bluetooth_pairing import BluetoothActionResult, SystemBluetoothManager
 from src.core.bluetooth_probe import BluetoothDeviceInfo, BluetoothProbe, normalize_mac
 from src.core.config_store import ConfigStore
@@ -47,11 +48,6 @@ from src.core.relay_lcus88 import LCUSRelay
 from src.core.serial_utils import list_serial_ports
 from src.core.test_engine import TestEngineWorker
 from src.core.types import BluetoothConnectCycleResult, BluetoothSwitchSettings
-
-import subprocess
-import time
-from ctypes import windll
-import platform
 
 _LOGGER = logging.getLogger("ui.bluetooth_switch_test")
 
@@ -69,13 +65,6 @@ class NoWheelDoubleSpinBox(QDoubleSpinBox):
 class NoWheelComboBox(QComboBox):
     def wheelEvent(self, event) -> None:  # noqa: N802
         event.ignore()
-
-
-# 按键常量
-VK_TAB = 0x09
-VK_SPACE = 0x20
-VK_ALT = 0x12
-VK_F4 = 0x73
 
 
 @dataclass(slots=True)
@@ -133,7 +122,7 @@ class BluetoothSwitchTestTab(QWidget):
 
         self._thread: QThread | None = None
         self._worker: TestEngineWorker | None = None
-        self._runner: BluetoothConnectRunner | None = None
+        self._runner: object | None = None
         self._running = False
         self._success_count = 0
         self._fail_count = 0
@@ -156,188 +145,6 @@ class BluetoothSwitchTestTab(QWidget):
         self._refresh_channel_hints()
         self._update_device_control_state()
         self._suspend_auto_save = False
-
-    def _press_key(self, vk_code):
-        """模拟按下按键"""
-        windll.user32.keybd_event(vk_code, 0, 0, 0)
-        windll.user32.keybd_event(vk_code, 0, 2, 0)
-
-    def _press_combination_key(self, vk_code1, vk_code2):
-        """模拟按下组合键"""
-        windll.user32.keybd_event(vk_code1, 0, 0, 0)
-        windll.user32.keybd_event(vk_code2, 0, 0, 0)
-        windll.user32.keybd_event(vk_code2, 0, 2, 0)
-        windll.user32.keybd_event(vk_code1, 0, 2, 0)
-
-    def _get_windows_version(self):
-        """检测Windows版本"""
-        version = platform.release()
-        build = platform.version().split('.')[2] if len(platform.version().split('.')) > 2 else '0'
-        if version == '10' and int(build) >= 22000:
-            return 'Windows 11'
-        elif version == '10':
-            return 'Windows 10'
-        else:
-            return 'Unknown'
-
-    # UI切换测试信号
-    ui_test_progress = Signal(int, int, int, int)  # cycle, total, success, fail
-    ui_test_finished = Signal(int, int, float)  # success, fail, rate
-
-    def _run_ui_toggle_test(self, cycle_count):
-        """运行UI切换测试"""
-        self._append_log("INFO", "开始执行UI切换测试方法")
-        try:
-            # 检测Windows版本
-            self._append_log("INFO", "检测Windows版本")
-            windows_version = self._get_windows_version()
-            self._append_log("INFO", f"检测到系统: {windows_version}")
-
-            # 根据系统版本设置TAB键次数
-            if windows_version == 'Windows 11':
-                tab_count = 3
-                self._append_log("INFO", "Windows 11 系统 - TAB键次数: 3")
-            elif windows_version == 'Windows 10':
-                tab_count = 1
-                self._append_log("INFO", "Windows 10 系统 - TAB键次数: 1")
-            else:
-                tab_count = 1
-                self._append_log("INFO", "未知系统 - 默认TAB键次数: 1")
-
-            # 获取蓝牙目标输入
-            bt_name = self.input_bt_name.text().strip()
-            bt_mac = self.input_bt_mac.text().strip()
-            mode_data = self.combo_bt_mode.currentData()
-            bt_match_mode = mode_data if mode_data in {"name_or_mac", "name_and_mac"} else "name_or_mac"
-
-            # 第一次测试前先打开再关闭蓝牙设置窗口（初始化）
-            self._append_log("INFO", "初始化：打开并关闭蓝牙设置窗口...")
-            subprocess.run("control bthprops.cpl", shell=True, startupinfo=self._get_subprocess_startupinfo())
-            time.sleep(3)
-            self._press_combination_key(VK_ALT, VK_F4)
-            self._append_log("INFO", "初始化完成")
-            time.sleep(2)
-
-            # 检查初始连接状态
-            self._append_log("INFO", "检查初始蓝牙连接状态...")
-            initial_connected, initial_matched = self._bt_probe_real.is_target_connected(bt_name, bt_mac, bt_match_mode)
-            initial_status = "已连接" if initial_connected else "未连接"
-            self._append_log("INFO", f"初始连接状态: {initial_status}")
-            if initial_matched:
-                self._append_log("INFO", f"匹配到 {len(initial_matched)} 个设备：")
-                for device in initial_matched:
-                    connected_hint = getattr(device, "connected", None)
-                    connected_text = "未知" if connected_hint is None else ("已连接" if connected_hint else "未连接")
-                    self._append_log("INFO", f"  - 实例ID={device.instance_id} | 连接状态={connected_text}")
-
-            # 初始化成功和失败次数
-            success_count = 0
-            fail_count = 0
-
-            # 循环执行整个操作
-            for cycle in range(cycle_count):
-                if not self._ui_test_running:
-                    self._append_log("INFO", "UI切换测试已停止")
-                    break
-
-                self._append_log("INFO", f"===== 第 {cycle+1} 次循环 =====")
-
-                # 1. 打开蓝牙设置
-                self._append_log("INFO", "打开蓝牙设置...")
-                subprocess.run("control bthprops.cpl", shell=True, startupinfo=self._get_subprocess_startupinfo())
-                time.sleep(2)
-
-                # 2. 控制 TAB 键（按下和释放）
-                for i in range(tab_count):
-                    self._press_key(VK_TAB)
-                    self._append_log("INFO", f"  第 {i+1} 次 TAB 已按下")
-                    time.sleep(1)
-
-                # 3. 控制空格键点击蓝牙开关
-                time.sleep(1)
-                self._press_key(VK_SPACE)
-                self._append_log("INFO", "  空格键已按下")
-
-                # 4. 检查蓝牙连接状态
-                time.sleep(2)  # 等待状态变化
-                self._append_log("INFO", "  检查蓝牙连接状态...")
-                connected, matched = self._bt_probe_real.is_target_connected(bt_name, bt_mac, bt_match_mode)
-                current_status = "已连接" if connected else "未连接"
-
-                if matched:
-                    self._append_log("INFO", f"  匹配到 {len(matched)} 个设备：")
-                    for device in matched:
-                        connected_hint = getattr(device, "connected", None)
-                        connected_text = "未知" if connected_hint is None else ("已连接" if connected_hint else "未连接")
-                        self._append_log("INFO", f"  - 实例ID={device.instance_id} | 连接状态={connected_text}")
-                else:
-                    self._append_log("WARNING", "  未匹配到目标蓝牙设备，请检查名称关键字或 MAC。")
-                self._append_log("INFO", f"  蓝牙检查结果: {current_status}")
-
-                # 5. 判断测试结果
-                if current_status != initial_status:
-                    success_count += 1
-                    self._append_log("INFO", "  测试结果: 成功（状态发生变化）")
-                    # 更新初始状态，用于下一次判断
-                    initial_status = current_status
-                else:
-                    fail_count += 1
-                    self._append_log("WARNING", "  测试结果: 失败（状态未发生变化）")
-
-                # 6. 关闭设置窗口（Alt+F4）
-                time.sleep(1)
-                self._press_combination_key(VK_ALT, VK_F4)
-                self._append_log("INFO", "  已关闭窗口")
-
-                self._append_log("INFO", f"第 {cycle+1} 次循环完成")
-
-                # 发送进度信号
-                self.ui_test_progress.emit(cycle + 1, cycle_count, success_count, fail_count)
-
-                time.sleep(5)
-
-            # 计算成功率
-            total = success_count + fail_count
-            success_rate = (success_count / total * 100.0) if total > 0 else 0.0
-
-            self._append_log("INFO", f"✅ 所有循环已完成！")
-            self._append_log("INFO", f"测试统计：成功 {success_count}，失败 {fail_count}，成功率 {success_rate:.2f}%")
-
-            # 发送完成信号
-            self.ui_test_finished.emit(success_count, fail_count, success_rate)
-
-            return "测试完成"
-        except Exception as e:
-            self._append_log("ERROR", f"UI切换测试异常: {e}")
-            import traceback
-            self._append_log("ERROR", f"异常堆栈: {traceback.format_exc()}")
-            return f"测试异常: {e}"
-        finally:
-            self._ui_test_running = False
-            self._update_device_control_state()
-            self._append_log("INFO", "UI切换测试方法执行完成")
-
-    @Slot(int, int, int, int)
-    def _on_ui_test_progress(self, cycle: int, total: int, success: int, fail: int) -> None:
-        """处理UI测试进度更新"""
-        self.progress.setRange(0, total)
-        self.progress.setValue(cycle)
-        self.label_done.setText(f"已完成：{cycle}/{total}")
-        self.label_success.setText(f"成功：{success}")
-        self.label_fail.setText(f"失败：{fail}")
-
-    @Slot(int, int, float)
-    def _on_ui_test_finished(self, success: int, fail: int, rate: float) -> None:
-        """处理UI测试完成"""
-        self.progress.setValue(100)
-        self.label_rate.setText(f"成功率：{rate:.2f}%")
-
-    def _get_subprocess_startupinfo(self):
-        """获取子进程启动信息，用于隐藏窗口"""
-        startupinfo = subprocess.STARTUPINFO()
-        startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
-        startupinfo.wShowWindow = subprocess.SW_HIDE
-        return startupinfo
 
     def _build_ui(self) -> None:
         root_layout = QHBoxLayout(self)
@@ -1036,51 +843,69 @@ class BluetoothSwitchTestTab(QWidget):
     def _start_ui_test(self) -> None:
         """开始UI切换测试"""
         self._append_log("INFO", "UI切换测试按钮被点击")
-        if self._ui_test_running:
+        if self._running or self._ui_test_running:
             self._append_log("INFO", "UI测试已经在运行中")
             return
-
-        cycle_count = self.input_test_count.value()
-        self._append_log("INFO", f"获取循环次数: {cycle_count}")
-        if cycle_count <= 0:
-            QMessageBox.warning(self, "参数错误", "循环次数必须大于0")
+        if not self._save_current_settings():
             return
 
+        try:
+            cfg = self._collect_settings_from_ui()
+        except ValueError as exc:
+            QMessageBox.warning(self, "参数错误", str(exc))
+            return
+
+        validation = self._validate_bluetooth_target_inputs(require_name=False)
+        if validation is None:
+            return
+
+        self._success_count = 0
+        self._fail_count = 0
+        self._update_stats(done=0, total=cfg.test_count)
+
+        runner = BluetoothUiSwitchRunner(
+            relay=self._relay_real,
+            bluetooth=self._bt_manager,
+            settings=cfg,
+            log_cb=lambda level, message: self._emit_worker_signal(
+                self._worker, "log", level, message
+            ),
+            progress_cb=lambda done, total: self._emit_worker_signal(
+                self._worker, "progress", done, total
+            ),
+            cycle_cb=lambda result: self._emit_worker_signal(
+                self._worker, "cycle", result
+            ),
+        )
+        worker = TestEngineWorker(runner)
+        self._runner = runner
+        self._worker = worker
+
+        thread = QThread(self)
+        worker.moveToThread(thread)
+        thread.started.connect(worker.run)
+        worker.sig_log.connect(self._append_log)
+        worker.sig_progress.connect(self._on_progress)
+        worker.sig_cycle_result.connect(self._on_cycle_result)
+        worker.sig_finished.connect(self._on_finished)
+        worker.sig_error.connect(self._on_error)
+        worker.sig_finished.connect(self._cleanup_worker_thread)
+        worker.sig_error.connect(self._cleanup_worker_thread)
+
+        self._thread = thread
+        self._running = True
         self._ui_test_running = True
         self._update_device_control_state()
-        self._append_log("INFO", f"UI切换测试开始，总轮次: {cycle_count}")
-
-        # 连接信号
-        self.ui_test_progress.connect(self._on_ui_test_progress)
-        self.ui_test_finished.connect(self._on_ui_test_finished)
-
-        # 直接在新线程中运行UI测试
-        import threading
-        def run_test():
-            self._run_ui_toggle_test(cycle_count)
-
-        test_thread = threading.Thread(target=run_test)
-        self._append_log("INFO", "创建并启动测试线程")
-        test_thread.daemon = True
-        test_thread.start()
-        self._append_log("INFO", "测试线程启动完成")
-
-    def _on_ui_test_success(self, result: object) -> None:
-        """处理UI测试成功"""
-        self._append_log("INFO", "UI测试任务执行完成")
-
-    def _on_ui_test_error(self, message: str) -> None:
-        """处理UI测试错误"""
-        self._append_log("ERROR", f"UI测试异常: {message}")
-        self._ui_test_running = False
-        self._update_device_control_state()
+        self._append_log("INFO", "UI切换测试线程启动。")
+        thread.start()
 
     def _stop_ui_test(self) -> None:
         """停止UI切换测试"""
         if not self._ui_test_running:
             return
 
-        self._ui_test_running = False
+        if self._worker:
+            self._worker.stop()
         self._append_log("WARNING", "已请求停止UI切换测试。")
 
     def _stop_test(self) -> None:
@@ -1158,6 +983,7 @@ class BluetoothSwitchTestTab(QWidget):
         self._worker = None
         self._runner = None
         self._running = False
+        self._ui_test_running = False
         self._update_running_state()
 
     def _emit_worker_signal(

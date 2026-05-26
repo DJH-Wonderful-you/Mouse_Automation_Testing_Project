@@ -512,7 +512,8 @@ class TestPlanRunner:
             )
         if self._plan_settings.bluetooth_switch_method == "ui":
             return BluetoothUiSwitchRunner(
-                bluetooth=self._device_context.active_bluetooth_probe(self._device_settings),
+                relay=self._device_context.active_relay(self._device_settings),
+                bluetooth=self._device_context.active_bluetooth_manager(self._device_settings),
                 settings=cfg,
                 log_cb=log_cb,
                 progress_cb=progress_cb,
