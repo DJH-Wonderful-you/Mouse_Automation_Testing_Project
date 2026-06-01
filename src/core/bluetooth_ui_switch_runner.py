@@ -10,7 +10,6 @@ from src.core.bluetooth_pairing import (
     BluetoothActionResult,
     BluetoothManager,
     _activate_window,
-    _close_window,
     _invoke_element,
     _iter_scope_items,
     _load_pywinauto_backend,
@@ -261,10 +260,8 @@ class BluetoothUiSwitchRunner:
         return _SettingsUiSession(desktop=desktop, send_keys=send_keys, window=settings_window)
 
     def _close_settings_ui(self, session: _SettingsUiSession) -> None:
-        try:
-            _close_window(session.window, session.send_keys)
-        except Exception as exc:  # noqa: BLE001
-            self._log("WARNING", f"关闭蓝牙设置窗口失败: {exc}")
+        if not _close_window_without_global_hotkey(session.window):
+            self._log("WARNING", "关闭蓝牙设置窗口失败，已跳过 Alt+F4 兜底以避免误关主程序。")
         self._controlled_sleep(0.5)
 
     def _click_bluetooth_toggle(
@@ -524,6 +521,8 @@ def _find_bluetooth_toggle(scopes: list[object]) -> object | None:
             control_type = _control_type(item)
             if control_type not in _TOGGLE_CONTROL_TYPES:
                 continue
+            if _is_excluded_toggle_candidate(item, control_type):
+                continue
             if _is_toggle_candidate(item, control_type):
                 fallback_candidates.append(item)
             score = _score_bluetooth_toggle_candidate(item, control_type)
@@ -550,6 +549,9 @@ def _find_bluetooth_toggle(scopes: list[object]) -> object | None:
 
 
 def _score_bluetooth_toggle_candidate(item: object, control_type: str) -> int | None:
+    if _is_excluded_toggle_candidate(item, control_type):
+        return None
+
     name_has_term = _contains_bluetooth_term(_element_name(item))
     automation_has_term = _contains_bluetooth_term(_automation_id(item))
     context_has_term = name_has_term or automation_has_term or _parent_has_bluetooth_context(item)
@@ -563,8 +565,6 @@ def _score_bluetooth_toggle_candidate(item: object, control_type: str) -> int | 
         return 1
     if control_type in {"Button", "CheckBox"} and name_has_term:
         return 2
-    if control_type in {"Button", "CheckBox"}:
-        return 3
     if control_type in {"Custom", "ListItem"} and name_has_term:
         return 4
     return None
@@ -609,6 +609,8 @@ def _find_toggle_near_bluetooth_label(scopes: list[object]) -> object | None:
                 control_type = _control_type(candidate)
                 if control_type not in _TOGGLE_CONTROL_TYPES:
                     continue
+                if _is_excluded_toggle_candidate(candidate, control_type):
+                    continue
                 if not _is_toggle_candidate(candidate, control_type):
                     continue
                 candidate_rect = _rectangle(candidate)
@@ -621,11 +623,47 @@ def _find_toggle_near_bluetooth_label(scopes: list[object]) -> object | None:
 
 
 def _is_toggle_candidate(item: object, control_type: str) -> bool:
+    if _is_excluded_toggle_candidate(item, control_type):
+        return False
     return (
         _has_toggle_pattern(item)
         or control_type in {"Switch", "ToggleButton", "CheckBox"}
         or _read_toggle_state(item) is not None
     )
+
+
+def _is_excluded_toggle_candidate(item: object, control_type: str) -> bool:
+    name = _element_name(item).strip().casefold()
+    automation_id = _automation_id(item).strip().casefold()
+    if control_type in {"TitleBar", "MenuItem"}:
+        return True
+
+    blocked_exact = {
+        "close",
+        "关闭",
+        "关闭 设置",
+        "minimize",
+        "最小化",
+        "maximize",
+        "最大化",
+        "restore",
+        "还原",
+        "back",
+        "后退",
+    }
+    if name in {item.casefold() for item in blocked_exact}:
+        return True
+
+    blocked_fragments = (
+        "close",
+        "关闭 设置",
+        "minimize",
+        "maximize",
+        "restore",
+        "titlebar",
+        "caption",
+    )
+    return any(fragment in name or fragment in automation_id for fragment in blocked_fragments)
 
 
 def _has_toggle_pattern(item: object) -> bool:
@@ -733,6 +771,22 @@ def _format_exception(exc: BaseException) -> str:
     return exc.__class__.__name__
 
 
+def _close_window_without_global_hotkey(window: object) -> bool:
+    top_level = _top_level_window(window)
+    if top_level is None:
+        return False
+
+    _activate_window(top_level)
+    close = _safe_attr(top_level, "close")
+    if callable(close):
+        try:
+            close()
+            return True
+        except Exception:  # noqa: BLE001
+            return False
+    return False
+
+
 def _iter_items(scope: object) -> list[object]:
     try:
         return _iter_scope_items(scope)
@@ -759,6 +813,18 @@ def _parent(item: object) -> object | None:
         return _pairing_safe_parent(item)
     except Exception:  # noqa: BLE001
         return None
+
+
+def _top_level_window(item: object) -> object | None:
+    top_level_parent = _safe_attr(item, "top_level_parent")
+    if callable(top_level_parent):
+        try:
+            top_level = top_level_parent()
+            if top_level is not None:
+                return top_level
+        except Exception:  # noqa: BLE001
+            pass
+    return item
 
 
 def _automation_id(item: object) -> str:

@@ -6,6 +6,7 @@ from src.core.bluetooth_pairing import BluetoothActionResult
 from src.core.bluetooth_ui_switch_runner import (
     BluetoothUiSwitchRunner,
     _click_element,
+    _close_window_without_global_hotkey,
     _find_bluetooth_toggle,
     _has_toggle_pattern,
     _read_toggle_state,
@@ -122,6 +123,28 @@ class _NoPatternSwitch:
         raise RuntimeError("NoPatternInterfaceError")
 
 
+class _BluetoothParent:
+    element_info = _ElementInfo(name="蓝牙和其他设备", control_type="Window")
+
+
+class _CloseSettingsButton:
+    element_info = _ElementInfo(name="关闭 设置", control_type="Button")
+
+    def parent(self):
+        return _BluetoothParent()
+
+    def invoke(self) -> None:
+        raise AssertionError("close button must not be invoked as Bluetooth toggle")
+
+
+class _WindowWithoutClose:
+    def __init__(self) -> None:
+        self.hotkey_sent = False
+
+    def top_level_parent(self):
+        return self
+
+
 class _Scope:
     def __init__(self, item: object) -> None:
         self._item = item
@@ -196,6 +219,12 @@ class TestBluetoothUiSwitchRunner(unittest.TestCase):
         self.assertFalse(_has_toggle_pattern(item))
         self.assertFalse(_click_element(item, send_keys=None))
         self.assertIs(_find_bluetooth_toggle([_Scope(item)]), item)
+
+    def test_finder_does_not_treat_settings_close_button_as_toggle(self) -> None:
+        self.assertIsNone(_find_bluetooth_toggle([_Scope(_CloseSettingsButton())]))
+
+    def test_close_settings_window_does_not_use_global_hotkey_fallback(self) -> None:
+        self.assertFalse(_close_window_without_global_hotkey(_WindowWithoutClose()))
 
 
 if __name__ == "__main__":
